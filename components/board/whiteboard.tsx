@@ -66,19 +66,12 @@ export default function Whiteboard() {
   const [isZooming, setIsZooming] = useState(false);
   const [isBrainstormActive, setIsBrainstormActive] = useState(false); // 브레인스톰 상태 추가
   const [url, setUrl] = useState('');
-  const selectedWidget = useSelector(
-    (state: RootState) => state.whiteboard.selectedWidget
-  );
 
   // Screen 좌표 기준의 마우스 위치를 저장
   const [mousePosition, setMousePosition] = useState<{
     x: number;
     y: number;
   } | null>(null);
-
-  const isArrowMode = useSelector(
-    (state: RootState) => state.arrow.isArrowMode
-  );
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -164,11 +157,6 @@ export default function Whiteboard() {
     };
   }, []);
 
-  //arrow 모드 종료 시 선택된 위젯 초기화
-  useEffect(() => {
-    dispatch(setSelectedWidget(null));
-  }, [isArrowMode]);
-
   // window 좌표 기준의 마우스 위치 기준으로 줌인, 줌아웃 구현
   useEffect(() => {
     const container = containerRef.current;
@@ -232,6 +220,7 @@ export default function Whiteboard() {
     };
   }, [scale, offset, isZooming, mousePosition]);
 
+  //scale, offset 변경 시 그리드 그리기
   const redraw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -251,6 +240,7 @@ export default function Whiteboard() {
     redraw();
   }, [scale, offset, redraw]);
 
+  // 파일 업로드 처리
   const processFile = (file: File, dataUrl: string) => {
     const centerX = (window.innerWidth / 2 - offset.x * scale) / scale;
     const centerY = (window.innerHeight / 2 - offset.y * scale) / scale;
@@ -325,6 +315,7 @@ export default function Whiteboard() {
     setTool('select');
   };
 
+  // 파일 업로드 핸들러(drag 파일이 존재할 경우 바로 실행)
   const handleFileUpload = (dragFile?: File) => {
     const handleFile = (file: File) => {
       const reader = new FileReader();
@@ -395,7 +386,6 @@ export default function Whiteboard() {
             footerBar: false,
           };
           break;
-
         case 'section':
           innerWidget = {
             id: Date.now().toString(),
@@ -439,6 +429,7 @@ export default function Whiteboard() {
     redraw();
   };
 
+  // 드래그 시 마우스 위치 변경
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -455,42 +446,12 @@ export default function Whiteboard() {
     }
   };
 
+  // 드래그 종료 시 판넬 모드 종료
   const handleMouseUp = () => {
     setIsPanning(false);
   };
-  //   e.preventDefault();
-  //   e.stopPropagation();
 
-  //   // Command(Mac) 또는 Ctrl(Windows) 키가 눌려있을 때만 줌 동작
-  //   if (e.metaKey || e.ctrlKey) {
-  //     const delta = e.deltaY;
-  //     const zoomFactor = Math.exp(-delta * ZOOM_SPEED);
-  //     const newScale = Math.min(Math.max(scale * zoomFactor, 0.1), 5);
-
-  //     // 마우스 포인터 위치 (뷰포트 좌표)
-  //     const mouseX = e.clientX;
-  //     const mouseY = e.clientY;
-
-  //     // 컨테이너의 위치 정보
-  //     const rect = containerRef.current?.getBoundingClientRect();
-  //     if (!rect) return;
-
-  //     // 마우스 포인터의 캔버스상 좌표
-  //     const pointX = (mouseX - rect.left) / scale - offset.x;
-  //     const pointY = (mouseY - rect.top) / scale - offset.y;
-
-  //     // 새로운 오프셋 계산
-  //     const newOffset = {
-  //       x: offset.x - pointX * (newScale - scale),
-  //       y: offset.y - pointY * (newScale - scale),
-  //     };
-
-  //     setScale(newScale);
-  //     setOffset(newOffset);
-  //   }
-  // };
   // 기존 텍스트 위젯만 필터링하는 함수 추가
-
   const getTextWidgets = (
     widgets: ShellWidgetProps<AllWidgetTypes>[]
   ): TextWidget[] => {
@@ -540,14 +501,6 @@ export default function Whiteboard() {
     dispatch(setSelectedWidget(newWidget.id));
   };
 
-  const handleZoomIn = () => {
-    setScale((prevScale) => Math.min(prevScale + 0.1, 5));
-  };
-
-  const handleZoomOut = () => {
-    setScale((prevScale) => Math.max(prevScale - 0.1, 0.1));
-  };
-
   // 드래그 앤 드롭 이벤트 리스너
   useEffect(() => {
     const container = containerRef.current;
@@ -580,7 +533,7 @@ export default function Whiteboard() {
     }
   };
 
-  // URL 추가 핸들러
+  // 붙여넣기를 통해 text, URL을 분류하고 추가하는 핸들러
   const handleUrlAdd = () => {
     if (url && containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
@@ -601,7 +554,7 @@ export default function Whiteboard() {
     }
   };
 
-  // 클립보드 붙여넣기 및 마우스 이동 이벤트 리스너
+  // 현재 마우스 위치로 클립보드 붙여넣기
   useEffect(() => {
     if (tool !== 'url') {
       const handlePaste = (e: ClipboardEvent) => {
@@ -630,6 +583,7 @@ export default function Whiteboard() {
     }
   }, [widgets, mousePosition]);
 
+  // 현재 마우스 위치로 텍스트 위젯 추가
   const addTextWidgets = (mousePos: { x: number; y: number }, text: string) => {
     const x = (mousePos.x - offset.x * scale) / scale;
     const y = (mousePos.y - offset.y * scale) / scale;
@@ -660,6 +614,7 @@ export default function Whiteboard() {
     dispatch(addWidget(newWidget));
   };
 
+  // 현재 마우스 위치로 URL 위젯 추가
   const addUrlWidgets = (mousePos: { x: number; y: number }, text: string) => {
     const x = (mousePos.x - offset.x * scale) / scale;
     const y = (mousePos.y - offset.y * scale) / scale;
@@ -692,18 +647,6 @@ export default function Whiteboard() {
   return (
     <div className='flex flex-col h-screen'>
       {/* 툴바 */}
-      {/* <div className='flex justify-between items-center p-4 bg-gray-100 border-b'>
-        <div className='flex space-x-2'>
-          <Button variant='outline' size='icon' onClick={handleZoomOut}>
-            <ZoomOut className='h-4 w-4' />
-            <span className='sr-only'>Zoom out</span>
-          </Button>
-          <Button variant='outline' size='icon' onClick={handleZoomIn}>
-            <ZoomIn className='h-4 w-4' />
-            <span className='sr-only'>Zoom in</span>
-          </Button>
-        </div>
-      </div> */}
       <div className='left-1/2 fixed bottom-8 border -translate-x-1/2 border-muted rounded-lg p-1 bg-white z-50 shadow-md h-11'>
         <div className='flex space-x-2 items-center'>
           <Button
@@ -872,16 +815,14 @@ export default function Whiteboard() {
           </Button>
         </div>
       </div>
-
       <div ref={containerRef} className='flex-grow overflow-hidden relative'>
         <canvas
           ref={canvasRef}
           width={window.innerWidth}
-          height={window.innerHeight - 64}
+          height={window.innerHeight}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          // onWheel={handleWheel}
           className={`${spacePressed ? 'cursor-grab' : 'cursor-crosshair'} ${
             isPanning ? 'cursor-grabbing' : ''
           }`}
