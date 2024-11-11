@@ -28,8 +28,8 @@ export interface WidgetProps {
     | 'template'
     | 'upload'
     | 'aiSearch'
-    | 'refresh',
-      | "board";
+    | 'refresh'
+    | 'board';
   isSelected?: boolean;
 }
 
@@ -174,9 +174,8 @@ export interface BoardWidget extends WidgetProps {
   text: string;
 }
 
-
 export interface ArrowWidget extends WidgetProps {
-  type: "arrow";
+  type: 'arrow';
 
   from: string;
   to: string;
@@ -221,7 +220,7 @@ export const isBoard = (widget: WidgetProps): widget is BoardWidget => {
 };
 
 export function isArrow(widget: WidgetProps): widget is ArrowWidget {
-  return widget.type === "arrow";
+  return widget.type === 'arrow';
 }
 
 // 호버 상태를 위한 타입 정의
