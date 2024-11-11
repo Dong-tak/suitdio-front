@@ -28,7 +28,8 @@ export interface WidgetProps {
     | 'template'
     | 'upload'
     | 'aiSearch'
-    | 'refresh';
+    | 'refresh',
+      | "board";
   isSelected?: boolean;
 }
 
@@ -69,6 +70,8 @@ export interface ShellWidgetProps<T extends AllWidgetTypes>
   editable: boolean;
   draggable: boolean;
   innerWidget: T; // 내부 위젯을 저장하는 속성
+  fill?: string; // 섹션 추가
+  memberIds?: string[]; // 섹션 추가
 }
 
 export interface TextWidget extends WidgetProps {
@@ -168,10 +171,13 @@ export interface BoardWidget extends WidgetProps {
   resizeable: boolean;
   headerBar: boolean;
   footerBar: boolean;
+  text: string;
 }
 
-export interface ArrowShape extends WidgetProps {
-  type: 'arrow';
+
+export interface ArrowWidget extends WidgetProps {
+  type: "arrow";
+
   from: string;
   to: string;
   x?: number;
@@ -213,6 +219,10 @@ export const isIframeEmbed = (
 export const isBoard = (widget: WidgetProps): widget is BoardWidget => {
   return widget.type === 'boardLink';
 };
+
+export function isArrow(widget: WidgetProps): widget is ArrowWidget {
+  return widget.type === "arrow";
+}
 
 // 호버 상태를 위한 타입 정의
 export type EdgePosition = 'n' | 's' | 'w' | 'e' | null;

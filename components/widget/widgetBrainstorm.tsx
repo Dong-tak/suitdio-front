@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { AllWidgetType } from "@/lib/type";
 
 interface BrainstormInputProps {
@@ -16,6 +16,8 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
 }) => {
   const [inputText, setInputText] = useState("");
   const [isSelected, setIsSelected] = useState(false);
+  const isProcessing = useRef(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Shift+T 단축키 핸들러 수정
   useEffect(() => {
@@ -39,18 +41,30 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
     []
   );
 
-  // Ctrl/Cmd + Enter 처리
+  const createNode = useCallback(() => {
+    if (textareaRef.current && inputText.trim()) {
+      const currentText = textareaRef.current.value;
+      if (currentText.trim()) {
+        onCreateNode(currentText);
+        setInputText("");
+      }
+    }
+  }, [inputText, onCreateNode]);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
         e.preventDefault();
-        if (inputText.trim()) {
-          onCreateNode(inputText);
-          setInputText("");
-        }
+        if (isProcessing.current) return;
+        isProcessing.current = true;
+
+        setTimeout(() => {
+          createNode();
+          isProcessing.current = false;
+        }, 10);
       }
     },
-    [inputText, onCreateNode]
+    [createNode]
   );
 
   // textarea에 focus 이벤트 핸들러 추가
@@ -71,6 +85,7 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
       }}
     >
       <textarea
+        ref={textareaRef}
         value={inputText}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
@@ -79,8 +94,8 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
         placeholder={`아이디어를 입력하세요!
 
 사용법:
-Ctrl/Cmd + Enter로 생성
-ON/OFF - Shift + T 또는 버튼 클릭`}
+ON/OFF - Shift + T / 버튼 클릭
+Ctrl/Cmd + Enter로 생성`}
         style={{
           width: "100%",
           height: "150px",
