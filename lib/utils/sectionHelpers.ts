@@ -82,7 +82,7 @@ export const isWithinBounds = (
   return isWithin;
 };
 
-// 섹션과 멤버 객체들의 위치 업데이트
+// 섹션과 멤버 객체들의 위치 업데이트(섹션 크기 조절 시에도 멤버의 위치와 크기는 유지)
 export const updateSectionAndMembers = (
   section: ShellWidgetProps<AllWidgetTypes>,
   dx: number,
@@ -117,39 +117,25 @@ export const updateSectionResize = (
   newHeight: number,
   newX: number,
   newY: number,
-  shapes: ShellWidgetProps<AllWidgetTypes>[]
-): ShellWidgetProps<AllWidgetTypes>[] => {
-  const scaleX = newWidth / section.width;
-  const scaleY = newHeight / section.height;
-  const dx = newX - section.x;
-  const dy = newY - section.y;
-
-  return shapes.map((shape) => {
-    if (shape.id === section.id) {
+  widgets: ShellWidgetProps<AllWidgetTypes>[]
+) => {
+  const updatedShapes = widgets.map((widget) => {
+    // 섹션 자체만 업데이트
+    if (widget.id === section.id) {
       return {
-        ...shape,
-        width: newWidth,
-        height: newHeight,
+        ...widget,
         x: newX,
         y: newY,
-      };
-    } else if (
-      section.innerWidget.type === "section" &&
-      (section.innerWidget as SectionWidget).memberIds.includes(shape.id)
-    ) {
-      const relativeX = shape.x - section.x;
-      const relativeY = shape.y - section.y;
-
-      return {
-        ...shape,
-        x: snap(section.x + relativeX * scaleX + dx),
-        y: snap(section.y + relativeY * scaleY + dy),
-        width: shape.width * scaleX,
-        height: shape.height * scaleY,
+        width: newWidth,
+        height: newHeight,
       };
     }
-    return shape;
+
+    // 나머지 위젯들(멤버 포함)은 변경하지 않음
+    return widget;
   });
+
+  return updatedShapes;
 };
 
 // 객체의 이동을 섹션 내부로 제한
