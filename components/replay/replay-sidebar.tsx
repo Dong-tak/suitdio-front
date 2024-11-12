@@ -152,7 +152,10 @@ export function ReplaySidebar({
 
           return (
             <SidebarGroup key={item.title}>
-              <div className='flex items-center justify-between'>
+              <div
+                key={item.title}
+                className='flex items-center justify-between'
+              >
                 <SidebarGroupLabel className='text-lg font-bold'>
                   {item.title}
                 </SidebarGroupLabel>

@@ -45,15 +45,6 @@ export const snapOnDragEnd = (e: any, shapeProps: any, onChange: any) => {
   });
 };
 
-export const anchorDragBoundFunc = (oldPos: any, newPos: any, event: any) => {
-  // snap 함수를 사용하여 x와 y 좌표를 스냅합니다.
-  const x = snap(newPos.x);
-  const y = snap(newPos.y);
-  console.log('snap position:', x, y);
-
-  return { x, y };
-};
-
 // 위젯 스냅핑을 위한 새로운 함수들
 export const snapWidgetPosition = (
   x: number,
