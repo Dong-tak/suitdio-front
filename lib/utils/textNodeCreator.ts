@@ -44,10 +44,10 @@ const getRandomPosition = (
       const nodeHeight = node.height ?? HEIGHT; // height가 undefined인 경우 기본값 사용
 
       return !(
-        position.x + WIDTH + padding < node.x ||
-        position.x > node.x + nodeWidth + padding ||
-        position.y + HEIGHT + padding < node.y ||
-        position.y > node.y + nodeHeight + padding
+        position.x + WIDTH + padding < (node.x ?? 0) ||
+        position.x > (node.x ?? 0) + nodeWidth + padding ||
+        position.y + HEIGHT + padding < (node.y ?? 0) ||
+        position.y > (node.y ?? 0) + nodeHeight + padding
       );
     });
 
