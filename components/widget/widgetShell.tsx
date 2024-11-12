@@ -411,9 +411,6 @@ export default function WidgetShell({
       e.preventDefault();
       e.stopPropagation();
 
-      if (e.shiftKey) {
-        dispatch(addSelectedWidget(widget.id));
-      }
       if (
         e.target instanceof HTMLElement &&
         e.target.classList.contains('resize-handle') &&
@@ -423,14 +420,6 @@ export default function WidgetShell({
         setResizeDirection(e.target.classList[1]); // nw, ne, sw, se
       } else {
         setIsDragging(true);
-        if (selectedWidget && !selectedWidget.includes(widget.id)) {
-          // Shift 키가 눌려있지 않으면 기존 선택 해제
-          if (!e.shiftKey) {
-            dispatch(deleteSelectedWidget(widget.id));
-          } else {
-            dispatch(addSelectedWidget(widget.id));
-          }
-        }
       }
       setDragStart({ x: e.clientX, y: e.clientY });
     }
@@ -451,10 +440,7 @@ export default function WidgetShell({
       const dx = snappedX / scale - widget.x;
       const dy = snappedY / scale - widget.y;
 
-      if (
-        Array.isArray(selectedWidget) &&
-        !selectedWidget.includes(widget.id)
-      ) {
+      if (Array.isArray(selectedWidget) && selectedWidget.includes(widget.id)) {
         // Shift 키가 눌려있지 않으면 기존 선택 해제
         selectedWidget.forEach((id) => {
           const targetWidget = widgets.find((w) => w.id === id);
@@ -621,6 +607,22 @@ export default function WidgetShell({
     console.log(`Hovered edge: ${position}`); // 디버깅용
   };
 
+  const handleWidgetClick = (e: React.MouseEvent) => {
+    if (selectedWidget && selectedWidget.includes(widget.id)) {
+      if (e.shiftKey) {
+        dispatch(deleteSelectedWidget(widget.id));
+      } else {
+        dispatch(setSelectedWidget([widget.id]));
+      }
+    } else {
+      if (e.shiftKey) {
+        dispatch(addSelectedWidget(widget.id));
+      } else {
+        dispatch(setSelectedWidget([widget.id]));
+      }
+    }
+  };
+
   return (
     <div
       className='widget-shell group'
@@ -661,7 +663,7 @@ export default function WidgetShell({
         borderRadius: '4px',
         // overflow: `${widget.innerWidget.type === 'url' ? 'hidden' : 'visible'}`,
       }}
-      onClick={() => dispatch(addSelectedWidget(widget.id))}
+      onClick={handleWidgetClick}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >
