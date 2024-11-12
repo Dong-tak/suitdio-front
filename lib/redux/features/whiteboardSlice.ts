@@ -1,9 +1,9 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AllWidgetTypes, ShellWidgetProps, TextWidget } from "@/lib/type";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AllWidgetTypes, ShellWidgetProps, TextWidget } from '@/lib/type';
 
 interface WhiteboardState {
   widgets: ShellWidgetProps<AllWidgetTypes>[];
-  selectedWidget: string | string[] | null;
+  selectedWidget: string[] | null;
   editModeWidgets: string | string[] | null;
 }
 
@@ -14,7 +14,7 @@ const initialState: WhiteboardState = {
 };
 
 const whiteboardSlice = createSlice({
-  name: "whiteboard",
+  name: 'whiteboard',
   initialState,
   reducers: {
     addWidget: (
@@ -35,8 +35,20 @@ const whiteboardSlice = createSlice({
     deleteWidget: (state, action: PayloadAction<string>) => {
       state.widgets = state.widgets.filter((w) => w.id !== action.payload);
     },
-    setSelectedWidget: (state, action: PayloadAction<string | null>) => {
+    setSelectedWidget: (state, action: PayloadAction<string[] | null>) => {
       state.selectedWidget = action.payload;
+    },
+    addSelectedWidget: (state, action: PayloadAction<string>) => {
+      if (state.selectedWidget && Array.isArray(state.selectedWidget)) {
+        state.selectedWidget.push(action.payload);
+      }
+    },
+    deleteSelectedWidget: (state, action: PayloadAction<string>) => {
+      if (state.selectedWidget && Array.isArray(state.selectedWidget)) {
+        state.selectedWidget = state.selectedWidget.filter(
+          (id) => id !== action.payload
+        );
+      }
     },
     setEditModeWidgets: (state, action: PayloadAction<string | null>) => {
       state.editModeWidgets = action.payload;
@@ -49,6 +61,8 @@ export const {
   updateWidget,
   deleteWidget,
   setSelectedWidget,
+  addSelectedWidget,
+  deleteSelectedWidget,
   setEditModeWidgets,
 } = whiteboardSlice.actions;
 export default whiteboardSlice.reducer;

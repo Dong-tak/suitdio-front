@@ -187,6 +187,13 @@ export interface ArrowWidget extends WidgetProps {
   arrowHeads: ArrowHeadState; // 화살표 머리 상태 추가
 }
 
+export interface SelectArea {
+  startX: number;
+  startY: number;
+  width: number;
+  height: number;
+}
+
 // 타입 가드 함수
 
 // export function isArrow(widget: WidgetProps): widget is ArrowWidget {

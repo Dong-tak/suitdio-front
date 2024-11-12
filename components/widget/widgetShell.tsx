@@ -13,12 +13,13 @@ import WidgetBoard from './widgetBoard';
 import WidgetSection from './widgetSection';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+  addSelectedWidget,
+  deleteSelectedWidget,
   deleteWidget,
   setEditModeWidgets,
   setSelectedWidget,
   updateWidget,
 } from '@/lib/redux/features/whiteboardSlice';
-import WidgetArea from './widgetArea';
 import {
   snap,
   snapHeight,
@@ -187,7 +188,7 @@ export default function WidgetShell({
   const widgets = useSelector((state: RootState) => state.whiteboard.widgets);
 
   useEffect(() => {
-    setIsSelected(selectedWidget === widget.id);
+    setIsSelected(selectedWidget?.includes(widget.id) ?? false);
     if (selectedWidget !== null && selectedWidget !== editModeWidgets) {
       dispatch(setEditModeWidgets(null));
     }
@@ -334,7 +335,7 @@ export default function WidgetShell({
           <WidgetSection
             widget={sectionWidget}
             isSelected={isSelected}
-            onSelect={() => dispatch(setSelectedWidget(widget.id))}
+            onSelect={() => dispatch(addSelectedWidget(widget.id))}
             onChange={(newAttrs) => {
               dispatch(
                 updateWidget({
@@ -409,6 +410,10 @@ export default function WidgetShell({
     if (!isEditMode && draggable && !isArrowNodeHovered) {
       e.preventDefault();
       e.stopPropagation();
+
+      if (e.shiftKey) {
+        dispatch(addSelectedWidget(widget.id));
+      }
       if (
         e.target instanceof HTMLElement &&
         e.target.classList.contains('resize-handle') &&
@@ -418,6 +423,14 @@ export default function WidgetShell({
         setResizeDirection(e.target.classList[1]); // nw, ne, sw, se
       } else {
         setIsDragging(true);
+        if (selectedWidget && !selectedWidget.includes(widget.id)) {
+          // Shift 키가 눌려있지 않으면 기존 선택 해제
+          if (!e.shiftKey) {
+            dispatch(deleteSelectedWidget(widget.id));
+          } else {
+            dispatch(addSelectedWidget(widget.id));
+          }
+        }
       }
       setDragStart({ x: e.clientX, y: e.clientY });
     }
@@ -437,6 +450,25 @@ export default function WidgetShell({
 
       const dx = snappedX / scale - widget.x;
       const dy = snappedY / scale - widget.y;
+
+      if (
+        Array.isArray(selectedWidget) &&
+        !selectedWidget.includes(widget.id)
+      ) {
+        // Shift 키가 눌려있지 않으면 기존 선택 해제
+        selectedWidget.forEach((id) => {
+          const targetWidget = widgets.find((w) => w.id === id);
+          if (targetWidget) {
+            dispatch(
+              updateWidget({
+                ...targetWidget,
+                x: targetWidget.x + dx,
+                y: targetWidget.y + dy,
+              })
+            );
+          }
+        });
+      }
 
       if (isSection(widget.innerWidget)) {
         // 섹션 이동 시 멤버들도 함께 이동
@@ -629,7 +661,7 @@ export default function WidgetShell({
         borderRadius: '4px',
         // overflow: `${widget.innerWidget.type === 'url' ? 'hidden' : 'visible'}`,
       }}
-      onClick={() => dispatch(setSelectedWidget(widget.id))}
+      onClick={() => dispatch(addSelectedWidget(widget.id))}
       onMouseDown={handleMouseDown}
       onDoubleClick={handleDoubleClick}
     >

@@ -1,0 +1,8 @@
+# .dockerignore 파일 내용
+node_modules
+logs
+tests
+coverage
+.git
+.DS_Store
+*.md
