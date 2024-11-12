@@ -427,6 +427,7 @@ export default function Whiteboard() {
       if (!e.shiftKey) {
         dispatch(setEditModeWidgets(null));
         setIsSelecting(true);
+        setDragStart({ x, y }); // 드래그 시작 위치 저장
         setSelectArea({
           startX: x,
           startY: y,
@@ -525,11 +526,16 @@ export default function Whiteboard() {
       const currentX = (e.clientX - rect.left - offset.x * scale) / scale;
       const currentY = (e.clientY - rect.top - offset.y * scale) / scale;
 
+      const width = Math.abs(currentX - dragStart.x);
+      const height = Math.abs(currentY - dragStart.y);
+      const selectX = Math.min(currentX, dragStart.x);
+      const selectY = Math.min(currentY, dragStart.y);
+
       setSelectArea({
-        startX: Math.min(selectArea.startX, currentX),
-        startY: Math.min(selectArea.startY, currentY),
-        width: Math.abs(currentX - selectArea.startX),
-        height: Math.abs(currentY - selectArea.startY),
+        startX: selectX,
+        startY: selectY,
+        width: width,
+        height: height,
       });
       redraw();
     }
