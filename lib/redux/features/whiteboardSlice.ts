@@ -1,16 +1,42 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AllWidgetTypes, ShellWidgetProps, TextWidget } from '@/lib/type';
+import { AllWidgetTypes, ShellWidgetProps } from '@/lib/type';
+
+// 액션 타입 정의
+type ActionType =
+  | 'CREATE_WIDGET'
+  | 'DELETE_WIDGET'
+  | 'EDIT_WIDGET'
+  | 'RESIZE_WIDGET'
+  | 'MOVE_WIDGET'
+  | 'STATE_WIDGET';
+
+// 커맨드 인터페이스 정의
+interface Command {
+  type: ActionType;
+  payload: any; //type 정의 필요
+  timestamp: number;
+}
 
 interface WhiteboardState {
   widgets: ShellWidgetProps<AllWidgetTypes>[];
   selectedWidget: string[] | null;
   editModeWidgets: string | string[] | null;
+  history: {
+    past: Command[];
+    future: Command[];
+  };
+  lastSavedState: ShellWidgetProps<AllWidgetTypes>[];
 }
 
 const initialState: WhiteboardState = {
   widgets: [],
   selectedWidget: null,
   editModeWidgets: null,
+  history: {
+    past: [],
+    future: [],
+  },
+  lastSavedState: [],
 };
 
 const whiteboardSlice = createSlice({
@@ -22,6 +48,24 @@ const whiteboardSlice = createSlice({
       action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
     ) => {
       state.widgets.push(action.payload);
+      state.history.past.push({
+        type: 'CREATE_WIDGET',
+        payload: action.payload,
+        timestamp: Date.now(),
+      });
+      state.history.future = []; // 새 액션이 발생하면 future 초기화
+      state.lastSavedState = [...state.widgets];
+    },
+    resizeWidget: (state, action: PayloadAction<string>) => {
+      state.widgets = state.widgets.filter((w) => w.id === action.payload);
+    },
+    moveWidget: (state, action: PayloadAction<string[]>) => {
+      state.widgets = state.widgets.filter(
+        (w) => !action.payload.includes(w.id)
+      );
+    },
+    stateWidget: (state, action: PayloadAction<string>) => {
+      state.widgets = state.widgets.filter((w) => w.id !== action.payload);
     },
     updateWidget: (
       state,
@@ -34,7 +78,35 @@ const whiteboardSlice = createSlice({
     },
     deleteWidget: (state, action: PayloadAction<string>) => {
       state.widgets = state.widgets.filter((w) => w.id !== action.payload);
+      state.history.past.push({
+        type: 'DELETE_WIDGET',
+        payload: action.payload,
+        timestamp: Date.now(),
+      });
+      state.history.future = [];
+      state.lastSavedState = [...state.widgets];
     },
+
+    // Undo 액션
+    undo: (state) => {
+      if (state.history.past.length === 0) return;
+
+      const lastCommand = state.history.past[state.history.past.length - 1];
+      state.history.past.pop();
+
+      // 마지막 커맨드 되돌리기
+      switch (lastCommand.type) {
+        case 'CREATE_WIDGET':
+          state.widgets = state.widgets.filter(
+            (w) => w.id !== lastCommand.payload.id
+          );
+          break;
+      }
+
+      state.history.future.push(lastCommand);
+      state.lastSavedState = [...state.widgets];
+    },
+
     setSelectedWidget: (state, action: PayloadAction<string[] | null>) => {
       state.selectedWidget = action.payload;
     },

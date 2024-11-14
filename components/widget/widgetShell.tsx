@@ -646,7 +646,7 @@ export default function WidgetShell({
           isEditMode
             ? 'black'
             : isSelected
-            ? '#BBDEFB'
+            ? '#f59e0b'
             : isArrowMode
             ? '#F1F5F9'
             : '#e0e0e0'
@@ -655,7 +655,7 @@ export default function WidgetShell({
           isEditMode
             ? '2px solid black'
             : isSelected
-            ? '2px solid #BBDEFB'
+            ? '2px solid #f59e0b' //amber-500
             : 'none'
         }`,
 

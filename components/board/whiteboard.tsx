@@ -85,6 +85,7 @@ export default function Whiteboard() {
   );
   const [url, setUrl] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
+  const history = useSelector((state: RootState) => state.whiteboard.history);
 
   // 섹션 드래그 상태 추가
   const [sectionDraft, setSectionDraft] = useState<{
@@ -283,8 +284,8 @@ export default function Whiteboard() {
 
     // 선택 영역 그리기
     if (selectArea) {
-      ctx.strokeStyle = '#2196F3';
-      ctx.fillStyle = 'rgba(33, 150, 243, 0.1)';
+      ctx.strokeStyle = '#d97706';
+      ctx.fillStyle = '#fffbeb50';
       ctx.lineWidth = 1 / scale;
       ctx.beginPath();
       ctx.rect(
@@ -410,6 +411,7 @@ export default function Whiteboard() {
 
   //마우스를 다운을 트리거로 위젯 생성, 선택, 드래그 모드 설정
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    console.log('history:', history);
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -881,8 +883,8 @@ export default function Whiteboard() {
   return (
     <div className='flex flex-col h-screen'>
       {/* 툴바 */}
-      <div className='left-1/2 fixed bottom-8 border -translate-x-1/2 border-muted rounded-lg p-1 bg-white z-50 shadow-md h-11'>
-        <div className='flex space-x-2 items-center'>
+      <div className='left-1/2 fixed bottom-8 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center'>
+        <div className='flex space-x-2 items-center '>
           <Button
             variant={tool === 'select' ? 'toolSelect' : 'white'}
             size='icon'
@@ -1048,6 +1050,65 @@ export default function Whiteboard() {
             onClick={() => setTool('aiSearch')}
           >
             <HiOutlineSparkles className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
+          </Button>
+        </div>
+      </div>
+      <div className='left-1/2 fixed top-6 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center space-x-2'>
+        <div className='flex space-x-2 items-center'>
+          <Button
+            variant={tool === 'select' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('select')}
+          >
+            <MousePointer2 className='h-4 w-4' />
+            <span className='sr-only'>Select tool</span>
+          </Button>
+          <Button
+            variant={tool === 'text' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('text')}
+          >
+            <Type className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
+          </Button>
+          <Button
+            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('arrow')}
+          >
+            <MoveRight className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
+          </Button>
+        </div>
+        <Separator orientation='vertical' className='h-6' />
+        <div className='p-2 font-bold text-sm flex-1 min-w-0'>
+          <h1 className='truncate'>How to survive in flood of technology</h1>
+        </div>
+        <Separator orientation='vertical' className='h-6' />
+        <div className='flex space-x-2 items-center'>
+          <Button
+            variant={tool === 'select' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('select')}
+          >
+            <MousePointer2 className='h-4 w-4' />
+            <span className='sr-only'>Select tool</span>
+          </Button>
+          <Button
+            variant={tool === 'text' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('text')}
+          >
+            <Type className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
+          </Button>
+          <Button
+            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('arrow')}
+          >
+            <MoveRight className='h-4 w-4' />
             <span className='sr-only'>Text tool</span>
           </Button>
         </div>
