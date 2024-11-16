@@ -176,7 +176,7 @@ export default function WidgetShell({
   const [isArrowNodeHovered, setIsArrowNodeHovered] = useState(false);
   const [isReduced, setIsReduced] = useState(false);
   const widgets = useSelector((state: RootState) => state.whiteboard.widgets);
-  const [snappedHeight, setSnappedHeight] = useState(0);
+  const [snappedHeight, setSnappedHeight] = useState(widget.height || 132);
   const isArrowMode = useSelector(
     (state: RootState) => state.arrow.isArrowMode
   );
