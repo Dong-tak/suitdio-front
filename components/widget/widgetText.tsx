@@ -1,7 +1,12 @@
 import { TextWidget as TextWidgetType } from '@/lib/type';
 import { PartialBlock } from '@blocknote/core';
 import { BlockNoteView } from '@blocknote/mantine';
-import { useCreateBlockNote } from '@blocknote/react';
+import {
+  DragHandleButton,
+  SideMenu,
+  SideMenuController,
+  useCreateBlockNote,
+} from '@blocknote/react';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
 import { useEffect, useRef, useState } from 'react';
@@ -17,6 +22,7 @@ export default function WidgetText({
   fontSize,
   autoFocus,
   onHeightChange,
+  height,
   ...props
 }: WidgetTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,7 +85,15 @@ export default function WidgetText({
 
   return (
     <div ref={containerRef} style={{ zIndex: -1, position: 'relative' }}>
-      <BlockNoteView editor={editor} editable={editable} />
+      <BlockNoteView editor={editor} editable={editable} sideMenu={false}>
+        <SideMenuController
+          sideMenu={(props) => (
+            <SideMenu {...props}>
+              <DragHandleButton {...props} />
+            </SideMenu>
+          )}
+        />
+      </BlockNoteView>
     </div>
   );
 }

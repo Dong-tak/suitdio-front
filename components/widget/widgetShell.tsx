@@ -170,6 +170,13 @@ export default function WidgetShell({
   const [resizeDirection, setResizeDirection] = useState<string | null>(null);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isNodeWidget, setIsNodeWidget] = useState(false);
+  const [isSelected, setIsSelected] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [hoveredEdge, setHoveredEdge] = useState<EdgePosition>(null);
+  const [isArrowNodeHovered, setIsArrowNodeHovered] = useState(false);
+  const [isReduced, setIsReduced] = useState(false);
+  const widgets = useSelector((state: RootState) => state.whiteboard.widgets);
+  const [snappedHeight, setSnappedHeight] = useState(0);
   const isArrowMode = useSelector(
     (state: RootState) => state.arrow.isArrowMode
   );
@@ -179,13 +186,6 @@ export default function WidgetShell({
   const selectedWidget = useSelector(
     (state: RootState) => state.whiteboard.selectedWidget
   );
-  const [isSelected, setIsSelected] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [hoveredEdge, setHoveredEdge] = useState<EdgePosition>(null);
-
-  const [isArrowNodeHovered, setIsArrowNodeHovered] = useState(false);
-
-  const widgets = useSelector((state: RootState) => state.whiteboard.widgets);
 
   useEffect(() => {
     setIsSelected(selectedWidget?.includes(widget.id) ?? false);
@@ -220,6 +220,10 @@ export default function WidgetShell({
     setIsNodeWidget(isNodeWidgetType(widget.innerWidget.type));
   }, [widget.innerWidget.type]);
 
+  useEffect(() => {
+    handleHeightChange(widget.height);
+  }, [isReduced]);
+
   const handleHeightChange = (height: number) => {
     if (height !== widget.height) {
       // header 높이 52px 추가
@@ -230,6 +234,7 @@ export default function WidgetShell({
         height = height + 52;
       }
       const snappedHeight = snapHeight(height);
+      setSnappedHeight(snappedHeight);
       dispatch(
         updateWidget({
           ...widget,
@@ -314,6 +319,7 @@ export default function WidgetShell({
         return (
           <WidgetText
             {...widget.innerWidget}
+            height={widget.innerWidget.height}
             editable={editable ? isEditMode : false}
             autoFocus={isEditMode}
             onHeightChange={handleHeightChange}
@@ -614,7 +620,7 @@ export default function WidgetShell({
       } else {
         dispatch(setSelectedWidget([widget.id]));
       }
-    } else {
+    } else if (!isEditMode) {
       if (e.shiftKey) {
         dispatch(addSelectedWidget(widget.id));
       } else {
@@ -623,57 +629,63 @@ export default function WidgetShell({
     }
   };
 
-  return (
-    <div
-      className='widget-shell group'
-      style={{
-        position: 'absolute',
-        zIndex: widget.innerWidget.type === 'section' ? 1 : 2,
-        padding: '4px',
-        margin: isNodeWidget ? `${4 * scale}px` : '0',
-        left: `${(widget.x + offset.x) * scale}px`, // offset을 더한 후 scale 적용
-        top: `${(widget.y + offset.y) * scale}px`, // offset을 더한 후 scale 적용
-        width: `${widget.width}px`,
-        height: `${widget.height}px`,
-        transform: `scale(${scale})`,
-        transformOrigin: '0 0',
-        backgroundColor:
-          widget.innerWidget.type === 'section'
-            ? 'rgba(200, 200, 200, 0.2)'
-            : 'white',
-        opacity: widget.innerWidget.type === 'section' ? 0.8 : 1,
-        border: `2px solid ${
-          isEditMode
-            ? 'black'
-            : isSelected
-            ? '#f59e0b'
-            : isArrowMode
-            ? '#F1F5F9'
-            : '#e0e0e0'
-        }`,
-        outline: `${
-          isEditMode
-            ? '2px solid black'
-            : isSelected
-            ? '2px solid #f59e0b' //amber-500
-            : 'none'
-        }`,
+  // 축소 버튼 클릭 핸들러
+  const handleReduceButtonClick = () => {
+    console.log('reduce button clicked');
+    const newIsReduced = !isReduced;
+    setIsReduced(newIsReduced);
+    console.log(isReduced);
+    if (newIsReduced) {
+      dispatch(
+        updateWidget({
+          ...widget,
+          innerWidget: {
+            ...widget.innerWidget,
+            resizeable: false,
+            editable: false,
+            headerBar: false,
+          },
+          height: 132,
+        })
+      );
+    } else {
+      dispatch(
+        updateWidget({
+          ...widget,
+          innerWidget: {
+            ...widget.innerWidget,
+            headerBar: true,
+            resizeable: true,
+            editable: true,
+          },
+          height: snappedHeight,
+        })
+      );
+    }
+  };
 
-        outlineOffset: '0px', // 음수 값을 주면 안쪽으로 들어갑니다
-        borderRadius: '4px',
-        // overflow: `${widget.innerWidget.type === 'url' ? 'hidden' : 'visible'}`,
-      }}
-      onClick={handleWidgetClick}
-      onMouseDown={handleMouseDown}
-      onDoubleClick={handleDoubleClick}
-    >
-      {headerBar && (
-        <div className='transition-opacity duration-200 hover:bg-gray-100 header-bar opacity-0 group-hover:opacity-100'>
+  return (
+    <>
+      {/* 축소 버튼 툴바 */}
+      {isReduced && (
+        <div
+          className={` h-[40px] flex w-fit border ${
+            isSelected ? 'block' : 'hidden'
+          }`}
+          style={{
+            position: 'absolute',
+            left: `${(widget.x + offset.x + 4) * scale}px`,
+            top: `${(widget.y + offset.y - 40) * scale}px`, // 위젯 위에 배치
+            transform: `scale(${scale})`,
+            transformOrigin: '0 0',
+            zIndex: 999,
+          }}
+        >
           <div className='flex items-center'>
             <Button
               size='icon'
               className=' rounded-none p-2 bg-white'
-              onClick={() => console.log('clicked')}
+              onClick={handleReduceButtonClick}
             >
               <SvgIcon
                 fill='none'
@@ -715,109 +727,207 @@ export default function WidgetShell({
           </div>
         </div>
       )}
-      {renderInnerWidget()}
-      {footerBar && (
-        <div className='footer-bar'>
-          <div className='flex items-center justify-between space-x-1  h-full pl-4'>
-            <div className='text-[12px] text-muted-foreground'>v 3.26</div>
-            <div className='w-[2px] h-[2px] bg-muted-foreground rounded-full' />
-            <div className='text-[12px] text-muted-foreground'>24.08.17</div>
-            <div className='w-[2px] h-[2px] bg-muted-foreground rounded-full' />
-            <div className='text-[12px] text-muted-foreground'>08:28</div>
+      <div
+        className='widget-shell group'
+        style={{
+          position: 'absolute',
+          zIndex: widget.innerWidget.type === 'section' ? 1 : 2,
+          padding: '4px',
+          margin: isNodeWidget ? `${4 * scale}px` : '0',
+          left: `${(widget.x + offset.x) * scale}px`, // offset을 더한 후 scale 적용
+          top: `${(widget.y + offset.y) * scale}px`, // offset을 더한 후 scale 적용
+          width: `${widget.width}px`,
+          height: `${widget.height}px`,
+          transform: `scale(${scale})`,
+          transformOrigin: '0 0',
+          backgroundColor:
+            widget.innerWidget.type === 'section'
+              ? 'rgba(200, 200, 200, 0.2)'
+              : 'white',
+          opacity: widget.innerWidget.type === 'section' ? 0.8 : 1,
+          border: `2px solid ${
+            isEditMode
+              ? 'black'
+              : isSelected
+              ? '#f59e0b'
+              : isArrowMode
+              ? '#F1F5F9'
+              : '#e0e0e0'
+          }`,
+          outline: `${
+            isEditMode
+              ? '2px solid black'
+              : isSelected
+              ? '2px solid #f59e0b' //amber-500
+              : 'none'
+          }`,
+
+          outlineOffset: '0px', // 음수 값을 주면 안쪽으로 들어갑니다
+          borderRadius: '4px',
+          // overflow: `${widget.innerWidget.type === 'url' ? 'hidden' : 'visible'}`,
+        }}
+        onClick={handleWidgetClick}
+        onMouseDown={handleMouseDown}
+        onDoubleClick={handleDoubleClick}
+      >
+        {headerBar && (
+          <div className='transition-opacity duration-200 hover:bg-gray-100 header-bar opacity-0 group-hover:opacity-100'>
+            <div className='flex items-center'>
+              <Button
+                size='icon'
+                className=' rounded-none p-2 bg-white'
+                onClick={handleReduceButtonClick}
+              >
+                <SvgIcon
+                  fill='none'
+                  width={8}
+                  height={9}
+                  className='flex items-center justify-center'
+                >
+                  {chevronDownSvg8px}
+                </SvgIcon>
+              </Button>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <SvgIcon
+                  fill='none'
+                  width={8}
+                  height={9}
+                  className='flex items-center justify-center'
+                >
+                  {wideFrameSvg8px}
+                </SvgIcon>
+              </Button>
+            </div>
+            <div className='flex items-center'>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <SvgIcon
+                  fill='none'
+                  width={8}
+                  height={9}
+                  className='flex items-center justify-center text-black'
+                >
+                  {arrowModeSvg}
+                </SvgIcon>
+              </Button>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <Info className='text-black' />
+              </Button>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <Ellipsis className='text-black' />
+              </Button>
+            </div>
           </div>
-          <div className='flex items-center'>
-            <Button size='icon' className=' rounded-none p-2 bg-white'>
-              <SvgIcon
-                fill='none'
-                width={8}
-                height={9}
-                className='flex items-center justify-center text-black'
-              >
-                {sixBoltSvg}
-              </SvgIcon>
-            </Button>
-            <Button size='icon' className=' rounded-none p-2 bg-white'>
-              <SvgIcon
-                fill='none'
-                width={8}
-                height={9}
-                className='flex items-center justify-center text-black'
-              >
-                {pauseSvg}
-              </SvgIcon>
-            </Button>
-            <Button size='icon' className=' rounded-none p-2 bg-white'>
-              <SvgIcon
-                fill='none'
-                width={8}
-                height={9}
-                className='flex items-center justify-center text-black'
-              >
-                {recordSvg}
-              </SvgIcon>
-            </Button>
-          </div>
+        )}
+        <div className='h-full w-full overflow-hidden'>
+          {renderInnerWidget()}
         </div>
-      )}
-      {/* {isSelected && (
+        {footerBar && (
+          <div className='footer-bar'>
+            <div className='flex items-center justify-between space-x-1  h-full pl-4'>
+              <div className='text-[12px] text-muted-foreground'>v 3.26</div>
+              <div className='w-[2px] h-[2px] bg-muted-foreground rounded-full' />
+              <div className='text-[12px] text-muted-foreground'>24.08.17</div>
+              <div className='w-[2px] h-[2px] bg-muted-foreground rounded-full' />
+              <div className='text-[12px] text-muted-foreground'>08:28</div>
+            </div>
+            <div className='flex items-center'>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <SvgIcon
+                  fill='none'
+                  width={8}
+                  height={9}
+                  className='flex items-center justify-center text-black'
+                >
+                  {sixBoltSvg}
+                </SvgIcon>
+              </Button>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <SvgIcon
+                  fill='none'
+                  width={8}
+                  height={9}
+                  className='flex items-center justify-center text-black'
+                >
+                  {pauseSvg}
+                </SvgIcon>
+              </Button>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <SvgIcon
+                  fill='none'
+                  width={8}
+                  height={9}
+                  className='flex items-center justify-center text-black'
+                >
+                  {recordSvg}
+                </SvgIcon>
+              </Button>
+            </div>
+          </div>
+        )}
+        {/* {isSelected && (
         
       )} */}
-      <>
-        <div className='resize-handle nw' style={getHandleStyle('nw')} />
-        <div className='resize-handle ne' style={getHandleStyle('ne')} />
-        <div className='resize-handle sw' style={getHandleStyle('sw')} />
-        <div className='resize-handle se' style={getHandleStyle('se')} />
-        <div
-          className='resize-handle n'
-          style={getHandleStyle('n')}
-          onMouseEnter={() => handleEdgeHover('n')}
-          onMouseLeave={() => handleEdgeHover(null)}
-        />
-        <div
-          className='resize-handle s'
-          style={getHandleStyle('s')}
-          onMouseEnter={() => handleEdgeHover('s')}
-          onMouseLeave={() => handleEdgeHover(null)}
-        />
-        <div
-          className='resize-handle w'
-          style={getHandleStyle('w')}
-          onMouseEnter={() => handleEdgeHover('w')}
-          onMouseLeave={() => handleEdgeHover(null)}
-        />
-        <div
-          className='resize-handle e'
-          style={getHandleStyle('e')}
-          onMouseEnter={() => handleEdgeHover('e')}
-          onMouseLeave={() => handleEdgeHover(null)}
-        />
-      </>
-      <div className='arrow-node-container'>
-        <div
-          className='arrow-node n'
-          style={setArrowNodeStyle('n')}
-          onMouseEnter={(e) => handleArrowNodeHover('n', true, e)}
-          onMouseLeave={(e) => handleArrowNodeHover('n', false, e)}
-        />
-        <div
-          className='arrow-node s'
-          style={setArrowNodeStyle('s')}
-          onMouseEnter={(e) => handleArrowNodeHover('s', true, e)}
-          onMouseLeave={(e) => handleArrowNodeHover('s', false, e)}
-        />
-        <div
-          className='arrow-node w'
-          style={setArrowNodeStyle('w')}
-          onMouseEnter={(e) => handleArrowNodeHover('w', true, e)}
-          onMouseLeave={(e) => handleArrowNodeHover('w', false, e)}
-        />
-        <div
-          className='arrow-node e'
-          style={setArrowNodeStyle('e')}
-          onMouseEnter={(e) => handleArrowNodeHover('e', true, e)}
-          onMouseLeave={(e) => handleArrowNodeHover('e', false, e)}
-        />
+        <>
+          {resizeable && (
+            <>
+              <div className='resize-handle nw' style={getHandleStyle('nw')} />
+              <div className='resize-handle ne' style={getHandleStyle('ne')} />
+              <div className='resize-handle sw' style={getHandleStyle('sw')} />
+              <div className='resize-handle se' style={getHandleStyle('se')} />
+            </>
+          )}
+          <div
+            className='resize-handle n'
+            style={getHandleStyle('n')}
+            onMouseEnter={() => handleEdgeHover('n')}
+            onMouseLeave={() => handleEdgeHover(null)}
+          />
+          <div
+            className='resize-handle s'
+            style={getHandleStyle('s')}
+            onMouseEnter={() => handleEdgeHover('s')}
+            onMouseLeave={() => handleEdgeHover(null)}
+          />
+          <div
+            className='resize-handle w'
+            style={getHandleStyle('w')}
+            onMouseEnter={() => handleEdgeHover('w')}
+            onMouseLeave={() => handleEdgeHover(null)}
+          />
+          <div
+            className='resize-handle e'
+            style={getHandleStyle('e')}
+            onMouseEnter={() => handleEdgeHover('e')}
+            onMouseLeave={() => handleEdgeHover(null)}
+          />
+        </>
+        <div className='arrow-node-container'>
+          <div
+            className='arrow-node n'
+            style={setArrowNodeStyle('n')}
+            onMouseEnter={(e) => handleArrowNodeHover('n', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('n', false, e)}
+          />
+          <div
+            className='arrow-node s'
+            style={setArrowNodeStyle('s')}
+            onMouseEnter={(e) => handleArrowNodeHover('s', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('s', false, e)}
+          />
+          <div
+            className='arrow-node w'
+            style={setArrowNodeStyle('w')}
+            onMouseEnter={(e) => handleArrowNodeHover('w', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('w', false, e)}
+          />
+          <div
+            className='arrow-node e'
+            style={setArrowNodeStyle('e')}
+            onMouseEnter={(e) => handleArrowNodeHover('e', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('e', false, e)}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

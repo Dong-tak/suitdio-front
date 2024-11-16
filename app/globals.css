@@ -8,57 +8,70 @@ body {
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #18181b;
-    --sub-background: #fafafa;
-    --sub-foreground: #27272a;
-    --cover-background: #f4f4f5;
-    --cover-foreground: #27272a;
-    --primary: #d97706;
-    --primary-foreground: #fafafa;
-    --primary-gray: #3f3f46;
-    --primary-hover: #b45309;
-    --primary-light: #fffbeb;
-    --secondary: #71717a;
-    --secondary-gray: #52525b;
-    --secondary-hover: #52525b;
-    --secondary-light: #fafafa;
-    --muted: #f1f5f9;
-    --muted-foreground: #94a3b8;
-    --destructive: #ef4444;
-    --destructive-hover: #dc2626;
-    --destructive-light: #fee2e2;
-    --warn: #d97706;
-    --warn-hover: #b45309;
-    --warn-light: #fef3c7;
-    --select: #3b82f6;
-    --select-hover: #2563eb;
-    --select-light: #dbeafe;
-    --card: #fafafa;
-    --card-foreground: #18181b;
-    --popover: 'white';
-    --popover-foreground: 0 0% 3.9%;
+    --background: #ffffff; /* White */
+    --foreground: #18181b; /* Zinc-900 */
+    --sub-background: #fafafa; /* Zinc-50 */
+    --sub-foreground: #27272a; /* Zinc-800 */
+    --cover-background: #f4f4f5; /* Zinc-100 */
+    --cover-foreground: #27272a; /* Zinc-800 */
+    --background-muted-40: #f4f4f540; /* Zinc-100 with 40% opacity */
+    --background-muted-50: #f4f4f550; /* Zinc-100 with 50% opacity */
+    --background-accent-40: #f4f4f550; /* Zinc-100 with 50% opacity */
+    --primary: #ffa000; /* AmberMD-700 */
+    --primary-foreground: #fafafa; /* Zinc-50 */
+    --primary-gray: #3f3f46; /* Zinc-700 */
+    --primary-hover: #ff8f00; /* AmberMD-800 */
+    --primary-light: #fffbeb; /* Amber-50 */
+    --secondary: #f4f4f5; /* Zinc-100 */
+    --secondary-foreground: #18181b; /* Zinc-900 */
+    --secondary-gray: #52525b; /* Zinc-600 */
+    --secondary-hover: #e4e4e7; /* Zinc-200 */
+    --secondary-light: #fafafa; /* Zinc-50 */
+    --muted: #f4f4f5; /* Slate-100 */
+    --muted-foreground: #71717a; /* Slate-400 */
+    --destructive: #f44336; /* RedMD-500 */
+    --destructive-foreground: #fafafa; /* Zinc-50 */
+    --destructive-hover: #e53935; /* RedMD-600 */
+    --destructive-hover-10: #e5393510; /* RedMD-500 with 10% opacity */
+    --destructive-hover-20: #e5393520; /* RedMD-500 with 20% opacity */
+    --destructive-light: #fee2e2; /* Red-100 */
+    --warn: #d97706; /* Amber-600 */
+    --warn-hover: #b45309; /* Amber-700 */
+    --warn-light: #fef3c7; /* Amber-100 */
+    --select: #3b82f6; /* Blue-500 */
+    --select-hover: #2563eb; /* Blue-600 */
+    --select-light: #dbeafe; /* Blue-100 */
+    --card: #ffffff; /* Zinc-50 */
+    --card-foreground: 'zinc-950'; /* Zinc-900 */
+    --popover: #ffffff; /* White */
+    --popover-foreground: #09090b; /* Zinc-950 */
     --secondary-foreground: 0 0% 9%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive-foreground: 0 0% 98%;
-    --border: #cbd5e1;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
+    --accent: #f4f4f5; /* Zinc-100 */
+    --accent-foreground: #18181b; /* Zinc-900 */
+    --destructive-foreground: 'zinc-50'; /* Zinc-50 */
+    --border: #e4e4e7; /* Zinc-200 */
+    --border-muted-40: #f4f4f540;
+    --border-destructive-50: #ffcdd2; /*RedMd-100*/
+    --input: #e4e4e7; /* Zinc-200 */
+    --ring: #71717a; /* Zinc-500 */
+    --success: #2196f3; /* BlueMD-500 */
+    --success-hover: #1976d2; /* BlueMD-700 */
+    --neon-green: #90caf9; /* BlueMD-200 */
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem; /* 0.5rem = 8px */
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: #fafafa; /* Zinc-50 */
+    --sidebar-foreground: #3f3f46; /* Zinc-700 */
+    --sidebar-foreground-70: #3f3f4670; /* Zinc-700 with 70% opacity */
+    --sidebar-primary: #ffa000; /* AmberMD-700 */
+    --sidebar-primary-foreground: #fafafa; /* Zinc-50 */
+    --sidebar-accent: #f4f4f5; /* Zinc-100 */
+    --sidebar-accent-foreground: #18181b; /* Zinc-900 */
+    --sidebar-border: #e4e4e7; /* Zinc-200 */
+    --sidebar-ring: #a1a1aa; /* Zinc-400 */
   }
   .dark {
     --background: 0 0% 3.9%;
