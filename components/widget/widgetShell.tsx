@@ -17,6 +17,7 @@ import {
   deleteSelectedWidget,
   deleteWidget,
   setEditModeWidgets,
+  setIsReduced,
   setSelectedWidget,
   updateWidget,
 } from '@/lib/redux/features/whiteboardSlice';
@@ -235,6 +236,7 @@ export default function WidgetShell({
       }
       const snappedHeight = snapHeight(height);
       setSnappedHeight(snappedHeight);
+      console.log(snappedHeight);
       dispatch(
         updateWidget({
           ...widget,
@@ -387,6 +389,7 @@ export default function WidgetShell({
             {...widget.innerWidget}
             width={widget.width}
             onHeightChange={handleHeightChange}
+            isReduced={isReduced}
           />
         );
       case 'pdf':
@@ -395,6 +398,7 @@ export default function WidgetShell({
             {...widget.innerWidget}
             width={widget.width}
             onHeightChange={handleHeightChange}
+            isReduced={isReduced}
           />
         );
       case 'url':
@@ -404,6 +408,7 @@ export default function WidgetShell({
             width={widget.width}
             height={widget.height}
             onHeightChange={handleHeightChange}
+            isReduced={isReduced}
           />
         );
       default:
@@ -749,7 +754,7 @@ export default function WidgetShell({
             isEditMode
               ? 'black'
               : isSelected
-              ? '#f59e0b'
+              ? '#FFB300'
               : isArrowMode
               ? '#F1F5F9'
               : '#e0e0e0'
@@ -758,13 +763,12 @@ export default function WidgetShell({
             isEditMode
               ? '2px solid black'
               : isSelected
-              ? '2px solid #f59e0b' //amber-500
+              ? '2px solid #FFB300' //amber-500
               : 'none'
           }`,
-
           outlineOffset: '0px', // 음수 값을 주면 안쪽으로 들어갑니다
           borderRadius: '4px',
-          // overflow: `${widget.innerWidget.type === 'url' ? 'hidden' : 'visible'}`,
+          transition: 'height 0.3s ease-in-out', // 높이 변경 애니메이션 추가
         }}
         onClick={handleWidgetClick}
         onMouseDown={handleMouseDown}
@@ -818,7 +822,11 @@ export default function WidgetShell({
             </div>
           </div>
         )}
-        <div className='h-full w-full overflow-hidden'>
+        <div
+          className={`h-full w-full overflow-hidden ${
+            isEditMode ? 'edit-mode-container' : ''
+          }`}
+        >
           {renderInnerWidget()}
         </div>
         {footerBar && (

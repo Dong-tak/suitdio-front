@@ -26,6 +26,7 @@ interface WhiteboardState {
     future: Command[];
   };
   lastSavedState: ShellWidgetProps<AllWidgetTypes>[];
+  isReduced: boolean;
 }
 
 const initialState: WhiteboardState = {
@@ -37,6 +38,7 @@ const initialState: WhiteboardState = {
     future: [],
   },
   lastSavedState: [],
+  isReduced: false,
 };
 
 const whiteboardSlice = createSlice({
@@ -125,6 +127,9 @@ const whiteboardSlice = createSlice({
     setEditModeWidgets: (state, action: PayloadAction<string | null>) => {
       state.editModeWidgets = action.payload;
     },
+    setIsReduced: (state, action: PayloadAction<boolean>) => {
+      state.isReduced = action.payload;
+    },
   },
 });
 
@@ -136,5 +141,6 @@ export const {
   addSelectedWidget,
   deleteSelectedWidget,
   setEditModeWidgets,
+  setIsReduced,
 } = whiteboardSlice.actions;
 export default whiteboardSlice.reducer;

@@ -10,6 +10,8 @@ import {
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
 import { useEffect, useRef, useState } from 'react';
+import { RootState } from '@/lib/redux/store';
+import { useSelector } from 'react-redux';
 
 interface WidgetTextProps extends TextWidgetType {
   editable: boolean;
@@ -22,7 +24,6 @@ export default function WidgetText({
   fontSize,
   autoFocus,
   onHeightChange,
-  height,
   ...props
 }: WidgetTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,17 +35,33 @@ export default function WidgetText({
         const response = await fetch(props.src);
         const text = await response.text();
         const blocks = await editor.tryParseMarkdownToBlocks(text);
-        // setInitialContent(blocks);
         editor.replaceBlocks(editor.document, blocks);
       } else if (props.mkText) {
         const blocks = await editor.tryParseMarkdownToBlocks(props.mkText);
-        // setInitialContent(blocks);
         editor.replaceBlocks(editor.document, blocks);
       }
     };
 
     loadMarkdown();
   }, []);
+
+  // useEffect(() => {
+  //   const blocks = editor.document;
+  //   if (isReduced) {
+  //     editor.updateBlock(blocks[0].id, {
+  //       type: 'heading',
+  //       props: { level: 2 },
+  //     });
+
+  //     // 1번째와 2번째 블록을 paragraph로 변경
+  //     editor.updateBlock(blocks[1].id, {
+  //       type: 'paragraph',
+  //     });
+  //     editor.updateBlock(blocks[2].id, {
+  //       type: 'paragraph',
+  //     });
+  //   }
+  // }, [isReduced]);
 
   const initialContent: PartialBlock[] | undefined = props.text
     ? JSON.parse(props.text)

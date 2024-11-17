@@ -89,6 +89,7 @@ export interface TextWidget extends WidgetProps {
   resizeable: boolean;
   headerBar: boolean;
   footerBar: boolean;
+  isReduced?: boolean;
 }
 
 export enum RelationshipType {
@@ -115,6 +116,7 @@ export interface SectionWidget extends WidgetProps {
   resizeable: boolean;
   headerBar: boolean;
   footerBar: boolean;
+  isReduced?: boolean;
 }
 
 export interface ImageEmbedWidget extends WidgetProps {
@@ -130,6 +132,7 @@ export interface ImageEmbedWidget extends WidgetProps {
   resizeable: boolean;
   headerBar: boolean;
   footerBar: boolean;
+  isReduced?: boolean;
 }
 export interface PDFEmbedWidget extends WidgetProps {
   type: 'pdf';
@@ -143,6 +146,8 @@ export interface PDFEmbedWidget extends WidgetProps {
   resizeable: boolean;
   headerBar: boolean;
   footerBar: boolean;
+  isReduced?: boolean;
+  name: string;
 }
 
 export interface IframeEmbedWidget extends WidgetProps {
@@ -157,6 +162,7 @@ export interface IframeEmbedWidget extends WidgetProps {
   resizeable: boolean;
   headerBar: boolean;
   footerBar: boolean;
+  isReduced?: boolean;
 }
 
 export interface BoardWidget extends WidgetProps {
@@ -172,6 +178,7 @@ export interface BoardWidget extends WidgetProps {
   headerBar: boolean;
   footerBar: boolean;
   text: string;
+  isReduced?: boolean;
 }
 
 export interface ArrowWidget extends WidgetProps {

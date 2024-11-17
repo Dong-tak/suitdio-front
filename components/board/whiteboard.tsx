@@ -310,6 +310,7 @@ export default function Whiteboard() {
     const centerX = (window.innerWidth / 2 - offset.x * scale) / scale;
     const centerY = (window.innerHeight / 2 - offset.y * scale) / scale;
     let innerWidget: AllWidgetTypes;
+    console.log('file:', file.name);
 
     if (file.type.startsWith('image/')) {
       innerWidget = {
@@ -334,6 +335,7 @@ export default function Whiteboard() {
         x: Math.round(centerX / baseSpacing) * baseSpacing,
         y: Math.round(centerY / baseSpacing) * baseSpacing,
         width: 460,
+        name: file.name,
         draggable: true,
         editable: true,
         resizeable: true,

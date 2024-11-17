@@ -125,3 +125,11 @@ body {
 .footer-bar {
   @apply h-[52px] z-[1000] w-full flex justify-between items-center p-2 fixed bottom-0 left-0;
 }
+
+.edit-mode-container {
+  pointer-events: none;
+}
+
+.edit-mode-container > * {
+  pointer-events: auto;
+}

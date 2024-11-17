@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 export default function WidgetImage({
   onHeightChange,
   width,
+  isReduced,
   ...props
 }: ImageEmbedWidget & { onHeightChange?: (height: number) => void }) {
   const [image, setImage] = useState<HTMLImageElement | null>(null);
@@ -27,14 +28,24 @@ export default function WidgetImage({
   }
 
   return (
-    <div className='relative w-full h-full'>
-      <Image
-        src={props.src}
-        alt='image'
-        width={width}
-        height={height}
-        objectFit='contain'
-      />
-    </div>
+    <>
+      {isReduced ? (
+        <div className='p-1 h-[132px] w-full flex items-center justify-between'>
+          <h2 className='h-[53px] text-start text-lg font-bold flex-1 truncate overflow-hidden whitespace-nowrap'>
+            {props.name}
+          </h2>
+        </div>
+      ) : (
+        <div className='relative w-full h-full'>
+          <Image
+            src={props.src}
+            alt='image'
+            width={width}
+            height={height}
+            objectFit='contain'
+          />
+        </div>
+      )}
+    </>
   );
 }
