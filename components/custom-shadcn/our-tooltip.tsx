@@ -1,24 +1,24 @@
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 interface OurTooltipProps {
   children: React.ReactNode;
   description: string;
   variant?:
-    | "default"
-    | "secondary"
-    | "destructive"
-    | "background"
-    | "link"
-    | "default"
-    | "outline"
-    | "ghost"
-    | "foreground"
+    | 'default'
+    | 'secondary'
+    | 'destructive'
+    | 'background'
+    | 'link'
+    | 'default'
+    | 'outline'
+    | 'ghost'
+    | 'foreground'
     | null
     | undefined;
 }
@@ -32,7 +32,7 @@ export function OurTooltip({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant={variant}>{children}</Button>
+          <Button>{children}</Button>
         </TooltipTrigger>
         <TooltipContent>
           <p>{description}</p>

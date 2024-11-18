@@ -1,17 +1,10 @@
 import { TextWidget as TextWidgetType } from '@/lib/type';
 import { PartialBlock } from '@blocknote/core';
-import { BlockNoteView } from '@blocknote/mantine';
-import {
-  DragHandleButton,
-  SideMenu,
-  SideMenuController,
-  useCreateBlockNote,
-} from '@blocknote/react';
+import { useCreateBlockNote } from '@blocknote/react';
 import '@blocknote/core/fonts/inter.css';
-import '@blocknote/mantine/style.css';
+import '@blocknote/react/style.css';
 import { useEffect, useRef, useState } from 'react';
-import { RootState } from '@/lib/redux/store';
-import { useSelector } from 'react-redux';
+import { BlockNoteView } from '@blocknote/mantine';
 
 interface WidgetTextProps extends TextWidgetType {
   editable: boolean;
@@ -106,15 +99,7 @@ export default function WidgetText({
 
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
-      <BlockNoteView editor={editor} editable={editable} sideMenu={false}>
-        <SideMenuController
-          sideMenu={(props) => (
-            <SideMenu {...props}>
-              <DragHandleButton {...props} />
-            </SideMenu>
-          )}
-        />
-      </BlockNoteView>
+      <BlockNoteView editor={editor} editable={editable} />
     </div>
   );
 }

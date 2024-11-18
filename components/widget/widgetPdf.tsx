@@ -1,13 +1,7 @@
 'use client';
 
-import { pdfjs, Document, Page } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useEffect, useState } from 'react';
 import { PDFEmbedWidget } from '@/lib/type';
-
-// PDF 워커 설정 수정
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
 
 export default function WidgetPdf({
   onHeightChange,
@@ -28,30 +22,30 @@ export default function WidgetPdf({
   const [containerHeight, setContainerHeight] = useState<number>(height ?? 750);
   const [aspectRatio, setAspectRatio] = useState<number | null>(null);
 
-  const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
+  // const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
+  //   setNumPages(numPages);
 
-    // PDF 문서의 첫 페이지 크기 정보 가져오기
-    const pdf = await pdfjs.getDocument(props.src).promise;
-    const page = await pdf.getPage(1);
-    const viewport = page.getViewport({ scale: 1.0 });
+  //   // PDF 문서의 첫 페이지 크기 정보 가져오기
+  //   const pdf = await pdfjs.getDocument(props.src).promise;
+  //   const page = await pdf.getPage(1);
+  //   const viewport = page.getViewport({ scale: 1.0 });
 
-    setPdfDimensions({
-      width: viewport.width,
-      height: viewport.height,
-    });
+  //   setPdfDimensions({
+  //     width: viewport.width,
+  //     height: viewport.height,
+  //   });
 
-    // 원본 비율 저장
-    const ratio = viewport.height / viewport.width;
-    setAspectRatio(ratio);
+  //   // 원본 비율 저장
+  //   const ratio = viewport.height / viewport.width;
+  //   setAspectRatio(ratio);
 
-    // 초기 높이 설정
-    if (width) {
-      const newHeight = width * ratio;
-      setContainerHeight(newHeight);
-      onHeightChange?.(newHeight);
-    }
-  };
+  //   // 초기 높이 설정
+  //   if (width) {
+  //     const newHeight = width * ratio;
+  //     setContainerHeight(newHeight);
+  //     onHeightChange?.(newHeight);
+  //   }
+  // };
 
   // width, height, scale 변경 시 크기 조절
   useEffect(() => {
@@ -111,46 +105,47 @@ export default function WidgetPdf({
           </h2>
         </div>
       ) : (
-        <div className='pdf-viewer w-full h-full'>
-          <div
-            className='pdf-container'
-            style={{
-              width: '100%',
-              height: containerHeight,
-              overflow: 'hidden',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Document file={props.src} onLoadSuccess={onDocumentLoadSuccess}>
-              <Page pageNumber={pageNumber} scale={scale} width={width} />
-            </Document>
-          </div>
+        <div>pdf</div>
+        // <div className='pdf-viewer w-full h-full'>
+        //   <div
+        //     className='pdf-container'
+        //     style={{
+        //       width: '100%',
+        //       height: containerHeight,
+        //       overflow: 'hidden',
+        //       display: 'flex',
+        //       justifyContent: 'center',
+        //       alignItems: 'center',
+        //     }}
+        //   >
+        //     <Document file={props.src} onLoadSuccess={onDocumentLoadSuccess}>
+        //       <Page pageNumber={pageNumber} scale={scale} width={width} />
+        //     </Document>
+        //   </div>
 
-          <div className='pdf-controls'>
-            <div className='page-controls'>
-              <button onClick={() => changePage(-1)} disabled={pageNumber <= 1}>
-                이전
-              </button>
-              <span>
-                {pageNumber} / {numPages || '-'}
-              </span>
-              <button
-                onClick={() => changePage(1)}
-                disabled={numPages !== null && pageNumber >= numPages}
-              >
-                다음
-              </button>
-            </div>
+        //   <div className='pdf-controls'>
+        //     <div className='page-controls'>
+        //       <button onClick={() => changePage(-1)} disabled={pageNumber <= 1}>
+        //         이전
+        //       </button>
+        //       <span>
+        //         {pageNumber} / {numPages || '-'}
+        //       </span>
+        //       <button
+        //         onClick={() => changePage(1)}
+        //         disabled={numPages !== null && pageNumber >= numPages}
+        //       >
+        //         다음
+        //       </button>
+        //     </div>
 
-            <div className='zoom-controls'>
-              <button onClick={() => changeScale(-0.2)}>축소</button>
-              <span>{Math.round(scale * 100)}%</span>
-              <button onClick={() => changeScale(0.2)}>확대</button>
-            </div>
-          </div>
-        </div>
+        //     <div className='zoom-controls'>
+        //       <button onClick={() => changeScale(-0.2)}>축소</button>
+        //       <span>{Math.round(scale * 100)}%</span>
+        //       <button onClick={() => changeScale(0.2)}>확대</button>
+        //     </div>
+        //   </div>
+        // </div>
       )}
     </>
   );
