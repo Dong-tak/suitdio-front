@@ -13,7 +13,7 @@ type ActionType =
 // 커맨드 인터페이스 정의
 interface Command {
   type: ActionType;
-  payload: any; //type 정의 필요
+  payload: string | ShellWidgetProps<AllWidgetTypes>; //type 정의 필요
   timestamp: number;
 }
 
@@ -100,7 +100,9 @@ const whiteboardSlice = createSlice({
       switch (lastCommand.type) {
         case 'CREATE_WIDGET':
           state.widgets = state.widgets.filter(
-            (w) => w.id !== lastCommand.payload.id
+            (w) =>
+              w.id !==
+              (lastCommand.payload as ShellWidgetProps<AllWidgetTypes>).id
           );
           break;
       }
