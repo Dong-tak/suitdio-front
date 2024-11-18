@@ -13,6 +13,7 @@ import WidgetText from '@/components/widget/widgetText';
 import WidgetImage from '@/components/widget/widgetImage';
 import WidgetPdf from '@/components/widget/widgetPdf';
 import WidgetUrl from '@/components/widget/widgetUrl';
+import { AllWidgetTypes, ShellWidgetProps } from '@/lib/type';
 
 interface WidgetPopupProps {
   isOpen: boolean;
@@ -37,7 +38,7 @@ export default function WidgetPopup({
     ? filteredWidgets.findIndex((widget) => widget.id === initialWidgetId)
     : 0;
 
-  const renderWidgetContent = (widget: any) => {
+  const renderWidgetContent = (widget: ShellWidgetProps<AllWidgetTypes>) => {
     switch (widget.innerWidget.type) {
       case 'text':
         return (
@@ -46,6 +47,7 @@ export default function WidgetPopup({
             height={widget.height}
             editable={true}
             autoFocus={false}
+            onHeightChange={() => {}}
             isOpen={isOpen}
           />
         );
@@ -72,6 +74,7 @@ export default function WidgetPopup({
             width={widget.width}
             height={widget.height}
             isReduced={false}
+            onHeightChange={() => {}}
           />
         );
       default:
