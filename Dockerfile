@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies with caching
-RUN npm ci 
+RUN npm install
 
 # Copy the rest of the application code
 COPY . .
@@ -31,7 +31,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 
 # Install only production dependencies (cached)
-RUN npm ci --production
+RUN npm install --production
 
 # Copy the .env file to the production image (optional)
 COPY .env .env
