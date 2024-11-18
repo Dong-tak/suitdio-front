@@ -17,12 +17,14 @@ interface WidgetTextProps extends TextWidgetType {
   editable: boolean;
   autoFocus?: boolean;
   onHeightChange: (height: number) => void;
+  isOpen?: boolean;
 }
 
 export default function WidgetText({
   editable,
   fontSize,
   autoFocus,
+  isOpen,
   onHeightChange,
   ...props
 }: WidgetTextProps) {
@@ -77,7 +79,9 @@ export default function WidgetText({
         const newHeight = containerRef.current.clientHeight;
         if (newHeight !== currentHeight) {
           setCurrentHeight(newHeight);
-          onHeightChange(newHeight);
+          if (!isOpen) {
+            onHeightChange(newHeight);
+          }
         }
       }
     };
@@ -101,7 +105,7 @@ export default function WidgetText({
   }, [autoFocus, editable, editor]);
 
   return (
-    <div ref={containerRef} style={{ zIndex: -1, position: 'relative' }}>
+    <div ref={containerRef} style={{ position: 'relative' }}>
       <BlockNoteView editor={editor} editable={editable} sideMenu={false}>
         <SideMenuController
           sideMenu={(props) => (

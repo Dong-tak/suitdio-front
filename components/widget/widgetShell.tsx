@@ -52,6 +52,7 @@ import { setIsArrowMode } from '@/lib/redux/features/arrowSlice';
 import WidgetImage from './widgetImage';
 import WidgetPdf from './widgetPdf';
 import WidgetUrl from './widgetUrl';
+import WidgetPopup from '@/components/state/popup';
 
 interface WidgetShellProps {
   widget: ShellWidgetProps<AllWidgetTypes>;
@@ -178,6 +179,8 @@ export default function WidgetShell({
   const [isReduced, setIsReduced] = useState(false);
   const widgets = useSelector((state: RootState) => state.whiteboard.widgets);
   const [snappedHeight, setSnappedHeight] = useState(widget.height || 132);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const isArrowMode = useSelector(
     (state: RootState) => state.arrow.isArrowMode
   );
@@ -669,6 +672,12 @@ export default function WidgetShell({
     }
   };
 
+  // 팝업 버튼 클릭 핸들러 추가
+  const handlePopupButtonClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsPopupOpen(true);
+  };
+
   return (
     <>
       {/* 축소 버튼 툴바 */}
@@ -701,7 +710,11 @@ export default function WidgetShell({
                 {chevronDownSvg8px}
               </SvgIcon>
             </Button>
-            <Button size='icon' className=' rounded-none p-2 bg-white'>
+            <Button
+              size='icon'
+              className=' rounded-none p-2 bg-white'
+              onClick={handlePopupButtonClick}
+            >
               <SvgIcon
                 fill='none'
                 width={8}
@@ -791,7 +804,12 @@ export default function WidgetShell({
                   {chevronDownSvg8px}
                 </SvgIcon>
               </Button>
-              <Button size='icon' className=' rounded-none p-2 bg-white'>
+              <Button
+                id='popupbutton'
+                size='icon'
+                className=' rounded-none p-2 bg-white'
+                onClick={handlePopupButtonClick}
+              >
                 <SvgIcon
                   fill='none'
                   width={8}
@@ -936,6 +954,11 @@ export default function WidgetShell({
           />
         </div>
       </div>
+      <WidgetPopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+        initialWidgetId={widget.id}
+      />
     </>
   );
 }
