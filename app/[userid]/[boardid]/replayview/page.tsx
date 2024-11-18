@@ -73,14 +73,20 @@ export default function ReplayView() {
           <Button size='icon' className='p-1 w-7 h-7 bg-white text-black'>
             <FaBackward className='w-3 h-3' />
           </Button>
-          <Button size='icon' className='p-1 w-7 h-7 bg-white text-black'>
-            <MdPauseCircle className='w-7 h-7' />
+          <Button
+            size='icon'
+            className='p-1 w-7 h-7 bg-white text-black [&_svg]:w-7 [&_svg]:h-7'
+          >
+            <MdPauseCircle />
           </Button>
           <Button size='icon' className='p-1 w-7 h-7 bg-white text-black'>
             <FaForward className='w-3 h-3' />
           </Button>
-          <Button size='icon' className='p-1 w-7 h-7 bg-white text-black'>
-            <PiRecordFill className='w-3 h-3' />
+          <Button
+            size='icon'
+            className='p-1 w-7 h-7 bg-white text-black [&_svg]:w-5 [&_svg]:h-5'
+          >
+            <PiRecordFill />
           </Button>
         </div>
         <div className='flex gap-2 items-center'>

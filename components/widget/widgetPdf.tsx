@@ -13,6 +13,7 @@ export default function WidgetPdf({
   onHeightChange,
   width,
   height,
+  isReduced,
   ...props
 }: PDFEmbedWidget & {
   onHeightChange?: (height: number) => void;
@@ -102,45 +103,55 @@ export default function WidgetPdf({
   };
 
   return (
-    <div className='pdf-viewer w-full h-full'>
-      <div
-        className='pdf-container'
-        style={{
-          width: '100%',
-          height: containerHeight,
-          overflow: 'hidden',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <Document file={props.src} onLoadSuccess={onDocumentLoadSuccess}>
-          <Page pageNumber={pageNumber} scale={scale} width={width} />
-        </Document>
-      </div>
-
-      <div className='pdf-controls'>
-        <div className='page-controls'>
-          <button onClick={() => changePage(-1)} disabled={pageNumber <= 1}>
-            이전
-          </button>
-          <span>
-            {pageNumber} / {numPages || '-'}
-          </span>
-          <button
-            onClick={() => changePage(1)}
-            disabled={numPages !== null && pageNumber >= numPages}
+    <>
+      {isReduced ? (
+        <div className='p-1 h-[132px] flex items-center justify-between'>
+          <h2 className='h-[53px] text-start text-lg font-bold flex-1'>
+            {props.name}
+          </h2>
+        </div>
+      ) : (
+        <div className='pdf-viewer w-full h-full'>
+          <div
+            className='pdf-container'
+            style={{
+              width: '100%',
+              height: containerHeight,
+              overflow: 'hidden',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
           >
-            다음
-          </button>
-        </div>
+            <Document file={props.src} onLoadSuccess={onDocumentLoadSuccess}>
+              <Page pageNumber={pageNumber} scale={scale} width={width} />
+            </Document>
+          </div>
 
-        <div className='zoom-controls'>
-          <button onClick={() => changeScale(-0.2)}>축소</button>
-          <span>{Math.round(scale * 100)}%</span>
-          <button onClick={() => changeScale(0.2)}>확대</button>
+          <div className='pdf-controls'>
+            <div className='page-controls'>
+              <button onClick={() => changePage(-1)} disabled={pageNumber <= 1}>
+                이전
+              </button>
+              <span>
+                {pageNumber} / {numPages || '-'}
+              </span>
+              <button
+                onClick={() => changePage(1)}
+                disabled={numPages !== null && pageNumber >= numPages}
+              >
+                다음
+              </button>
+            </div>
+
+            <div className='zoom-controls'>
+              <button onClick={() => changeScale(-0.2)}>축소</button>
+              <span>{Math.round(scale * 100)}%</span>
+              <button onClick={() => changeScale(0.2)}>확대</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

@@ -1,0 +1,43 @@
+# Build Stage
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# AWS CLI 설치를 위해 필요한 패키지 설치
+RUN apk add --no-cache aws-cli
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy the rest of the application code
+COPY . .
+
+# Build Stage에서 .env 파일 포함
+ARG ENV_FILE=.env
+COPY ${ENV_FILE} .env
+
+# Build the Next.js application
+RUN npm run build
+
+# Production Stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy the build output and package files from builder
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/.env .env  
+
+# Install only production dependencies
+RUN npm ci --production
+
+# Expose the port
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "run", "start"]

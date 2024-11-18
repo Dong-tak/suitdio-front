@@ -141,7 +141,10 @@ export function ReplaySidebar({
         {data.navMain.map((item) => {
           if (item.error) {
             return (
-              <div className='flex items-center gap-2 py-2 text-red-500'>
+              <div
+                key={item.error}
+                className='flex items-center gap-2 py-2 text-red-500'
+              >
                 <span className='h-[1px] flex-1 bg-red-300' />
                 <span className='text-sm'>{item.error} </span>
                 <span className='text-xs text-red-400'>{item.time}</span>
@@ -149,10 +152,12 @@ export function ReplaySidebar({
               </div>
             );
           }
-
           return (
             <SidebarGroup key={item.title}>
-              <div className='flex items-center justify-between'>
+              <div
+                key={item.title}
+                className='flex items-center justify-between'
+              >
                 <SidebarGroupLabel className='text-lg font-bold'>
                   {item.title}
                 </SidebarGroupLabel>
