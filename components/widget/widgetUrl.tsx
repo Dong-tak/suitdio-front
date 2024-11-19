@@ -1,5 +1,5 @@
 import { RootState } from '@/lib/redux/store';
-import { IframeEmbedWidget } from '@/lib/type';
+import { IframeEmbedWidget } from '@/types/type';
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 

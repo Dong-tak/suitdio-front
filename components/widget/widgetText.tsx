@@ -1,4 +1,4 @@
-import { TextWidget as TextWidgetType } from '@/lib/type';
+import { TextWidget } from '@/types/type';
 import { PartialBlock } from '@blocknote/core';
 import { useCreateBlockNote } from '@blocknote/react';
 import '@blocknote/core/fonts/inter.css';
@@ -6,7 +6,7 @@ import '@blocknote/react/style.css';
 import { useEffect, useRef, useState } from 'react';
 import { BlockNoteView } from '@blocknote/mantine';
 
-interface WidgetTextProps extends TextWidgetType {
+interface WidgetTextProps extends TextWidget {
   editable: boolean;
   autoFocus?: boolean;
   onHeightChange: (height: number) => void;

@@ -1,4 +1,4 @@
-import { TextWidget } from '../type';
+import { TextWidget } from '../../types/type';
 
 interface Position {
   x: number;

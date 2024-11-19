@@ -1,5 +1,5 @@
-import { ShellWidgetProps, AllWidgetTypes } from "@/lib/type";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ArrowState {
   isArrowMode: boolean;
@@ -26,7 +26,7 @@ const initialState: ArrowState = {
 };
 
 const arrowSlice = createSlice({
-  name: "arrow",
+  name: 'arrow',
   initialState,
   reducers: {
     // 설정 패널 토글 및 선택된 화살표 ID 설정

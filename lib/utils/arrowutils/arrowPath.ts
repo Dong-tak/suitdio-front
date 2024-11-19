@@ -1,5 +1,5 @@
 // utils/helpers.ts
-import { AllWidgetTypes } from "../../type";
+import { AllWidgetTypes } from '../../../types/type';
 
 interface WidgetWithDimensions {
   x: number;
@@ -14,8 +14,8 @@ export const snapDistance = 10;
 export const getShapeSideCenters = (shape: AllWidgetTypes) => {
   const shapeX = shape.x ?? 0;
   const shapeY = shape.y ?? 0;
-  const shapeWidth = ("width" in shape ? shape.width : undefined) ?? 100;
-  const shapeHeight = ("height" in shape ? shape.height : undefined) ?? 30;
+  const shapeWidth = ('width' in shape ? shape.width : undefined) ?? 100;
+  const shapeHeight = ('height' in shape ? shape.height : undefined) ?? 30;
 
   const centers = [
     { x: shapeX + shapeWidth / 2, y: shapeY }, // 상단 중앙
@@ -37,8 +37,8 @@ export const findClosestShapeAtPoint = (
   shapes.forEach((shape) => {
     const shapeX = shape.x ?? 0;
     const shapeY = shape.y ?? 0;
-    const shapeWidth = ("width" in shape ? shape.width : undefined) ?? 100;
-    const shapeHeight = ("height" in shape ? shape.height : undefined) ?? 30;
+    const shapeWidth = ('width' in shape ? shape.width : undefined) ?? 100;
+    const shapeHeight = ('height' in shape ? shape.height : undefined) ?? 30;
 
     if (
       x >= shapeX - snapDistance &&
@@ -84,17 +84,17 @@ export function getConnectorPoints(from: AllWidgetTypes, to: AllWidgetTypes) {
   // 출발 도형의 중심 좌표 계산
   const fromCenterX =
     (from.x ?? 0) +
-    (("width" in from ? from.width : undefined) ?? DEFAULT_WIDTH) / 2;
+    (('width' in from ? from.width : undefined) ?? DEFAULT_WIDTH) / 2;
   const fromCenterY =
     (from.y ?? 0) +
-    (("height" in from ? from.height : undefined) ?? DEFAULT_HEIGHT) / 2;
+    (('height' in from ? from.height : undefined) ?? DEFAULT_HEIGHT) / 2;
 
   // 도착 도형의 중심 좌표 계산
   const toCenterX =
-    (to.x ?? 0) + (("width" in to ? to.width : undefined) ?? DEFAULT_WIDTH) / 2;
+    (to.x ?? 0) + (('width' in to ? to.width : undefined) ?? DEFAULT_WIDTH) / 2;
   const toCenterY =
     (to.y ?? 0) +
-    (("height" in to ? to.height : undefined) ?? DEFAULT_HEIGHT) / 2;
+    (('height' in to ? to.height : undefined) ?? DEFAULT_HEIGHT) / 2;
 
   let fromPoint, toPoint;
 

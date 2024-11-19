@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AllWidgetTypes, ShellWidgetProps } from '@/lib/type';
+import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
 
 // 액션 타입 정의
 type ActionType =

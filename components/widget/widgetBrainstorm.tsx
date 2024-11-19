@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useState, useRef } from "react";
-import { AllWidgetType } from "@/lib/type";
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { AllWidgetType } from '@/types/type';
 
 interface BrainstormInputProps {
   onCreateNode: (text: string) => void;
   isActive: boolean;
   setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
-  setTool: React.Dispatch<React.SetStateAction<"select" | AllWidgetType>>;
+  setTool: React.Dispatch<React.SetStateAction<'select' | AllWidgetType>>;
 }
 
 const BrainstormInput: React.FC<BrainstormInputProps> = ({
@@ -14,7 +14,7 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
   setIsActive,
   setTool,
 }) => {
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState('');
   const [isSelected, setIsSelected] = useState(false);
   const isProcessing = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -22,15 +22,15 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
   // Shift+T 단축키 핸들러 수정
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && e.key === "T") {
+      if (e.shiftKey && e.key === 'T') {
         e.preventDefault();
         setIsActive((prev: boolean) => !prev);
-        setTool("brainStorm" as AllWidgetType);
+        setTool('brainStorm' as AllWidgetType);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setIsActive, setTool]);
 
   // 텍스트 입력 처리
@@ -46,14 +46,14 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
       const currentText = textareaRef.current.value;
       if (currentText.trim()) {
         onCreateNode(currentText);
-        setInputText("");
+        setInputText('');
       }
     }
   }, [inputText, onCreateNode]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
         if (isProcessing.current) return;
         isProcessing.current = true;
@@ -76,11 +76,11 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
   return (
     <div
       style={{
-        position: "fixed",
+        position: 'fixed',
         right: 20,
-        top: "20%",
-        transform: "translateY(-50%)",
-        width: "300px",
+        top: '20%',
+        transform: 'translateY(-50%)',
+        width: '300px',
         zIndex: 1000,
       }}
     >
@@ -97,18 +97,18 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
 ON/OFF - Shift + T / 버튼 클릭
 Ctrl/Cmd + Enter로 생성`}
         style={{
-          width: "100%",
-          height: "150px",
-          padding: "10px",
-          borderRadius: "8px",
-          border: `2px solid ${isSelected ? "#00A3FF" : "#E5E5E5"}`,
-          outline: "none",
-          resize: "none",
-          fontSize: "16px",
-          opacity: isSelected ? "100%" : "70%",
-          transition: "all 0.2s ease",
-          backgroundColor: "white",
-          boxShadow: isSelected ? "0 0 0 1px #00A3FF" : "none",
+          width: '100%',
+          height: '150px',
+          padding: '10px',
+          borderRadius: '8px',
+          border: `2px solid ${isSelected ? '#00A3FF' : '#E5E5E5'}`,
+          outline: 'none',
+          resize: 'none',
+          fontSize: '16px',
+          opacity: isSelected ? '100%' : '70%',
+          transition: 'all 0.2s ease',
+          backgroundColor: 'white',
+          boxShadow: isSelected ? '0 0 0 1px #00A3FF' : 'none',
         }}
         autoFocus
       />
