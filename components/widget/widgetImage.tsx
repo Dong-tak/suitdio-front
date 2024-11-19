@@ -1,4 +1,4 @@
-import { ImageEmbedWidget } from '@/lib/type';
+import { ImageEmbedWidget } from '@/types/type';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 

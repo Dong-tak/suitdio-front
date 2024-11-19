@@ -13,7 +13,7 @@ import WidgetText from '@/components/widget/widgetText';
 import WidgetImage from '@/components/widget/widgetImage';
 import WidgetPdf from '@/components/widget/widgetPdf';
 import WidgetUrl from '@/components/widget/widgetUrl';
-import { AllWidgetTypes, ShellWidgetProps } from '@/lib/type';
+import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
 
 interface WidgetPopupProps {
   isOpen: boolean;

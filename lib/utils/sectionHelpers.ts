@@ -1,5 +1,5 @@
-import { ShellWidgetProps, AllWidgetTypes, SectionWidget } from "@/lib/type";
-import { snap } from "./snapping";
+import { ShellWidgetProps, AllWidgetTypes, SectionWidget } from '@/types/type';
+import { snap } from './snapping';
 
 // 섹션 내부에 객체가 완전히 포함되어 있는지 확인
 export const isCompletelyContained = (
@@ -8,7 +8,7 @@ export const isCompletelyContained = (
   scale: number = 1,
   offset: { x: number; y: number } = { x: 0, y: 0 }
 ): boolean => {
-  if (shape.id === section.id || shape.innerWidget.type === "section") {
+  if (shape.id === section.id || shape.innerWidget.type === 'section') {
     return false;
   }
 
@@ -30,7 +30,7 @@ export const isCompletelyContained = (
     shapeBottom <= sectionBottom;
 
   // 디버깅 로그 추가
-  console.log("Containment Check:", {
+  console.log('Containment Check:', {
     shapeId: shape.id,
     isContained,
     shapeBounds: {
@@ -61,7 +61,7 @@ export const isWithinBounds = (
     shape.x + shape.width <= bounds.x + bounds.width &&
     shape.y + shape.height <= bounds.y + bounds.height;
 
-  console.log("Margin Check:", {
+  console.log('Margin Check:', {
     shapeId: shape.id,
     shapeBounds: {
       x: shape.x,
@@ -97,7 +97,7 @@ export const updateSectionAndMembers = (
         y: snap(section.y + dy),
       };
     } else if (
-      section.innerWidget.type === "section" &&
+      section.innerWidget.type === 'section' &&
       (section.innerWidget as SectionWidget).memberIds.includes(shape.id)
     ) {
       return {
@@ -194,7 +194,7 @@ export const limitMovementInSection = (
 
   // 크게 벗어난 경우 로그만 출력
   if (isSignificantlyOutside) {
-    console.log("Object significantly outside section:", {
+    console.log('Object significantly outside section:', {
       shapeId: shape.id,
       sectionId: section.id,
       distances: {
@@ -208,7 +208,7 @@ export const limitMovementInSection = (
 
   // 위치가 실제로 변경될 때만 로그 출력
   if (limitedX !== shape.x || limitedY !== shape.y) {
-    console.log("Movement Limit:", {
+    console.log('Movement Limit:', {
       shapeId: shape.id,
       sectionId: section.id,
       proposed: { x: newX, y: newY },
@@ -241,7 +241,7 @@ export const canMoveInSection = (
     newY + shape.height <= section.y + section.height - margin;
 
   // 이동 가능 여부 로그 추가
-  console.log("Movement Check:", {
+  console.log('Movement Check:', {
     shapeId: shape.id,
     sectionId: section.id,
     position: { x: newX, y: newY },
@@ -254,7 +254,7 @@ export const canMoveInSection = (
       bottom: section.y + section.height - (newY + shape.height),
     },
     isMember:
-      section.innerWidget.type === "section" &&
+      section.innerWidget.type === 'section' &&
       (section.innerWidget as SectionWidget).memberIds.includes(shape.id),
   });
 

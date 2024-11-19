@@ -7,7 +7,7 @@ import {
   ShellWidgetProps,
   SectionWidget,
   isSection,
-} from '@/lib/type';
+} from '@/types/type';
 import WidgetText from './widgetText';
 import WidgetBoard from './widgetBoard';
 import WidgetSection from './widgetSection';
@@ -516,7 +516,7 @@ export default function WidgetShell({
                   innerWidget: {
                     ...otherWidget.innerWidget,
                     memberIds: otherWidget.innerWidget.memberIds.filter(
-                      (id) => id !== widget.id
+                      (id: string) => id !== widget.id
                     ),
                   },
                 })

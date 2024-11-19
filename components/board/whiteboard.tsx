@@ -32,7 +32,7 @@ import {
   SectionWidget,
   IframeEmbedWidget,
   SelectArea,
-} from '@/lib/type';
+} from '@/types/type';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
 import WidgetShell from '../widget/widgetShell';

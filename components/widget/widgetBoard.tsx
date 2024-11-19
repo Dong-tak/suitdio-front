@@ -1,13 +1,12 @@
-import { TextWidget as TextWidgetType } from "@/lib/type";
-import { PartialBlock } from "@blocknote/core";
-import { BlockNoteView } from "@blocknote/mantine";
-import { useCreateBlockNote } from "@blocknote/react";
-import "@blocknote/core/fonts/inter.css";
-import "@blocknote/mantine/style.css";
-import { useEffect, useRef, useState } from "react";
-import { BoardWidget as BoardWidgetType } from "@/lib/type";
+import { PartialBlock } from '@blocknote/core';
+import { BlockNoteView } from '@blocknote/mantine';
+import { useCreateBlockNote } from '@blocknote/react';
+import '@blocknote/core/fonts/inter.css';
+import '@blocknote/mantine/style.css';
+import { useEffect, useRef, useState } from 'react';
+import { BoardWidget } from '@/types/type';
 
-interface WidgetBoardProps extends BoardWidgetType {
+interface WidgetBoardProps extends BoardWidget {
   editable: boolean;
   autoFocus?: boolean;
   text: string;
@@ -63,7 +62,7 @@ export default function WidgetBoard({
   }, [autoFocus, editable, editor]);
 
   return (
-    <div ref={containerRef} style={{ zIndex: -1, position: "relative" }}>
+    <div ref={containerRef} style={{ zIndex: -1, position: 'relative' }}>
       <BlockNoteView editor={editor} editable={editable} />
     </div>
   );
