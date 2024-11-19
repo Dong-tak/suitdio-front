@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { DataFetchInClient } from '@/api/postdata-client';
+import { DataFetchInClient } from "@/api/postdata-client";
 
 export interface LoginData {
   loginId: string;
@@ -31,7 +31,7 @@ interface ErrorResponse {
 }
 
 export const onLogInSuccess = (response: LoginResponse) => {
-  console.log('로그인 성공:', response);
+  console.log("로그인 성공:", response);
   const { id } = response.user;
   console.log(id);
   const access = response.access;
@@ -45,7 +45,7 @@ export const onLogInSuccess = (response: LoginResponse) => {
 };
 
 export const onLogIn = async (params: LoginData) => {
-  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/auth/`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/auth/login/`;
   const bodyData = {
     loginId: params.loginId,
     password: params.password,

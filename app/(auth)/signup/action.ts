@@ -1,9 +1,9 @@
-'use client'; // Ensure this runs in the client-side environment
+"use client"; // Ensure this runs in the client-side environment
 
-import { DataFetchInClient } from '@/api/postdata-client';
+import { DataFetchInClient } from "@/api/postdata-client";
 
 export async function registerUser(email: string) {
-  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/user/register/`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_POST_API_URL}/auth/register/`;
   const bodyData = { email };
   const data = await DataFetchInClient({ apiUrl, bodyData });
   return data;
