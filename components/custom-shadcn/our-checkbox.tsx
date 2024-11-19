@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface OurCheckboxProps {
   disabled?: boolean;
@@ -13,23 +13,25 @@ interface OurCheckboxProps {
 
 export function OurCheckbox({
   disabled = false,
-  size = "sm",
+  size = 'sm',
   children,
   checked = false,
   onCheckedChange,
   id,
 }: OurCheckboxProps) {
   return (
-    <div className="flex items-center space-x-2">
+    <div className='flex items-center space-x-2'>
       <Checkbox
         id={id}
         disabled={disabled}
         checked={checked}
-        onCheckedChange={(checked) => onCheckedChange?.(checked === true)}
+        onCheckedChange={(checked: boolean) =>
+          onCheckedChange?.(checked === true)
+        }
       />
       <label
         htmlFor={id}
-        className="text-foreground body-normal-body-01 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        className='text-foreground body-normal-body-01 peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
       >
         {children}
       </label>
@@ -39,22 +41,24 @@ export function OurCheckbox({
 
 export function OurColorCheckbox({
   disabled = false,
-  size = "sm",
+  size = 'sm',
   children,
   checked = false,
   onCheckedChange,
 }: OurCheckboxProps) {
   return (
-    <div className="flex items-center space-x-2">
+    <div className='flex items-center space-x-2'>
       <Checkbox
-        id="terms"
+        id='terms'
         disabled={disabled}
         checked={checked}
-        onCheckedChange={(checked) => onCheckedChange?.(checked === true)}
+        onCheckedChange={(checked: boolean) =>
+          onCheckedChange?.(checked === true)
+        }
       />
       <label
-        htmlFor="terms"
-        className="text-accent-foreground body-normal-body-01 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        htmlFor='terms'
+        className='text-accent-foreground body-normal-body-01 peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
       >
         {children}
       </label>
