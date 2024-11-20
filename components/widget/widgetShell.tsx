@@ -53,6 +53,7 @@ import WidgetImage from './widgetImage';
 import WidgetPdf from './widgetPdf';
 import WidgetUrl from './widgetUrl';
 import WidgetPopup from '@/components/state/popup';
+import WidgetArrow from './widgetArrow';
 
 interface WidgetShellProps {
   widget: ShellWidgetProps<AllWidgetTypes>;
@@ -414,6 +415,8 @@ export default function WidgetShell({
             isReduced={isReduced}
           />
         );
+      case 'arrow':
+        return <WidgetArrow {...widget.innerWidget} x={0} y={0} />;
       default:
         return null;
     }

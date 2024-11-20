@@ -43,10 +43,10 @@ import { Separator } from '../ui/separator';
 import { createTextNode } from '@/lib/utils/textNodeCreator';
 import BrainstormInput from '../widget/widgetBrainstorm';
 import CreateBoardDialog from '../ui/creatboard';
-import FocusControlBar from '../ui/FocusControlBar';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
+import { setIsArrowMode } from '@/lib/redux/features/arrowSlice';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -80,12 +80,11 @@ export default function Whiteboard() {
   const [isBoardPlacementMode, setIsBoardPlacementMode] = useState(false);
   const [selectArea, setSelectArea] = useState<SelectArea | null>(null);
   const [isSelecting, setIsSelecting] = useState(false);
-  const selectedWidgets = useSelector(
-    (state: RootState) => state.whiteboard.selectedWidget
-  );
   const [url, setUrl] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
-  const history = useSelector((state: RootState) => state.whiteboard.history);
+  const isArrowMode = useSelector(
+    (state: RootState) => state.arrow.isArrowMode
+  );
 
   // 섹션 드래그 상태 추가
   const [sectionDraft, setSectionDraft] = useState<{
@@ -413,7 +412,6 @@ export default function Whiteboard() {
 
   //마우스를 다운을 트리거로 위젯 생성, 선택, 드래그 모드 설정
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    console.log('history:', history);
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -483,6 +481,22 @@ export default function Whiteboard() {
             editable: true,
             resizeable: true,
             headerBar: true,
+            footerBar: false,
+          };
+          break;
+        case 'arrow':
+          innerWidget = {
+            id: Date.now().toString(),
+            type: 'arrow',
+            from: '',
+            to: '',
+            x: Math.round(x / baseSpacing) * baseSpacing,
+            y: Math.round(y / baseSpacing) * baseSpacing,
+            width: 200,
+            draggable: true,
+            editable: false,
+            resizeable: true,
+            headerBar: false,
             footerBar: false,
           };
           break;
@@ -881,6 +895,16 @@ export default function Whiteboard() {
     };
     dispatch(addWidget(newWidget));
   };
+
+  const handleArrowMode = () => {
+    setTool('arrow');
+    dispatch(setIsArrowMode(true));
+    if (isArrowMode) {
+      addArrowWidget();
+    }
+  };
+
+  const addArrowWidget = () => {};
 
   return (
     <div className='flex flex-col h-screen'>

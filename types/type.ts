@@ -4,6 +4,7 @@
 export type AllWidgetTypes =
   | TextWidget
   | ImageEmbedWidget
+  | ArrowWidget
   | PDFEmbedWidget
   | IframeEmbedWidget
   | SectionWidget
@@ -36,11 +37,12 @@ export interface WidgetProps {
 // 위젯 타입들을 유니온 타입으로 정의
 export type NodeWidgetType = 'text' | 'image' | 'pdf' | 'url' | 'boardLink';
 export type AreaWidgetType = 'section' | 'mindmap';
+export type ArrowWidgetType = 'arrow';
 export type AllWidgetType =
   | NodeWidgetType
   | AreaWidgetType
+  | ArrowWidgetType
   | 'shell'
-  | 'arrow'
   | 'brainStorm'
   | 'search'
   | 'template'
@@ -183,15 +185,16 @@ export interface BoardWidget extends WidgetProps {
 
 export interface ArrowWidget extends WidgetProps {
   type: 'arrow';
-
   from: string;
   to: string;
-  x?: number;
-  y?: number;
-  points: number[];
-  arrowTipX: number;
-  arrowTipY: number;
-  arrowHeads: ArrowHeadState; // 화살표 머리 상태 추가
+  x: number;
+  y: number;
+  width: number;
+  draggable: boolean;
+  editable: boolean;
+  resizeable: boolean;
+  headerBar: boolean;
+  footerBar: boolean;
 }
 
 export interface SelectArea {
