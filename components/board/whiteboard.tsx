@@ -32,6 +32,7 @@ import {
   SectionWidget,
   IframeEmbedWidget,
   SelectArea,
+  Arrow,
 } from '@/types/type';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
@@ -46,7 +47,12 @@ import CreateBoardDialog from '../ui/creatboard';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
 import { Label } from '../ui/label';
 import { Input } from '../ui/input';
-import { setIsArrowMode } from '@/lib/redux/features/arrowSlice';
+import {
+  addArrow,
+  deleteFirstLinkWidget,
+  setIsArrowMode,
+} from '@/lib/redux/features/arrowSlice';
+import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -85,6 +91,10 @@ export default function Whiteboard() {
   const isArrowMode = useSelector(
     (state: RootState) => state.arrow.isArrowMode
   );
+  const linkWidgets = useSelector(
+    (state: RootState) => state.arrow.linkWidgets
+  );
+  const arrows = useSelector((state: RootState) => state.arrow.arrows);
 
   // 섹션 드래그 상태 추가
   const [sectionDraft, setSectionDraft] = useState<{
@@ -265,6 +275,11 @@ export default function Whiteboard() {
 
     drawGrid(ctx);
 
+    // 화살표 그리기
+    arrows.forEach((arrow) => {
+      drawArrow(ctx, arrow, scale, offset);
+    });
+
     // 섹션 드래프트 그리기
     if (sectionDraft) {
       ctx.fillStyle = 'rgba(200, 200, 200, 0.2)';
@@ -298,7 +313,7 @@ export default function Whiteboard() {
     }
 
     ctx.restore();
-  }, [scale, offset, sectionDraft, selectArea]);
+  }, [scale, offset, sectionDraft, selectArea, arrows]);
 
   useEffect(() => {
     redraw();
@@ -481,22 +496,6 @@ export default function Whiteboard() {
             editable: true,
             resizeable: true,
             headerBar: true,
-            footerBar: false,
-          };
-          break;
-        case 'arrow':
-          innerWidget = {
-            id: Date.now().toString(),
-            type: 'arrow',
-            from: '',
-            to: '',
-            x: Math.round(x / baseSpacing) * baseSpacing,
-            y: Math.round(y / baseSpacing) * baseSpacing,
-            width: 200,
-            draggable: true,
-            editable: false,
-            resizeable: true,
-            headerBar: false,
             footerBar: false,
           };
           break;
@@ -899,12 +898,47 @@ export default function Whiteboard() {
   const handleArrowMode = () => {
     setTool('arrow');
     dispatch(setIsArrowMode(true));
+  };
+
+  useEffect(() => {
     if (isArrowMode) {
       addArrowWidget();
     }
-  };
+  }, [linkWidgets]);
 
-  const addArrowWidget = () => {};
+  const addArrowWidget = () => {
+    if (linkWidgets.length >= 2) {
+      const [fromWidget, toWidget] = linkWidgets;
+
+      // 화살표 포인트 계산
+      const arrowPoints = calculateArrowPoints(fromWidget, toWidget);
+
+      // 새로운 화살표 객체 생성
+      const newArrow: Arrow = {
+        fromId: fromWidget.id,
+        toId: toWidget.id,
+        ...arrowPoints,
+      };
+
+      // Redux store에 화살표 추가
+      dispatch(addArrow(newArrow));
+
+      // linkWidgets 배열에서 처리된 위젯들 제거
+      dispatch(deleteFirstLinkWidget());
+
+      dispatch(setIsArrowMode(false));
+      setTool('select');
+
+      // 남은 위젯들로 재귀 호출
+      // addArrowWidget();
+    }
+
+    // // linkWidgets의 길이가 2 미만이면 종료
+    // if (linkWidgets.length < 2) {
+    //   dispatch(setIsArrowMode(false));
+    //   setTool('select');
+    // }
+  };
 
   return (
     <div className='flex flex-col h-screen'>
@@ -931,7 +965,7 @@ export default function Whiteboard() {
           <Button
             variant={tool === 'arrow' ? 'toolSelect' : 'white'}
             size='icon'
-            onClick={() => setTool('arrow')}
+            onClick={handleArrowMode}
           >
             <MoveRight className='h-4 w-4' />
             <span className='sr-only'>Text tool</span>

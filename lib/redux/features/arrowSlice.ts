@@ -1,12 +1,16 @@
-import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
+import { ShellWidgetProps, AllWidgetTypes, Arrow } from '@/types/type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ArrowState {
   isArrowMode: boolean; // 화살표 모드 활성화 여부
+  linkWidgets: ShellWidgetProps<AllWidgetTypes>[]; // 화살표로 연결된 위젯들
+  arrows: Arrow[]; // 화살표들
 }
 
 const initialState: ArrowState = {
   isArrowMode: false,
+  linkWidgets: [],
+  arrows: [],
 };
 
 const arrowSlice = createSlice({
@@ -16,8 +20,23 @@ const arrowSlice = createSlice({
     setIsArrowMode: (state, action) => {
       state.isArrowMode = action.payload;
     },
+    addLinkWidgets: (state, action) => {
+      console.log('리듀서 내부 - 받은 widget.id:', action.payload);
+      state.linkWidgets.push(action.payload);
+    },
+    deleteFirstLinkWidget: (state) => {
+      state.linkWidgets.shift();
+    },
+    addArrow: (state, action) => {
+      state.arrows.push(action.payload);
+    },
   },
 });
 
-export const { setIsArrowMode } = arrowSlice.actions;
+export const {
+  setIsArrowMode,
+  addLinkWidgets,
+  deleteFirstLinkWidget,
+  addArrow,
+} = arrowSlice.actions;
 export default arrowSlice.reducer;
