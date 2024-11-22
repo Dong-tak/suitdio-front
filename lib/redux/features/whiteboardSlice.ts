@@ -1,5 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import { Middleware } from 'redux';
+import { Action } from '@reduxjs/toolkit';
 
 // 액션 타입 정의
 type ActionType =
@@ -57,17 +59,6 @@ const whiteboardSlice = createSlice({
       });
       state.history.future = []; // 새 액션이 발생하면 future 초기화
       state.lastSavedState = [...state.widgets];
-    },
-    resizeWidget: (state, action: PayloadAction<string>) => {
-      state.widgets = state.widgets.filter((w) => w.id === action.payload);
-    },
-    moveWidget: (state, action: PayloadAction<string[]>) => {
-      state.widgets = state.widgets.filter(
-        (w) => !action.payload.includes(w.id)
-      );
-    },
-    stateWidget: (state, action: PayloadAction<string>) => {
-      state.widgets = state.widgets.filter((w) => w.id !== action.payload);
     },
     updateWidget: (
       state,

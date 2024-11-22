@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/lib/redux/store';
+import { RootState, store } from '@/lib/redux/store';
 import {
   addWidget,
   setSelectedWidget,
@@ -53,6 +53,7 @@ import {
   setIsArrowMode,
 } from '@/lib/redux/features/arrowSlice';
 import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
+import { useWebSocket } from '@/hooks/use-socket';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -109,6 +110,8 @@ export default function Whiteboard() {
     x: number;
     y: number;
   } | null>(null);
+
+  useWebSocket();
 
   // 입력 변경 핸들러
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
