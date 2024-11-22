@@ -22,7 +22,6 @@ export interface WidgetProps {
     | 'section'
     | 'mindmap'
     | 'shell'
-    | 'arrow'
     | 'brainStorm'
     | 'search'
     | 'template'
@@ -40,13 +39,13 @@ export type AllWidgetType =
   | NodeWidgetType
   | AreaWidgetType
   | 'shell'
-  | 'arrow'
   | 'brainStorm'
   | 'search'
   | 'template'
   | 'upload'
   | 'aiSearch'
-  | 'refresh';
+  | 'refresh'
+  | 'arrow';
 
 // 타입 검사를 위한 상수 배열 (런타임에서 사용)
 export const NODE_WIDGET_TYPES = [
@@ -181,17 +180,12 @@ export interface BoardWidget extends WidgetProps {
   isReduced?: boolean;
 }
 
-export interface ArrowWidget extends WidgetProps {
-  type: 'arrow';
-
-  from: string;
-  to: string;
-  x?: number;
-  y?: number;
+export interface Arrow {
+  fromId: string;
+  toId: string;
   points: number[];
   arrowTipX: number;
   arrowTipY: number;
-  arrowHeads: ArrowHeadState; // 화살표 머리 상태 추가
 }
 
 export interface SelectArea {
@@ -232,10 +226,6 @@ export const isIframeEmbed = (
 export const isBoard = (widget: WidgetProps): widget is BoardWidget => {
   return widget.type === 'boardLink';
 };
-
-export function isArrow(widget: WidgetProps): widget is ArrowWidget {
-  return widget.type === 'arrow';
-}
 
 // 호버 상태를 위한 타입 정의
 export type EdgePosition = 'n' | 's' | 'w' | 'e' | null;

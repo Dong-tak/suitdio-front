@@ -48,7 +48,7 @@ import {
   limitMovementInSection,
 } from '@/lib/utils/sectionHelpers';
 import { FaPause } from 'react-icons/fa';
-import { setIsArrowMode } from '@/lib/redux/features/arrowSlice';
+import { addLinkWidgets } from '@/lib/redux/features/arrowSlice';
 import WidgetImage from './widgetImage';
 import WidgetPdf from './widgetPdf';
 import WidgetUrl from './widgetUrl';
@@ -190,7 +190,9 @@ export default function WidgetShell({
   const selectedWidget = useSelector(
     (state: RootState) => state.whiteboard.selectedWidget
   );
-
+  const linkWidgets = useSelector(
+    (state: RootState) => state.arrow.linkWidgets
+  );
   useEffect(() => {
     setIsSelected(selectedWidget?.includes(widget.id) ?? false);
     if (selectedWidget !== null && selectedWidget !== editModeWidgets) {
@@ -622,6 +624,9 @@ export default function WidgetShell({
   };
 
   const handleWidgetClick = (e: React.MouseEvent) => {
+    if (isArrowMode) {
+      dispatch(addLinkWidgets(widget));
+    }
     if (selectedWidget && selectedWidget.includes(widget.id)) {
       if (e.shiftKey) {
         dispatch(deleteSelectedWidget(widget.id));
