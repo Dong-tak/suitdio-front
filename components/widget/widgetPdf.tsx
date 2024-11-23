@@ -31,6 +31,7 @@ export default function WidgetPdf({
 
   const onDocumentLoadSuccess = async ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
+    console.log('src', props.src);
 
     // PDF 문서의 첫 페이지 크기 정보 가져오기
     const pdf = await pdfjs.getDocument(props.src).promise;
