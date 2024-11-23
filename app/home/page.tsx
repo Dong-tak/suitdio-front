@@ -1,21 +1,32 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import SvgIcon from "@/lib/utils/svgIcon";
-import { sixBoltSvg, pauseSvg, recordSvg } from "@/lib/utils/svgBag";
-import { Button } from "@/components/ui/button";
-import { Ellipsis } from "lucide-react";
 import HomeView from "@/components/home/homeview";
+import { useState } from "react";
 
 export default function Home() {
+  const [contentTitle, setContentTitle] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentTitle(e.target.value);
+  };
+
+  const handleSaveClick = () => {
+    setOpen(true);
+  };
+
+  const onOpenChange = (open: boolean) => {
+    setOpen(open);
+  };
+
   return (
     <div>
       <HomeView
-        contentTitle="test"
-        handleInputChange={() => {}}
-        handleSaveClick={() => {}}
-        open={false}
-        onOpenChange={() => {}}
+        contentTitle={contentTitle}
+        handleInputChange={handleInputChange}
+        handleSaveClick={handleSaveClick}
+        open={open}
+        onOpenChange={onOpenChange}
       />
     </div>
   );
