@@ -12,7 +12,7 @@ async function getBoardData(boardId: string) {
   }
 }
 
-export default async function Home({
+export default async function Board({
   params,
 }: {
   params: { boardId: string };
