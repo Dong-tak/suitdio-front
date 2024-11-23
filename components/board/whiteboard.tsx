@@ -50,6 +50,7 @@ import { Input } from '../ui/input';
 import {
   addArrow,
   deleteFirstLinkWidget,
+  deleteLinkWidget,
   setIsArrowMode,
 } from '@/lib/redux/features/arrowSlice';
 import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
@@ -927,7 +928,7 @@ export default function Whiteboard() {
       dispatch(addArrow(newArrow));
 
       // linkWidgets 배열에서 처리된 위젯들 제거
-      dispatch(deleteFirstLinkWidget());
+      dispatch(deleteLinkWidget());
 
       dispatch(setIsArrowMode(false));
       setTool('select');

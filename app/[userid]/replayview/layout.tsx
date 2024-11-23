@@ -5,7 +5,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/sidebar/app-sidebar';
-import '../../../globals.css';
+import '../../globals.css';
 import { ReplaySidebar } from '@/components/replay/replay-sidebar';
 
 export const metadata: Metadata = {
