@@ -905,44 +905,10 @@ export default function Whiteboard() {
   };
 
   useEffect(() => {
-    if (isArrowMode) {
-      addArrowWidget();
-    }
-  }, [linkWidgets]);
-
-  const addArrowWidget = () => {
-    if (linkWidgets.length >= 2) {
-      const [fromWidget, toWidget] = linkWidgets;
-
-      // 화살표 포인트 계산
-      const arrowPoints = calculateArrowPoints(fromWidget, toWidget);
-
-      // 새로운 화살표 객체 생성
-      const newArrow: Arrow = {
-        fromId: fromWidget.id,
-        toId: toWidget.id,
-        ...arrowPoints,
-      };
-
-      // Redux store에 화살표 추가
-      dispatch(addArrow(newArrow));
-
-      // linkWidgets 배열에서 처리된 위젯들 제거
-      dispatch(deleteLinkWidget());
-
-      dispatch(setIsArrowMode(false));
+    if (!isArrowMode) {
       setTool('select');
-
-      // 남은 위젯들로 재귀 호출
-      // addArrowWidget();
     }
-
-    // // linkWidgets의 길이가 2 미만이면 종료
-    // if (linkWidgets.length < 2) {
-    //   dispatch(setIsArrowMode(false));
-    //   setTool('select');
-    // }
-  };
+  }, [isArrowMode]);
 
   return (
     <div className='flex flex-col h-screen'>

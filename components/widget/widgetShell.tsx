@@ -7,6 +7,7 @@ import {
   ShellWidgetProps,
   SectionWidget,
   isSection,
+  Arrow,
 } from '@/types/type';
 import WidgetText from './widgetText';
 import WidgetBoard from './widgetBoard';
@@ -48,11 +49,18 @@ import {
   limitMovementInSection,
 } from '@/lib/utils/sectionHelpers';
 import { FaPause } from 'react-icons/fa';
-import { addLinkWidgets } from '@/lib/redux/features/arrowSlice';
+import {
+  addArrow,
+  addLinkWidgets,
+  deleteLinkWidget,
+  setIsArrowMode,
+  updateArrow,
+} from '@/lib/redux/features/arrowSlice';
 import WidgetImage from './widgetImage';
 import WidgetPdf from './widgetPdf';
 import WidgetUrl from './widgetUrl';
 import WidgetPopup from '@/components/state/popup';
+import { calculateArrowPoints } from '../arrow/drawArrow';
 
 interface WidgetShellProps {
   widget: ShellWidgetProps<AllWidgetTypes>;
@@ -193,6 +201,7 @@ export default function WidgetShell({
   const linkWidgets = useSelector(
     (state: RootState) => state.arrow.linkWidgets
   );
+
   useEffect(() => {
     setIsSelected(selectedWidget?.includes(widget.id) ?? false);
     if (selectedWidget !== null && selectedWidget !== editModeWidgets) {
@@ -229,6 +238,84 @@ export default function WidgetShell({
   useEffect(() => {
     handleHeightChange(widget.height);
   }, [isReduced]);
+
+  useEffect(() => {
+    if (isArrowMode) {
+      addArrowWidget();
+    }
+  }, [linkWidgets]);
+
+  const addArrowWidget = () => {
+    if (linkWidgets.length >= 2) {
+      const [fromWidget, toWidget] = linkWidgets;
+
+      // 화살표 포인트 계산
+      const arrowPoints = calculateArrowPoints(fromWidget, toWidget);
+
+      // 새로운 화살표 객체 생성
+      const newArrow: Arrow = {
+        fromId: fromWidget.id,
+        toId: toWidget.id,
+        ...arrowPoints,
+      };
+
+      // Redux store에 화살표 추가
+      dispatch(addArrow(newArrow));
+
+      // linkWidgets 배열에서 처리된 위젯들 제거
+      dispatch(deleteLinkWidget());
+
+      dispatch(setIsArrowMode(false));
+
+      // 남은 위젯들로 재귀 호출
+      // addArrowWidget();
+    }
+
+    // // linkWidgets의 길이가 2 미만이면 종료
+    // if (linkWidgets.length < 2) {
+    //   dispatch(setIsArrowMode(false));
+    //   setTool('select');
+    // }
+  };
+
+  useEffect(() => {
+    updateArrowPos();
+  }, [widget.x, widget.y, widget.width, widget.height]);
+
+  const arrows = useSelector((state: RootState) => state.arrow.arrows);
+
+  const updateArrowPos = () => {
+    // 현재 위젯과 관련된 모든 화살표 찾기
+    const relatedArrows = arrows.filter(
+      (arrow) => arrow.fromId === widget.id || arrow.toId === widget.id
+    );
+
+    relatedArrows.forEach((arrow) => {
+      // 현재 위젯이 시작점인지 끝점인지에 따라 다른 위젯 찾기
+      const otherWidgetId =
+        arrow.fromId === widget.id ? arrow.toId : arrow.fromId;
+      const otherWidget = widgets.find((w) => w.id === otherWidgetId);
+
+      if (otherWidget) {
+        // 화살표 포인트 계산 시 올바른 순서로 위젯 전달
+        const newPoints = calculateArrowPoints(
+          arrow.fromId === widget.id ? widget : otherWidget,
+          arrow.fromId === widget.id ? otherWidget : widget
+        );
+        console.log(arrows);
+
+        dispatch(
+          updateArrow({
+            fromId: arrow.fromId,
+            toId: arrow.toId,
+            points: newPoints.points,
+            arrowTipX: newPoints.arrowTipX,
+            arrowTipY: newPoints.arrowTipY,
+          })
+        );
+      }
+    });
+  };
 
   const handleHeightChange = (height: number) => {
     if (height !== widget.height) {
