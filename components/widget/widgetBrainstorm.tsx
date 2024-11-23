@@ -21,20 +21,23 @@ const BrainstormInput: React.FC<BrainstormInputProps> = ({
 
   // Shift+T 단축키 핸들러 수정
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.shiftKey && (e.key === "T" || e.key === "t")) {
-        e.preventDefault();
-        console.log("Shift+T pressed");
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // T의 keyCode는 84입니다
+      if (event.shiftKey && event.keyCode === 84) {
+        event.preventDefault();
+        event.stopPropagation();
+        console.log("Shift+T pressed, keyCode:", event.keyCode);
         setIsActive((prev) => !prev);
         setTool("brainstorm" as AllWidgetType);
       }
     };
 
+    document.addEventListener("keydown", handleKeyDown, true);
     console.log("Event listener added");
-    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
       console.log("Event listener removed");
-      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [setIsActive, setTool]);
 
