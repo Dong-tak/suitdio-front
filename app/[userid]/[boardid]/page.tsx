@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic';
 import { fetchBoard } from './action';
-import parseWidgetData from '@/lib/utils/parseWidgetData';
 
 // 서버 컴포넌트에서 데이터 가져오기
 async function getBoardData(boardId: string) {
@@ -27,7 +26,6 @@ export default async function Home({
 
   // 보드 데이터 가져오기
   const boardData = await getBoardData(params.boardId);
-  // const data = parseWidgetData(boardData);
 
   return (
     <div>

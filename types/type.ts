@@ -195,6 +195,11 @@ export interface SelectArea {
   height: number;
 }
 
+export interface WhiteboardAction {
+  type: string;
+  payload: any;
+}
+
 // 타입 가드 함수
 
 // export function isArrow(widget: WidgetProps): widget is ArrowWidget {
@@ -226,6 +231,12 @@ export const isIframeEmbed = (
 export const isBoard = (widget: WidgetProps): widget is BoardWidget => {
   return widget.type === 'boardLink';
 };
+
+export function isWhiteboardAction(
+  action: unknown
+): action is WhiteboardAction {
+  return typeof action === 'object' && action !== null && 'type' in action;
+}
 
 // 호버 상태를 위한 타입 정의
 export type EdgePosition = 'n' | 's' | 'w' | 'e' | null;

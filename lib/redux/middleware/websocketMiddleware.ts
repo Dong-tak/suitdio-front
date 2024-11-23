@@ -1,11 +1,12 @@
 // 소켓 미들웨어 타입 정의
 
+import { isWhiteboardAction } from '@/types/type';
 import { Middleware } from '@reduxjs/toolkit';
 import debounce from 'lodash/debounce';
 
 // 디바운스된 소켓 전송 함수 수정
 const createDebouncedSend = (socket: WebSocket) => {
-  return debounce((message: any) => {
+  return debounce((message: unknown) => {
     console.log('Debounced WebSocket message:', message);
     socket.send(JSON.stringify(message));
   }, 100);
@@ -14,8 +15,11 @@ const createDebouncedSend = (socket: WebSocket) => {
 export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
   const debouncedSend = createDebouncedSend(socket);
 
-  return (store) => (next) => (action: any) => {
+  return (store) => (next) => (action: unknown) => {
     const result = next(action);
+
+    // 타입 가드 추가
+    if (!isWhiteboardAction(action)) return result;
 
     switch (action.type) {
       case 'whiteboard/addWidget':
