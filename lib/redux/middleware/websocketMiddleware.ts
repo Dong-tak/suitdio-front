@@ -19,68 +19,258 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
 
     switch (action.type) {
       case 'whiteboard/addWidget':
-        const addMessage = {
-          type: 'action',
-          transactionId: null,
-          actions: [
-            {
-              action: 'create',
-              type: 'widget',
-              data: {
-                id: action.payload.id,
-                workspaceId: '0HS78Z813DVX6',
-                type: action.payload.innerWidget.type,
-                data: {
-                  content: action.payload.innerWidget.text,
+        let addMessage;
+        switch (action.payload.innerWidget.type) {
+          case 'text':
+            addMessage = {
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'create',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: action.payload.innerWidget.type,
+                    data: {
+                      content: action.payload.innerWidget.text,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
                 },
-                position: {
-                  x: action.payload.x,
-                  y: action.payload.y,
-                  z: 1,
+              ],
+            };
+            break;
+          case 'url':
+            addMessage = {
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'create',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: 'embed_url',
+                    data: {
+                      src: action.payload.innerWidget.src,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
                 },
-                size: {
-                  width: action.payload.width,
-                  height: action.payload.height,
+              ],
+            };
+            break;
+          case 'pdf':
+            addMessage = {
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'create',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: 'embed_pdf',
+                    data: {
+                      src: action.payload.innerWidget.src,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
                 },
-                state: 'default',
-              },
-            },
-          ],
-        };
+              ],
+            };
+            break;
+          case 'image':
+            addMessage = {
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'create',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: 'embed_img',
+                    data: {
+                      src: action.payload.innerWidget.src,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
+                },
+              ],
+            };
+            break;
+        }
         console.log('WebSocket addWidget message:', addMessage);
         socket.send(JSON.stringify(addMessage));
         break;
 
       case 'whiteboard/updateWidget':
         // 업데이트는 디바운스 적용
-        debouncedSend({
-          type: 'action',
-          transactionId: null,
-          actions: [
-            {
-              action: 'update',
-              type: 'widget',
-              data: {
-                id: action.payload.id,
-                workspaceId: '0HS78Z813DVX6',
-                type: action.payload.innerWidget.type,
-                data: {
-                  content: action.payload.innerWidget.text,
+        let updateMessage;
+        switch (action.payload.innerWidget.type) {
+          case 'text':
+            updateMessage = debouncedSend({
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'update',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: action.payload.innerWidget.type,
+                    data: {
+                      content: action.payload.innerWidget.text,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
                 },
-                position: {
-                  x: action.payload.x,
-                  y: action.payload.y,
-                  z: 1,
+              ],
+            });
+            break;
+          case 'url':
+            updateMessage = debouncedSend({
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'update',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: 'embed_url',
+                    data: {
+                      src: action.payload.innerWidget.src,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
                 },
-                size: {
-                  width: action.payload.width,
-                  height: action.payload.height,
+              ],
+            });
+            break;
+          case 'pdf':
+            updateMessage = debouncedSend({
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'update',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: 'embed_pdf',
+                    data: {
+                      src: action.payload.innerWidget.src,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
                 },
-                state: 'default',
-              },
-            },
-          ],
-        });
+              ],
+            });
+            break;
+          case 'image':
+            updateMessage = debouncedSend({
+              type: 'action',
+              transactionId: null,
+              actions: [
+                {
+                  action: 'update',
+                  type: 'widget',
+                  data: {
+                    id: action.payload.id,
+                    workspaceId: '0HS78Z813DVX6',
+                    type: 'embed_img',
+                    data: {
+                      src: action.payload.innerWidget.src,
+                    },
+                    position: {
+                      x: action.payload.x,
+                      y: action.payload.y,
+                      z: 1,
+                    },
+                    size: {
+                      width: action.payload.width,
+                      height: action.payload.height,
+                    },
+                    state: 'default',
+                  },
+                },
+              ],
+            });
+            break;
+        }
         break;
 
       case 'whiteboard/deleteWidget':
