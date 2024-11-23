@@ -11,7 +11,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import FocusControlBar from "./FocusControlBar";
 import SvgIcon from "@/lib/utils/svgIcon";
 import { sixBoltSvg, pauseSvg, recordSvg } from "@/lib/utils/svgBag";
 

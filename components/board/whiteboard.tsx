@@ -43,7 +43,7 @@ import { HiOutlineSparkles } from "react-icons/hi2";
 import { Separator } from "../ui/separator";
 import { createTextNode } from "@/lib/utils/textNodeCreator";
 import BrainstormInput from "../widget/widgetBrainstorm";
-import CreateBoardDialog from "../ui/creatboard";
+import CreateBoardDialog from "../home/creatboard";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";

@@ -32,10 +32,10 @@ export default function HomeView({
   return (
     <div className="w-full flex flex-col items-center min-h-screen relative overflow-hidden">
       {/* 헤더 바 */}
-      <div className="flex w-full items-center p-2 justify-end bg-background sticky top-0 z-10">
-        <div className="p-2">
-          <Ellipsis className="w-4 h-4 relative" />
-        </div>
+      <div className="flex w-full items-center p-2 justify-end bg-background sticky top-0">
+        <Button size="icon" className="p-2 bg-background hover:bg-muted">
+          <Ellipsis className="w-4 h-4 relative text-muted-foreground" />
+        </Button>
       </div>
       {/* 헤더 바 */}
 
@@ -45,7 +45,7 @@ export default function HomeView({
           Focus, Make Better Choices
         </div>
         <div className="flex flex-col h-[106px] w-[560px] border rounded-lg">
-          <div className="flex-grow grid w-full items-center gap-1.5">
+          <div className="flex-grow grid w-full p-3 items-center gap-1.5">
             <Input
               id="title"
               value={contentTitle}
@@ -56,17 +56,18 @@ export default function HomeView({
               autoFocus
             />
           </div>
-          {/* 푸터 바 */}
+          {/* 버튼 바 */}
           <div className="w-full flex justify-between">
             <div className="flex items-center justify-between space-x-1  h-full pl-4">
               <div className="text-[12px] text-muted-foreground">v 3.26</div>
               <div className="w-[2px] h-[2px] bg-muted-foreground rounded-full" />
-              <div className="text-[12px] text-muted-foreground">24.08.17</div>
+              <div className="text-[12px] text-muted-foreground">Today</div>
               <div className="w-[2px] h-[2px] bg-muted-foreground rounded-full" />
-              <div className="text-[12px] text-muted-foreground">08:28</div>
+              <div className="text-[12px] text-muted-foreground">Now</div>
             </div>
+            {/* 버튼 바 */}
             <div className="flex items-center">
-              <Button size="icon" className=" rounded-none p-2 bg-white">
+              <Button size="icon" className=" rounded-md p-2 bg-white">
                 <SvgIcon
                   fill="none"
                   width={8}
@@ -76,7 +77,7 @@ export default function HomeView({
                   {sixBoltSvg}
                 </SvgIcon>
               </Button>
-              <Button size="icon" className=" rounded-none p-2 bg-white">
+              <Button size="icon" className=" rounded-md p-2 bg-white">
                 <SvgIcon
                   fill="none"
                   width={8}
@@ -86,7 +87,7 @@ export default function HomeView({
                   {pauseSvg}
                 </SvgIcon>
               </Button>
-              <Button size="icon" className=" rounded-none p-2 bg-white">
+              <Button size="icon" className=" rounded-md p-2 bg-white">
                 <SvgIcon
                   fill="none"
                   width={8}
