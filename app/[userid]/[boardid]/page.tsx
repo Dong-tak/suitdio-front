@@ -25,7 +25,7 @@ export default async function Home({
   console.log('params', params);
 
   // 보드 데이터 가져오기
-  const boardData = await getBoardData(params.boardId);
+  // const boardData = await getBoardData(params.boardId);
 
   return (
     <div>

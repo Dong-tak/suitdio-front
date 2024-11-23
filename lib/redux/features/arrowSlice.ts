@@ -27,6 +27,9 @@ const arrowSlice = createSlice({
     deleteFirstLinkWidget: (state) => {
       state.linkWidgets.shift();
     },
+    deleteLinkWidget: (state) => {
+      state.linkWidgets = [];
+    },
     addArrow: (state, action) => {
       state.arrows.push(action.payload);
     },
@@ -37,6 +40,7 @@ export const {
   setIsArrowMode,
   addLinkWidgets,
   deleteFirstLinkWidget,
+  deleteLinkWidget,
   addArrow,
 } = arrowSlice.actions;
 export default arrowSlice.reducer;

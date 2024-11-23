@@ -60,18 +60,37 @@ export const calculateArrowPoints = (
   // 중간 지점 계산
   const midX = (fromPoint.x + toPoint.x) / 2;
 
+  // 수직 진입을 위한 오프셋 계산
+  const verticalOffset = 30; // 수직 진입 거리
+
+  let startControlX, startControlY, endControlX, endControlY;
+
+  if (Math.abs(dx) > Math.abs(dy)) {
+    // 수평 방향
+    startControlX = fromPoint.x + (dx > 0 ? verticalOffset : -verticalOffset);
+    startControlY = fromPoint.y;
+    endControlX = toPoint.x + (dx > 0 ? -verticalOffset : verticalOffset);
+    endControlY = toPoint.y;
+  } else {
+    // 수직 방향
+    startControlX = fromPoint.x;
+    startControlY = fromPoint.y + (dy > 0 ? verticalOffset : -verticalOffset);
+    endControlX = toPoint.x;
+    endControlY = toPoint.y + (dy > 0 ? -verticalOffset : verticalOffset);
+  }
+
   return {
     points: [
       fromPoint.x,
       fromPoint.y, // 시작점
+      startControlX,
+      startControlY, // 시작 제어점
       midX,
-      fromPoint.y, // 제어점 1
+      startControlY, // 중간점 1
       midX,
-      fromPoint.y, // 중간점
-      midX,
-      toPoint.y, // 제어점 2
-      midX,
-      toPoint.y, // 중간점
+      endControlY, // 중간점 2
+      endControlX,
+      endControlY, // 끝 제어점
       toPoint.x,
       toPoint.y, // 끝점
     ],
@@ -113,8 +132,8 @@ export const drawArrow = (
     ctx.lineTo(x2a, y2a);
 
     // 꺾임 부분 곡선 처리
-    const radius = 15 / scale; // scale에 따라 곡률 반지름 조정
-    ctx.arcTo(x2, y2, x2b, y2b, radius);
+    // const radius = 15 / scale; // scale에 따라 곡률 반지름 조정
+    // ctx.arcTo(x2, y2, x2b, y2b, radius);
   }
 
   // 마지막 선분
