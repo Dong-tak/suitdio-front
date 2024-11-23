@@ -1,4 +1,3 @@
-//팝업 창 생성 컴포넌트
 import { ArrowLeft, Pin, SquarePlus } from "lucide-react";
 import {
   Dialog,
@@ -13,6 +12,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import FocusControlBar from "./FocusControlBar";
+import SvgIcon from "@/lib/utils/svgIcon";
+import { sixBoltSvg, pauseSvg, recordSvg } from "@/lib/utils/svgBag";
+
 interface CreateBoardDialogProps {
   contentTitle: string;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -41,40 +43,67 @@ export default function CreateBoardDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className={`w-full gap-5 rounded-md bg-popover p-6 ${className} bg-white`}
+        className={`w-full gap-5 rounded-md bg-popover p-6 ${className} bg-white flex flex-col`}
+        style={{ minHeight: "250px" }}
       >
         <DialogHeader>
           <DialogTitle className="w-full pb-2 display-undefine-display-01">
             보드 주제를 입력하세요
           </DialogTitle>
         </DialogHeader>
-        <div className="grid w-full items-center gap-1.5">
+        <div className="flex-grow grid w-full items-center gap-1.5">
           <Input
             id="title"
             value={contentTitle}
             onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             className="w-full border-none"
-            placeholder="Enter your focus"
+            placeholder="Enter your focus (Ctrl+Enter)"
             autoFocus
           />
         </div>
-        <DialogFooter className="flex w-full items-end justify-end gap-2">
-          <div className="w-full p-5">
-            {/* VersionBar 컴포넌트 사용 */}
-            <FocusControlBar
-              version="v.3.26"
-              createdDate="24.08.17"
-              createdTime="08:28"
-              showSettings={true} // 설정 버튼 보이기
-              showPause={true} // 일시정지 버튼 숨기기
-              showPlay={true} // 시작 버튼 보이기
-            />
+        {/* 푸터 바 */}
+        <div className="footer-bar">
+          <div className="flex items-center justify-between space-x-1  h-full pl-4">
+            <div className="text-[12px] text-muted-foreground">v 3.26</div>
+            <div className="w-[2px] h-[2px] bg-muted-foreground rounded-full" />
+            <div className="text-[12px] text-muted-foreground">24.08.17</div>
+            <div className="w-[2px] h-[2px] bg-muted-foreground rounded-full" />
+            <div className="text-[12px] text-muted-foreground">08:28</div>
           </div>
-          <Button onClick={handleSaveClick} className="mt-4">
-            저장
-          </Button>
-        </DialogFooter>
+          <div className="flex items-center">
+            <Button size="icon" className=" rounded-none p-2 bg-white">
+              <SvgIcon
+                fill="none"
+                width={8}
+                height={9}
+                className="flex items-center justify-center text-black"
+              >
+                {sixBoltSvg}
+              </SvgIcon>
+            </Button>
+            <Button size="icon" className=" rounded-none p-2 bg-white">
+              <SvgIcon
+                fill="none"
+                width={8}
+                height={9}
+                className="flex items-center justify-center text-black"
+              >
+                {pauseSvg}
+              </SvgIcon>
+            </Button>
+            <Button size="icon" className=" rounded-none p-2 bg-white">
+              <SvgIcon
+                fill="none"
+                width={8}
+                height={9}
+                className="flex items-center justify-center text-black"
+              >
+                {recordSvg}
+              </SvgIcon>
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
