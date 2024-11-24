@@ -16,82 +16,52 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft, ArrowRight, Ellipsis, Search } from "lucide-react";
 import { useEffect, useState } from "react";
-
-// 타입 정의
-interface Board {
-  id: string;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-  workspaceId: string;
-  data: {
-    focus: string;
-  };
-}
+import { Board } from "./action";
+import {
+  fetchWorkspace,
+  fetchBoards,
+  deleteBoard,
+  createBoard,
+} from "./action";
 
 export default function RecordView() {
-  const [boards, setBoards] = useState<Board[]>([]);
   const [workspaceId, setWorkspaceId] = useState<string>("");
+  const [boards, setBoards] = useState<Board[]>([]);
 
-  // workspace 정보 가져오기
   useEffect(() => {
-    const fetchWorkspace = async () => {
+    const initWorkspace = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}record/workspace/0HS78Z813DVX6/boards/`
-        );
-
-        if (!response.ok)
-          throw new Error("워크스페이스 정보를 가져오는데 실패했습니다");
-        const { boards } = await response.json();
-        setWorkspaceId(boards[0].workspaceId);
+        const id = await fetchWorkspace();
+        setWorkspaceId(id);
       } catch (error) {
-        console.error("워크스페이스 정보 로딩 중 오류:", error);
+        console.error(error);
       }
     };
 
-    fetchWorkspace();
+    initWorkspace();
   }, []);
 
-  // boards 가져오기
   useEffect(() => {
-    const fetchBoards = async () => {
-      if (!workspaceId) return; // workspaceId가 없으면 요청하지 않음
+    const loadBoards = async () => {
+      if (!workspaceId) return;
 
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}record/workspace/${workspaceId}/boards/`
-        );
-
-        if (!response.ok)
-          throw new Error("보드 데이터를 가져오는데 실패했습니다");
-        const { boards } = await response.json();
-        setBoards(boards);
+        const boardsData = await fetchBoards(workspaceId);
+        setBoards(boardsData);
       } catch (error) {
-        console.error("보드 데이터 로딩 중 오류:", error);
+        console.error(error);
       }
     };
 
-    fetchBoards();
+    loadBoards();
   }, [workspaceId]);
 
   const handleDeleteBoard = async (boardId: string) => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}record/board/${boardId}/`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("보드 삭제에 실패했습니다");
-      }
-
-      // 삭제 성공 시 로컬 상태 업데이트
+      await deleteBoard(boardId);
       setBoards(boards.filter((board) => board.id !== boardId));
     } catch (error) {
-      console.error("보드 삭제 중 오류 발생:", error);
+      console.error(error);
     }
   };
 
@@ -149,28 +119,9 @@ export default function RecordView() {
         <Button
           onClick={async () => {
             try {
-              const response = await fetch(
-                `${process.env.NEXT_PUBLIC_API_BASE_URL}record/board/create/0HS78Z813DVX6/`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    data: {
-                      focus: "new board",
-                    },
-                  }),
-                }
-              );
-
-              if (!response.ok) {
-                throw new Error("보드 생성에 실패했습니다");
-              }
-
-              const data = await response.json();
-              setBoards([...boards, data]); // 새로운 보드를 boards 배열에 추가
-              console.log("보드가 생성되었습니다:", data);
+              const newBoard = await createBoard("0HS78Z813DVX6");
+              setBoards([...boards, newBoard]);
+              console.log("보드가 생성되었습니다:", newBoard);
             } catch (error) {
               console.error("보드 생성 중 오류 발생:", error);
             }
