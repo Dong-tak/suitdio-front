@@ -47,6 +47,15 @@ const arrowSlice = createSlice({
     setArrows: (state, action: PayloadAction<Arrow[]>) => {
       state.arrows = action.payload;
     },
+    deleteArrow: (state, action: PayloadAction<Arrow>) => {
+      state.arrows = state.arrows.filter(
+        (arrow) =>
+          !(
+            arrow.fromId === action.payload.fromId &&
+            arrow.toId === action.payload.toId
+          )
+      );
+    },
   },
 });
 
@@ -58,5 +67,6 @@ export const {
   addArrow,
   updateArrow,
   setArrows,
+  deleteArrow,
 } = arrowSlice.actions;
 export default arrowSlice.reducer;

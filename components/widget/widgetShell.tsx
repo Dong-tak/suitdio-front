@@ -63,7 +63,7 @@ import WidgetPdf from './widgetPdf';
 import WidgetUrl from './widgetUrl';
 import WidgetPopup from '@/components/state/popup';
 import { calculateArrowPoints } from '../arrow/drawArrow';
-
+import { getTsid } from 'tsid-ts';
 interface WidgetShellProps {
   widget: ShellWidgetProps<AllWidgetTypes>;
   scale: number;
@@ -257,6 +257,7 @@ export default function WidgetShell({
 
       // 새로운 화살표 객체 생성
       const newArrow: Arrow = {
+        id: getTsid().toString(),
         fromId: fromWidget.id,
         toId: toWidget.id,
         ...arrowPoints,
@@ -326,6 +327,7 @@ export default function WidgetShell({
 
         dispatch(
           updateArrow({
+            id: arrow.id,
             fromId: arrow.fromId,
             toId: arrow.toId,
             points: newPoints.points,
