@@ -16,6 +16,6 @@ export async function completeUserProfile(
 
   const data = await DataFetchInClient({ apiUrl, bodyData });
   console.log(data);
-  router.push(`/home/${data.user.id}`);
+  router.push(`/${data.workspace.id}`);
   return { success: true, message: "Profile completed and user logged in" };
 }

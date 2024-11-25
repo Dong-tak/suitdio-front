@@ -17,9 +17,13 @@ interface User {
   email: string;
   nickname: string;
 }
-
+interface Workspace {
+  id: string;
+  name: string;
+}
 interface LoginResponse {
   user: User;
+  workspace: Workspace;
   message: string;
   token: Token;
   access: Token;
@@ -34,6 +38,7 @@ export const onLogInSuccess = (response: LoginResponse) => {
   console.log("로그인 성공:", response);
   const { id } = response.user;
   console.log(id);
+  console.log(response.workspace.id);
   const access = response.access;
   const accessToken = access.toString();
 
@@ -41,7 +46,7 @@ export const onLogInSuccess = (response: LoginResponse) => {
   // document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
 
   // 로그인 성공 후 /detail 페이지로 이동 (user id를 쿼리 파라미터로 전달)
-  window.location.href = `/home/${id}`;
+  window.location.href = `/${response.workspace.id}`;
 };
 
 export const onLogIn = async (params: LoginData) => {

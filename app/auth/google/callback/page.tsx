@@ -33,7 +33,7 @@ export default function GoogleCallback() {
         credentials: "include",
       })
         .then((response) =>
-          response.json().then((data) => ({ status: response.status, data })),
+          response.json().then((data) => ({ status: response.status, data }))
         )
         .then(({ status, data }) => {
           if (status === 200) {
