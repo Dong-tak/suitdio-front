@@ -1,3 +1,4 @@
+import { calculateArrowPoints } from '@/components/arrow/drawArrow';
 import { ShellWidgetProps, AllWidgetTypes, Arrow } from '@/types/type';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
@@ -33,6 +34,16 @@ const arrowSlice = createSlice({
     addArrow: (state, action) => {
       state.arrows.push(action.payload);
     },
+    updateArrow: (state, action: PayloadAction<Arrow>) => {
+      const index = state.arrows.findIndex(
+        (arrow) =>
+          arrow.fromId === action.payload.fromId &&
+          arrow.toId === action.payload.toId
+      );
+      if (index !== -1) {
+        state.arrows[index] = action.payload;
+      }
+    },
   },
 });
 
@@ -42,5 +53,6 @@ export const {
   deleteFirstLinkWidget,
   deleteLinkWidget,
   addArrow,
+  updateArrow,
 } = arrowSlice.actions;
 export default arrowSlice.reducer;
