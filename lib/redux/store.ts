@@ -12,7 +12,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) => {
     const socket = new WebSocket(
-      'ws://192.168.219.128:8000/v1/play/board/0HW3057JC7TKW/'
+      `${process.env.NEXT_PUBLIC_WEBSOCKET_BASE_URL}play/board/0HW3057JC7TKW/`
     );
     return getDefaultMiddleware().concat(createWebSocketMiddleware(socket));
   },
