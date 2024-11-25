@@ -29,6 +29,7 @@ export default function Home() {
       dispatch(addWidget(newBoard));
 
       localStorage.setItem("currentBoardId", "1");
+
       router.push("1/1");
     }
   };

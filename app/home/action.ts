@@ -7,7 +7,7 @@ interface BoardPosition {
 
 export const createBoardWithTitle = (
   contentTitle: string,
-  widgets: any[],
+  widgets: ShellWidgetProps<AllWidgetTypes>[],
   boardPosition: BoardPosition
 ) => {
   const newBoard: ShellWidgetProps<AllWidgetTypes> = {
