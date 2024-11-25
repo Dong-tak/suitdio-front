@@ -1,14 +1,17 @@
-"use client";
+'use client';
 
-import HomeView from "@/components/home/homeview";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { addWidget } from "@/lib/redux/features/whiteboardSlice";
-import { createBoardWithTitle } from "./action";
+import HomeView from '@/components/home/homeview';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import {
+  addMiddleWidget,
+  addWidget,
+} from '@/lib/redux/features/whiteboardSlice';
+import { createBoardWithTitle } from './action';
 
 export default function Home() {
-  const [contentTitle, setContentTitle] = useState("");
+  const [contentTitle, setContentTitle] = useState('');
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -26,11 +29,11 @@ export default function Home() {
 
       const newBoard = createBoardWithTitle(contentTitle, [], boardPosition);
 
-      dispatch(addWidget(newBoard));
+      dispatch(addMiddleWidget(newBoard));
 
-      localStorage.setItem("currentBoardId", "1");
+      localStorage.setItem('currentBoardId', '1');
 
-      router.push("1/1");
+      router.push('1/1');
     }
   };
 

@@ -1,16 +1,16 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
-import { Middleware } from "redux";
-import { Action } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import { Middleware } from 'redux';
+import { Action } from '@reduxjs/toolkit';
 
 // 액션 타입 정의
 type ActionType =
-  | "CREATE_WIDGET"
-  | "DELETE_WIDGET"
-  | "EDIT_WIDGET"
-  | "RESIZE_WIDGET"
-  | "MOVE_WIDGET"
-  | "STATE_WIDGET";
+  | 'CREATE_WIDGET'
+  | 'DELETE_WIDGET'
+  | 'EDIT_WIDGET'
+  | 'RESIZE_WIDGET'
+  | 'MOVE_WIDGET'
+  | 'STATE_WIDGET';
 
 // 커맨드 인터페이스 정의
 interface Command {
@@ -44,7 +44,7 @@ const initialState: WhiteboardState = {
 };
 
 const whiteboardSlice = createSlice({
-  name: "whiteboard",
+  name: 'whiteboard',
   initialState,
   reducers: {
     addWidget: (
@@ -53,12 +53,18 @@ const whiteboardSlice = createSlice({
     ) => {
       state.widgets.push(action.payload);
       state.history.past.push({
-        type: "CREATE_WIDGET",
+        type: 'CREATE_WIDGET',
         payload: action.payload,
         timestamp: Date.now(),
       });
       state.history.future = []; // 새 액션이 발생하면 future 초기화
       state.lastSavedState = [...state.widgets];
+    },
+    addMiddleWidget: (
+      state,
+      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
+    ) => {
+      state.widgets.push(action.payload);
     },
     updateWidget: (
       state,
@@ -72,7 +78,7 @@ const whiteboardSlice = createSlice({
     deleteWidget: (state, action: PayloadAction<string>) => {
       state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       state.history.past.push({
-        type: "DELETE_WIDGET",
+        type: 'DELETE_WIDGET',
         payload: action.payload,
         timestamp: Date.now(),
       });
@@ -89,7 +95,7 @@ const whiteboardSlice = createSlice({
 
       // 마지막 커맨드 되돌리기
       switch (lastCommand.type) {
-        case "CREATE_WIDGET":
+        case 'CREATE_WIDGET':
           state.widgets = state.widgets.filter(
             (w) =>
               w.id !==
@@ -130,6 +136,7 @@ export const {
   addWidget,
   updateWidget,
   deleteWidget,
+  addMiddleWidget,
   setSelectedWidget,
   addSelectedWidget,
   deleteSelectedWidget,
