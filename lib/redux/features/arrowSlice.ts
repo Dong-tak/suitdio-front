@@ -44,6 +44,9 @@ const arrowSlice = createSlice({
         state.arrows[index] = action.payload;
       }
     },
+    setArrows: (state, action: PayloadAction<Arrow[]>) => {
+      state.arrows = action.payload;
+    },
   },
 });
 
@@ -54,5 +57,6 @@ export const {
   deleteLinkWidget,
   addArrow,
   updateArrow,
+  setArrows,
 } = arrowSlice.actions;
 export default arrowSlice.reducer;
