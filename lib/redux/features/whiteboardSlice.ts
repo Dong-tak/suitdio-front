@@ -60,6 +60,13 @@ const whiteboardSlice = createSlice({
       state.history.future = []; // 새 액션이 발생하면 future 초기화
       state.lastSavedState = [...state.widgets];
     },
+    addMiddleWidget: (
+      // 미들웨어 간섭 없앰 (중앙위젯용)
+      state,
+      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
+    ) => {
+      state.widgets.push(action.payload);
+    },
     updateWidget: (
       state,
       action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
@@ -130,6 +137,7 @@ export const {
   addWidget,
   updateWidget,
   deleteWidget,
+  addMiddleWidget,
   setSelectedWidget,
   addSelectedWidget,
   deleteSelectedWidget,

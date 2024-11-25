@@ -4,7 +4,10 @@ import HomeView from "@/components/home/homeview";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
-import { addWidget } from "@/lib/redux/features/whiteboardSlice";
+import {
+  addMiddleWidget,
+  addWidget,
+} from "@/lib/redux/features/whiteboardSlice";
 import { createBoardWithTitle } from "./action";
 
 export default function Home() {
@@ -26,11 +29,11 @@ export default function Home() {
 
       const newBoard = createBoardWithTitle(contentTitle, [], boardPosition);
 
-      dispatch(addWidget(newBoard));
+      dispatch(addMiddleWidget(newBoard));
 
       localStorage.setItem("currentBoardId", "1");
 
-      router.push("1/1");
+      router.push("1/");
     }
   };
 

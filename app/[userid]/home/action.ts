@@ -22,7 +22,7 @@ export const createBoardWithTitle = (
     draggable: false,
     innerWidget: {
       id: `CenterWidget-${Date.now()}`,
-      type: "boardLink",
+      type: "center",
       titleBlock: contentTitle,
       width: 800,
       height: 300,
