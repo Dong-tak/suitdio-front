@@ -54,7 +54,9 @@ import {
   addArrow,
   addLinkWidgets,
   deleteLinkWidget,
+  setArrows,
   setIsArrowMode,
+  setSelectedArrows,
   updateArrow,
 } from '@/lib/redux/features/arrowSlice';
 import WidgetImage from './widgetImage';
@@ -62,7 +64,7 @@ import WidgetPdf from './widgetPdf';
 import WidgetUrl from './widgetUrl';
 import WidgetPopup from '@/components/state/popup';
 import { calculateArrowPoints } from '../arrow/drawArrow';
-
+import { getTsid } from 'tsid-ts';
 interface WidgetShellProps {
   widget: ShellWidgetProps<AllWidgetTypes>;
   scale: number;
@@ -242,7 +244,7 @@ export default function WidgetShell({
   }, [isReduced]);
 
   useEffect(() => {
-    if (isArrowMode) {
+    if (isArrowMode && linkWidgets.length === 2) {
       addArrowWidget();
     }
   }, [linkWidgets]);
@@ -256,10 +258,13 @@ export default function WidgetShell({
 
       // 새로운 화살표 객체 생성
       const newArrow: Arrow = {
+        id: getTsid().toString(),
         fromId: fromWidget.id,
         toId: toWidget.id,
         ...arrowPoints,
       };
+
+      console.log('newArrow:', newArrow);
 
       // Redux store에 화살표 추가
       dispatch(addArrow(newArrow));
@@ -268,18 +273,31 @@ export default function WidgetShell({
       dispatch(deleteLinkWidget());
 
       dispatch(setIsArrowMode(false));
-
-      // 남은 위젯들로 재귀 호출
-      // addArrowWidget();
     }
-
-    // // linkWidgets의 길이가 2 미만이면 종료
-    // if (linkWidgets.length < 2) {
-    //   dispatch(setIsArrowMode(false));
-    // }
   };
+
   useEffect(() => {
     if (arrows.length > 0) {
+      // 중복 화살표 확인 및 제거
+      const uniqueArrows = arrows.reduce((acc, current) => {
+        const isDuplicate = acc.some(
+          (arrow) =>
+            (arrow.fromId === current.fromId && arrow.toId === current.toId) ||
+            (arrow.fromId === current.toId && arrow.toId === current.fromId)
+        );
+
+        if (!isDuplicate) {
+          acc.push(current);
+        }
+
+        return acc;
+      }, [] as Arrow[]);
+
+      // 중복이 제거된 화살표 배열이 기존과 다르다면 업데이트
+      if (uniqueArrows.length !== arrows.length) {
+        console.log('중복 화살표가 제거됨:', uniqueArrows);
+        dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
+      }
       console.log('Updated arrows:', arrows);
     }
   }, [arrows]);
@@ -310,6 +328,7 @@ export default function WidgetShell({
 
         dispatch(
           updateArrow({
+            id: arrow.id,
             fromId: arrow.fromId,
             toId: arrow.toId,
             points: newPoints.points,
@@ -723,12 +742,14 @@ export default function WidgetShell({
         dispatch(deleteSelectedWidget(widget.id));
       } else {
         dispatch(setSelectedWidget([widget.id]));
+        dispatch(setSelectedArrows([]));
       }
     } else if (!isEditMode) {
       if (e.shiftKey) {
         dispatch(addSelectedWidget(widget.id));
       } else {
         dispatch(setSelectedWidget([widget.id]));
+        dispatch(setSelectedArrows([]));
       }
     }
   };

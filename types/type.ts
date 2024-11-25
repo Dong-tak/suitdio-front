@@ -181,6 +181,7 @@ export interface BoardWidget extends WidgetProps {
 }
 
 export interface Arrow {
+  id: string;
   fromId: string;
   toId: string;
   points: number[];

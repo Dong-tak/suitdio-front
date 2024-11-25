@@ -257,17 +257,17 @@ export const recordSvg = (
       <path
         d='M4.00033 7.83341C5.84127 7.83341 7.33366 6.34103 7.33366 4.50008C7.33366 2.65913 5.84127 1.16675 4.00033 1.16675C2.15938 1.16675 0.666992 2.65913 0.666992 4.50008C0.666992 6.34103 2.15938 7.83341 4.00033 7.83341Z'
         stroke='#E53935'
-        stroke-width='0.666667'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+        strokeWidth='0.666667'
+        strokeLinecap='round'
+        strokeLinejoin='round'
       />
       <path
         d='M4.00049 6.5C5.10506 6.5 6.00049 5.60457 6.00049 4.5C6.00049 3.39543 5.10506 2.5 4.00049 2.5C2.89592 2.5 2.00049 3.39543 2.00049 4.5C2.00049 5.60457 2.89592 6.5 4.00049 6.5Z'
         fill='#E53935'
         stroke='#E53935'
-        stroke-width='0.4'
-        stroke-linecap='round'
-        stroke-linejoin='round'
+        strokeWidth='0.4'
+        strokeLinecap='round'
+        strokeLinejoin='round'
       />
     </g>
     <defs>
