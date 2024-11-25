@@ -15,8 +15,56 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { ArrowLeft, ArrowRight, Ellipsis, Search } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Board } from "./action";
+import {
+  fetchWorkspace,
+  fetchBoards,
+  deleteBoard,
+  createBoard,
+} from "./action";
 
 export default function RecordView() {
+  const [workspaceId, setWorkspaceId] = useState<string>("");
+  const [boards, setBoards] = useState<Board[]>([]);
+
+  useEffect(() => {
+    const initWorkspace = async () => {
+      try {
+        const id = await fetchWorkspace();
+        setWorkspaceId(id);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    initWorkspace();
+  }, []);
+
+  useEffect(() => {
+    const loadBoards = async () => {
+      if (!workspaceId) return;
+
+      try {
+        const boardsData = await fetchBoards(workspaceId);
+        setBoards(boardsData);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    loadBoards();
+  }, [workspaceId]);
+
+  const handleDeleteBoard = async (boardId: string) => {
+    try {
+      await deleteBoard(boardId);
+      setBoards(boards.filter((board) => board.id !== boardId));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <SidebarInset>
       <header className="flex h-11 shrink-0 items-center justify-between px-2">
@@ -68,6 +116,20 @@ export default function RecordView() {
           placeholder="Search"
           className="w-full pl-10 bg-slate-100 border-none"
         />
+        <Button
+          onClick={async () => {
+            try {
+              const newBoard = await createBoard("0HS78Z813DVX6");
+              setBoards([...boards, newBoard]);
+              console.log("보드가 생성되었습니다:", newBoard);
+            } catch (error) {
+              console.error("보드 생성 중 오류 발생:", error);
+            }
+          }}
+          className="hover:bg-orange-300 bg-orange-500"
+        >
+          보드 생성
+        </Button>
       </div>
       <div className="flex items-center gap-2 px-6 justify-start mt-2">
         <FilterMenu label="최종 수정일" items={["수정일", "생성일", "버전"]} />
@@ -75,31 +137,17 @@ export default function RecordView() {
       </div>
       <div className="flex flex-1 flex-col gap-4 px-6 mt-4">
         <div className="grid gap-4 grid-cols-auto-fit">
-          <RecordCard
-            cardId="1"
-            cardTitle="What is Real Productivity"
-            cardConclusion="open인 경우 모두 사라지게 되었음 ㅋㅋ두 개를 분리해야 하는데 어떻게 할까=appSidebar에 들어가는 button은 새로 만들어야 하나새로운 sidebar toggle button을 추가해서 구현"
-          />
-          <RecordCard
-            cardId="1"
-            cardTitle="What is Real Productivity"
-            cardConclusion="open인 경우 모두 사라지게 되었음 ㅋㅋ두 개를 분리해야 하는데 어떻게 할까=appSidebar에 들어가는 button은 새로 만들어야 하나새로운 sidebar toggle button을 추가해서 구현"
-          />
-          <RecordCard
-            cardId="1"
-            cardTitle="What is Real Productivity"
-            cardConclusion="open인 경우 모두 사라지게 되었음 ㅋㅋ두 개를 분리해야 하는데 어떻게 할까=appSidebar에 들어가는 button은 새로 만들어야 하나새로운 sidebar toggle button을 추가해서 구현"
-          />
-          <RecordCard
-            cardId="1"
-            cardTitle="What is Real Productivity"
-            cardConclusion="open인 경우 모두 사라지게 되었음 ㅋㅋ두 개를 분리해야 하는데 어떻게 할까=appSidebar에 들어가는 button은 새로 만들어야 하나새로운 sidebar toggle button을 추가해서 구현"
-          />
-          <RecordCard
-            cardId="1"
-            cardTitle="What is Real Productivity"
-            cardConclusion="open인 경우 모두 사라지게 되었음 ㅋㅋ두 개를 분리해야 하는데 어떻게 할까=appSidebar에 들어가는 button은 새로 만들어야 하나새로운 sidebar toggle button을 추가해서 구현"
-          />
+          {boards.map((board) => (
+            <RecordCard
+              key={board.id}
+              cardId={board.id}
+              cardTitle={board.data.focus}
+              cardConclusion={`최종 수정: ${new Date(
+                board.updatedAt
+              ).toLocaleDateString("ko-KR")}`}
+              onDelete={handleDeleteBoard}
+            />
+          ))}
         </div>
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted md:min-h-min" />
       </div>

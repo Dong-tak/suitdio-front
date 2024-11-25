@@ -3,8 +3,8 @@ name: build test for pull request
 on:
   pull_request:
     branches:
-      - "main"
-      - "develop"
+      - 'main'
+      - 'develop'
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
         id: cache-node-modules
         uses: actions/cache@v3
         with:
-          path: "**/node_modules"
+          path: '**/node_modules'
           key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-modules-
@@ -34,6 +34,11 @@ jobs:
           key: ${{ runner.os }}-nextjs-cache-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nextjs-cache-
+
+      - name: Create .env file
+        run: |
+          echo "${{ secrets.ENV }}" > .env
+          cat .env  # 빌드 타임에 확인을 위해 출력
 
       - name: Install Dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
