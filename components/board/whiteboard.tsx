@@ -49,9 +49,11 @@ import { Label } from '../ui/label';
 import { Input } from '../ui/input';
 import {
   addArrow,
+  deleteArrow,
   deleteFirstLinkWidget,
   deleteLinkWidget,
   setIsArrowMode,
+  setSelectedArrows,
 } from '@/lib/redux/features/arrowSlice';
 import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
 import { useWebSocket } from '@/hooks/use-socket';
@@ -97,6 +99,9 @@ export default function Whiteboard() {
     (state: RootState) => state.arrow.linkWidgets
   );
   const arrows = useSelector((state: RootState) => state.arrow.arrows);
+  const selectedArrow = useSelector(
+    (state: RootState) => state.arrow.selectedArrows
+  );
 
   // 섹션 드래그 상태 추가
   const [sectionDraft, setSectionDraft] = useState<{
@@ -281,7 +286,17 @@ export default function Whiteboard() {
 
     // 화살표 그리기
     arrows.forEach((arrow) => {
+      const isSelected = selectedArrow.includes(arrow);
       drawArrow(ctx, arrow, scale, offset);
+
+      // 선택된 화살표의 시작점과 끝점에 원 그리기
+      if (isSelected) {
+        ctx.beginPath();
+        ctx.fillStyle = '#00A3FF';
+        ctx.arc(arrow.points[0], arrow.points[1], 5 / scale, 0, 2 * Math.PI);
+        ctx.arc(arrow.points[8], arrow.points[9], 5 / scale, 0, 2 * Math.PI);
+        ctx.fill();
+      }
     });
 
     // 섹션 드래프트 그리기
@@ -317,7 +332,7 @@ export default function Whiteboard() {
     }
 
     ctx.restore();
-  }, [scale, offset, sectionDraft, selectArea, arrows]);
+  }, [scale, offset, sectionDraft, selectArea, arrows, selectedArrow]);
 
   useEffect(() => {
     redraw();
@@ -455,6 +470,15 @@ export default function Whiteboard() {
           width: 0,
           height: 0,
         });
+        const clickedArrow = arrows.find((arrow) =>
+          isPointNearArrow(x, y, arrow)
+        );
+        if (clickedArrow) {
+          dispatch(setSelectedArrows([clickedArrow]));
+          return; // 화살표를 선택했다면 다른 선택 동작 중단
+        } else {
+          dispatch(setSelectedArrows([]));
+        }
       }
       // 보드 생성 모드일 때
     } else if (tool === 'boardLink' && isBoardPlacementMode) {
@@ -602,10 +626,32 @@ export default function Whiteboard() {
         })
         .map((widget) => widget.id);
       dispatch(setSelectedWidget(selectedIds));
+      // 선택 영역 내의 화살표 찾기
+      const selectedArrows = arrows.filter((arrow) => {
+        const startX = arrow.points[0];
+        const startY = arrow.points[1];
+        const endX = arrow.points[8];
+        const endY = arrow.points[9];
+
+        // 화살표의 시작점이나 끝점이 선택 영역 내에 있는지 확인
+        return (
+          (startX >= selectArea.startX &&
+            startX <= selectArea.startX + selectArea.width &&
+            startY >= selectArea.startY &&
+            startY <= selectArea.startY + selectArea.height) ||
+          (endX >= selectArea.startX &&
+            endX <= selectArea.startX + selectArea.width &&
+            endY >= selectArea.startY &&
+            endY <= selectArea.startY + selectArea.height)
+        );
+      });
+
+      if (selectedArrows.length > 0) {
+        dispatch(setSelectedArrows(selectedArrows));
+      }
       setIsSelecting(false);
       setSelectArea(null);
     }
-    // Shift 키가 눌려있으면 기존 선택에 추가
 
     if (tool === 'section' && sectionDraft) {
       if (sectionDraft.width > 0 && sectionDraft.height > 0) {
@@ -909,6 +955,43 @@ export default function Whiteboard() {
       setTool('select');
     }
   }, [isArrowMode]);
+
+  // 화살표 선택을 위한 함수 추가
+  const isPointNearArrow = (x: number, y: number, arrow: Arrow): boolean => {
+    const tolerance = 10 / scale; // 클릭 허용 범위
+
+    // 시작점과 끝점 사이의 거리 계산
+    const dx = arrow.arrowTipX - arrow.points[0];
+    const dy = arrow.arrowTipY - arrow.points[1];
+    const length = Math.sqrt(dx * dx + dy * dy);
+
+    // 점과 선 사이의 거리 계산
+    const t =
+      ((x - arrow.points[0]) * dx + (y - arrow.points[1]) * dy) /
+      (length * length);
+    const projX = arrow.points[0] + t * dx;
+    const projY = arrow.points[1] + t * dy;
+
+    const distance = Math.sqrt(Math.pow(x - projX, 2) + Math.pow(y - projY, 2));
+
+    return distance < tolerance && t >= 0 && t <= 1;
+  };
+
+  // 키보드 이벤트 핸들러 추가
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        selectedArrow.length > 0 &&
+        (e.key === 'Backspace' || e.key === 'Delete')
+      ) {
+        dispatch(deleteArrow(selectedArrow[0]));
+        dispatch(setSelectedArrows([]));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedArrow, dispatch]);
 
   return (
     <div className='flex flex-col h-screen'>

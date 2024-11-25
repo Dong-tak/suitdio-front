@@ -6,12 +6,14 @@ interface ArrowState {
   isArrowMode: boolean; // 화살표 모드 활성화 여부
   linkWidgets: ShellWidgetProps<AllWidgetTypes>[]; // 화살표로 연결된 위젯들
   arrows: Arrow[]; // 화살표들
+  selectedArrows: Arrow[]; // 선택된 화살표들
 }
 
 const initialState: ArrowState = {
   isArrowMode: false,
   linkWidgets: [],
   arrows: [],
+  selectedArrows: [],
 };
 
 const arrowSlice = createSlice({
@@ -56,6 +58,17 @@ const arrowSlice = createSlice({
           )
       );
     },
+    setSelectedArrows: (state, action: PayloadAction<Arrow[]>) => {
+      state.selectedArrows = action.payload;
+    },
+    addSelectedArrow: (state, action: PayloadAction<Arrow>) => {
+      state.selectedArrows.push(action.payload);
+    },
+    deleteSelectedArrow: (state, action: PayloadAction<Arrow>) => {
+      state.selectedArrows = state.selectedArrows.filter(
+        (arrow) => arrow.id !== action.payload.id
+      );
+    },
   },
 });
 
@@ -68,5 +81,8 @@ export const {
   updateArrow,
   setArrows,
   deleteArrow,
+  setSelectedArrows,
+  addSelectedArrow,
+  deleteSelectedArrow,
 } = arrowSlice.actions;
 export default arrowSlice.reducer;

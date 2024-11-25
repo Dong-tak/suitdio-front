@@ -56,6 +56,7 @@ import {
   deleteLinkWidget,
   setArrows,
   setIsArrowMode,
+  setSelectedArrows,
   updateArrow,
 } from '@/lib/redux/features/arrowSlice';
 import WidgetImage from './widgetImage';
@@ -741,12 +742,14 @@ export default function WidgetShell({
         dispatch(deleteSelectedWidget(widget.id));
       } else {
         dispatch(setSelectedWidget([widget.id]));
+        dispatch(setSelectedArrows([]));
       }
     } else if (!isEditMode) {
       if (e.shiftKey) {
         dispatch(addSelectedWidget(widget.id));
       } else {
         dispatch(setSelectedWidget([widget.id]));
+        dispatch(setSelectedArrows([]));
       }
     }
   };
