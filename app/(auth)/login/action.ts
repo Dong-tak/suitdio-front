@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { DataFetchInClient } from "@/api/postdata-client";
+import { DataFetchInClient } from '@/api/postdata-client';
 
 export interface LoginData {
   loginId: string;
@@ -35,7 +35,7 @@ interface ErrorResponse {
 }
 
 export const onLogInSuccess = (response: LoginResponse) => {
-  console.log("로그인 성공:", response);
+  console.log('로그인 성공:', response);
   const { id } = response.user;
   console.log(id);
   console.log(response.workspace.id);
@@ -46,6 +46,7 @@ export const onLogInSuccess = (response: LoginResponse) => {
   // document.cookie = `accessToken=${accessToken}; path=/; SameSite=Lax`;
 
   // 로그인 성공 후 /detail 페이지로 이동 (user id를 쿼리 파라미터로 전달)
+  console.log('loginSuccess', response.workspace.id);
   window.location.href = `/${response.workspace.id}`;
 };
 
