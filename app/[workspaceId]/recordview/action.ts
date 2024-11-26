@@ -11,18 +11,35 @@ export interface Board {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-const headers = {
-  Authorization:
-    "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzMwNjA3MTMsInN1YiI6IjBIUzc4WjgwSlJNQUYifQ.WLhXwgV_RtOXGALHUXpyPiTbPYeoTgw4YjU7bODrme8 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMEhTNzhaODBKUk1BRiIsImV4cCI6MTczMzA2MDcxM30.XV-WBWHQzpnJrb1VBO27PL-dncAYxvqx9zYzmnjpv5k",
+export const initializeWorkspaceData = async () => {
+  try {
+    const response = await fetch(
+      `/api/proxy/record/workspace/0HS78Z813DVX6/boards/`,
+      {
+        method: "GET",
+      }
+    );
+
+    if (!response.ok)
+      throw new Error("워크스페이스 데이터를 가져오는데 실패했습니다");
+
+    const { boards } = await response.json();
+    return {
+      workspaceId: boards[0].workspaceId,
+      boards: boards,
+    };
+  } catch (error) {
+    console.error("데이터 로딩 중 오류:", error);
+    throw error;
+  }
 };
 
 export const fetchWorkspace = async () => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}record/workspace/0HS78Z813DVX6/boards/`,
+      `/api/proxy/record/workspace/0HS78Z813DVX6/boards/`,
       {
         method: "GET",
-        headers,
       }
     );
 
@@ -39,10 +56,9 @@ export const fetchWorkspace = async () => {
 export const fetchBoards = async (workspaceId: string) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}record/workspace/${workspaceId}/boards/`,
+      `/api/proxy/record/workspace/${workspaceId}/boards/`,
       {
         method: "GET",
-        headers,
       }
     );
 
@@ -57,9 +73,8 @@ export const fetchBoards = async (workspaceId: string) => {
 
 export const deleteBoard = async (boardId: string) => {
   try {
-    const response = await fetch(`${API_BASE_URL}record/board/${boardId}/`, {
+    const response = await fetch(`/api/proxy/record/board/${boardId}/`, {
       method: "DELETE",
-      headers,
     });
 
     if (!response.ok) {
@@ -75,11 +90,10 @@ export const deleteBoard = async (boardId: string) => {
 export const createBoard = async (workspaceId: string) => {
   try {
     const response = await fetch(
-      `${API_BASE_URL}record/board/create/${workspaceId}/`,
+      `/api/proxy/record/board/create/${workspaceId}/`,
       {
         method: "POST",
         headers: {
-          ...headers,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
