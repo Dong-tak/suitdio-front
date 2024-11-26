@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import { AllWidgetTypes, ShellWidgetProps, TextWidget } from '@/types/type';
 import { Middleware } from 'redux';
 import { Action } from '@reduxjs/toolkit';
 
@@ -75,6 +75,7 @@ const whiteboardSlice = createSlice({
         state.widgets[index] = action.payload;
       }
     },
+
     deleteWidget: (state, action: PayloadAction<string>) => {
       state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       state.history.past.push({

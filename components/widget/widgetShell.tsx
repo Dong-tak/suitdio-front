@@ -293,7 +293,7 @@ export default function WidgetShell({
         return acc;
       }, [] as Arrow[]);
 
-      // 중복이 제거된 화살표 배열이 기존과 다르다면 업데이트
+      // ��복이 제거된 화살표 배열이 기존과 다르다면 업데이트
       if (uniqueArrows.length !== arrows.length) {
         console.log('중복 화살표가 제거됨:', uniqueArrows);
         dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
@@ -356,6 +356,17 @@ export default function WidgetShell({
         updateWidget({
           ...widget,
           height: snappedHeight,
+        })
+      );
+    }
+  };
+
+  const handleTextChange = (text: string) => {
+    if (widget.innerWidget.type === 'text') {
+      dispatch(
+        updateWidget({
+          ...widget,
+          innerWidget: { ...widget.innerWidget, text },
         })
       );
     }
@@ -440,6 +451,7 @@ export default function WidgetShell({
             editable={editable ? isEditMode : false}
             autoFocus={isEditMode}
             onHeightChange={handleHeightChange}
+            onTextChange={handleTextChange}
           />
         );
       case 'section':
@@ -898,7 +910,7 @@ export default function WidgetShell({
           }`,
           outlineOffset: '0px', // 음수 값을 주면 안쪽으로 들어갑니다
           borderRadius: '4px',
-          transition: 'height 0.3s ease-in-out', // 높이 변경 애니메이션 추가
+          transition: 'height 0.3s ease-in-out', // 높이 ���경 애니메이션 추가
         }}
         onClick={handleWidgetClick}
         onMouseDown={handleMouseDown}

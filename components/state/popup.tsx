@@ -48,6 +48,7 @@ export default function WidgetPopup({
             editable={true}
             autoFocus={false}
             onHeightChange={() => {}}
+            onTextChange={() => {}}
             isOpen={isOpen}
           />
         );
@@ -85,7 +86,7 @@ export default function WidgetPopup({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className='max-w-[80vw] h-[80vh]'>
-        <Carousel defaultValue={1}>
+        <Carousel>
           <CarouselContent>
             {filteredWidgets.map((widget, index) => (
               <CarouselItem
