@@ -71,6 +71,8 @@ export interface ShellWidgetProps<T extends AllWidgetTypes>
   innerWidget: T; // 내부 위젯을 저장하는 속성
   fill?: string; // 섹션 추가
   memberIds?: string[]; // 섹션 추가
+  from: ShellWidgetProps<AllWidgetTypes>[];
+  to: ShellWidgetProps<AllWidgetTypes>[];
 }
 
 export interface TextWidget extends WidgetProps {
