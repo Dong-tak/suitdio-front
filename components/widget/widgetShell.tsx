@@ -78,6 +78,8 @@ interface WidgetShellProps {
   footerBar: boolean;
   fill?: string;
   memberIds?: string[];
+  onEditModeChange?: (isEditMode: boolean) => void;
+  onPopupOpenChange?: (isPopupOpen: boolean) => void;
 }
 
 //resize 핸들 스타일 함수
@@ -178,6 +180,8 @@ export default function WidgetShell({
   footerBar,
   fill,
   memberIds,
+  onEditModeChange,
+  onPopupOpenChange,
 }: WidgetShellProps) {
   const dispatch = useDispatch();
   const [isDragging, setIsDragging] = useState(false);
@@ -218,6 +222,14 @@ export default function WidgetShell({
   useEffect(() => {
     setIsEditMode(editModeWidgets === widget.id);
   }, [editModeWidgets]);
+
+  useEffect(() => {
+    onEditModeChange?.(isEditMode);
+  }, [isEditMode]);
+
+  useEffect(() => {
+    onPopupOpenChange?.(isPopupOpen);
+  }, [isPopupOpen]);
 
   useEffect(() => {
     if (isSelected) {
