@@ -97,7 +97,7 @@ export async function middleware(request: NextRequest) {
     let finalResponse;
     if (pathname === "/" && userData.workspaceId) {
       finalResponse = NextResponse.redirect(
-        new URL(`/${userData.workspaceId}/home`, request.url)
+        new URL(`/${userData.workspaceId}`, request.url)
       );
     } else {
       finalResponse = NextResponse.next();
