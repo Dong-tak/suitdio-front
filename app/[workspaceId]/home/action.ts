@@ -1,4 +1,4 @@
-import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
+import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
 
 interface BoardPosition {
   x: number;
@@ -12,7 +12,7 @@ export const createBoardWithTitle = (
 ) => {
   const newBoard: ShellWidgetProps<AllWidgetTypes> = {
     id: `CenterWidget-${Date.now()}`, // 유니크한 ID 생성
-    type: "shell",
+    type: 'shell',
     x: boardPosition.x,
     y: boardPosition.y,
     width: 800,
@@ -20,9 +20,11 @@ export const createBoardWithTitle = (
     resizable: false,
     editable: false,
     draggable: false,
+    from: [],
+    to: [],
     innerWidget: {
       id: `CenterWidget-${Date.now()}`,
-      type: "boardLink",
+      type: 'boardLink',
       titleBlock: contentTitle,
       width: 800,
       height: 300,
@@ -33,7 +35,7 @@ export const createBoardWithTitle = (
       resizeable: false,
       headerBar: true,
       footerBar: true,
-      text: "",
+      text: '',
     },
   };
 

@@ -23,6 +23,9 @@ import {
   setSelectedWidget,
   setEditModeWidgets,
   addSelectedWidget,
+  addWidgetFrom,
+  addWidgetTo,
+  updateWidget,
 } from '@/lib/redux/features/whiteboardSlice';
 import {
   ShellWidgetProps,
@@ -52,11 +55,13 @@ import {
   deleteArrow,
   deleteFirstLinkWidget,
   deleteLinkWidget,
+  setArrows,
   setIsArrowMode,
   setSelectedArrows,
 } from '@/lib/redux/features/arrowSlice';
 import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
 import { useWebSocket } from '@/hooks/use-socket';
+import { getTsid } from 'tsid-ts';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -407,6 +412,8 @@ export default function Whiteboard() {
       resizable: true,
       editable: true,
       draggable: true,
+      from: [],
+      to: [],
       innerWidget,
     };
 
@@ -542,6 +549,8 @@ export default function Whiteboard() {
         resizable: true,
         editable: true,
         draggable: true,
+        from: [],
+        to: [],
         innerWidget,
       };
 
@@ -681,6 +690,8 @@ export default function Whiteboard() {
           resizable: true,
           editable: true,
           draggable: true,
+          from: [],
+          to: [],
           innerWidget,
         };
 
@@ -735,6 +746,8 @@ export default function Whiteboard() {
       resizable: true,
       editable: true,
       draggable: true,
+      from: [],
+      to: [],
       innerWidget: newNode,
     };
 
@@ -769,6 +782,8 @@ export default function Whiteboard() {
         resizable: true,
         editable: true,
         draggable: true,
+        from: [],
+        to: [],
         innerWidget: {
           id: `board-inner-${widgets.length + 1}`,
           type: 'boardLink',
@@ -910,6 +925,8 @@ export default function Whiteboard() {
       resizable: true,
       editable: true,
       draggable: true,
+      from: [],
+      to: [],
       innerWidget,
     };
     dispatch(addWidget(newWidget));
@@ -940,6 +957,8 @@ export default function Whiteboard() {
       resizable: true,
       editable: true,
       draggable: true,
+      from: [],
+      to: [],
       innerWidget,
     };
     dispatch(addWidget(newWidget));
@@ -977,6 +996,41 @@ export default function Whiteboard() {
     return distance < tolerance && t >= 0 && t <= 1;
   };
 
+  useEffect(() => {
+    if (isArrowMode && linkWidgets.length === 2) {
+      addArrowWidget();
+    }
+  }, [linkWidgets]);
+
+  const addArrowWidget = () => {
+    if (linkWidgets.length === 2) {
+      const [fromWidget, toWidget] = linkWidgets;
+      dispatch(addWidgetFrom({ widgetId: toWidget.id, fromWidget }));
+      dispatch(addWidgetTo({ widgetId: fromWidget.id, toWidget }));
+
+      // 화살표 포인트 계산
+      const arrowPoints = calculateArrowPoints(fromWidget, toWidget);
+
+      // 새로운 화살표 객체 생성
+      const newArrow: Arrow = {
+        id: getTsid().toString(),
+        fromId: fromWidget.id,
+        toId: toWidget.id,
+        ...arrowPoints,
+      };
+
+      console.log('newArrow:', newArrow);
+
+      // Redux store에 화살표 추가
+      dispatch(addArrow(newArrow));
+
+      // linkWidgets 배열에서 처리된 위젯들 제거
+      dispatch(deleteLinkWidget());
+
+      dispatch(setIsArrowMode(false));
+    }
+  };
+
   // 키보드 이벤트 핸들러 추가
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -984,7 +1038,33 @@ export default function Whiteboard() {
         selectedArrow.length > 0 &&
         (e.key === 'Backspace' || e.key === 'Delete')
       ) {
-        dispatch(deleteArrow(selectedArrow[0]));
+        // 선택된 각 화살표에 대해 처리
+        selectedArrow.forEach((arrow) => {
+          // fromId를 가진 위젯에서 toId 제거
+          const fromWidget = widgets.find((w) => w.id === arrow.fromId);
+          if (fromWidget) {
+            const updatedFromWidget = {
+              ...fromWidget,
+              to: fromWidget.to.filter((to) => to.id !== arrow.toId),
+            };
+            console.log('updatedFromWidget:', updatedFromWidget);
+            dispatch(updateWidget(updatedFromWidget));
+          }
+
+          // toId를 가진 위젯에서 fromId 제거
+          const toWidget = widgets.find((w) => w.id === arrow.toId);
+          if (toWidget) {
+            const updatedToWidget = {
+              ...toWidget,
+              from: toWidget.from.filter((from) => from.id !== arrow.fromId),
+            };
+            console.log('updatedToWidget:', updatedToWidget);
+            dispatch(updateWidget(updatedToWidget));
+          }
+        });
+
+        // 화살표 삭제 및 선택 해제
+        dispatch(deleteArrow(selectedArrow));
         dispatch(setSelectedArrows([]));
       }
     };
@@ -992,6 +1072,32 @@ export default function Whiteboard() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedArrow, dispatch]);
+
+  useEffect(() => {
+    if (arrows.length > 0) {
+      // 중복 화살표 확인 및 제거
+      const uniqueArrows = arrows.reduce((acc, current) => {
+        const isDuplicate = acc.some(
+          (arrow) =>
+            (arrow.fromId === current.fromId && arrow.toId === current.toId) ||
+            (arrow.fromId === current.toId && arrow.toId === current.fromId)
+        );
+
+        if (!isDuplicate) {
+          acc.push(current);
+        }
+
+        return acc;
+      }, [] as Arrow[]);
+
+      // 복이 제거된 화살표 배열이 기존과 다르다면 업데이트
+      if (uniqueArrows.length !== arrows.length) {
+        console.log('중복 화살표가 제거됨:', uniqueArrows);
+        dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
+      }
+      console.log('Updated arrows:', arrows);
+    }
+  }, [arrows]);
 
   return (
     <div className='flex flex-col h-screen'>

@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import {
   addSelectedWidget,
+  addWidgetFrom,
+  addWidgetTo,
   deleteSelectedWidget,
   deleteWidget,
   setEditModeWidgets,
@@ -244,65 +246,6 @@ export default function WidgetShell({
   }, [isReduced]);
 
   useEffect(() => {
-    if (isArrowMode && linkWidgets.length === 2) {
-      addArrowWidget();
-    }
-  }, [linkWidgets]);
-
-  const addArrowWidget = () => {
-    if (linkWidgets.length === 2) {
-      const [fromWidget, toWidget] = linkWidgets;
-
-      // 화살표 포인트 계산
-      const arrowPoints = calculateArrowPoints(fromWidget, toWidget);
-
-      // 새로운 화살표 객체 생성
-      const newArrow: Arrow = {
-        id: getTsid().toString(),
-        fromId: fromWidget.id,
-        toId: toWidget.id,
-        ...arrowPoints,
-      };
-
-      console.log('newArrow:', newArrow);
-
-      // Redux store에 화살표 추가
-      dispatch(addArrow(newArrow));
-
-      // linkWidgets 배열에서 처리된 위젯들 제거
-      dispatch(deleteLinkWidget());
-
-      dispatch(setIsArrowMode(false));
-    }
-  };
-
-  useEffect(() => {
-    if (arrows.length > 0) {
-      // 중복 화살표 확인 및 제거
-      const uniqueArrows = arrows.reduce((acc, current) => {
-        const isDuplicate = acc.some(
-          (arrow) =>
-            (arrow.fromId === current.fromId && arrow.toId === current.toId) ||
-            (arrow.fromId === current.toId && arrow.toId === current.fromId)
-        );
-
-        if (!isDuplicate) {
-          acc.push(current);
-        }
-
-        return acc;
-      }, [] as Arrow[]);
-
-      // 중복이 제거된 화살표 배열이 기존과 다르다면 업데이트
-      if (uniqueArrows.length !== arrows.length) {
-        console.log('중복 화살표가 제거됨:', uniqueArrows);
-        dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
-      }
-      console.log('Updated arrows:', arrows);
-    }
-  }, [arrows]);
-
-  useEffect(() => {
     updateArrowPos();
   }, [widget.x, widget.y, widget.width, widget.height]);
 
@@ -356,6 +299,17 @@ export default function WidgetShell({
         updateWidget({
           ...widget,
           height: snappedHeight,
+        })
+      );
+    }
+  };
+
+  const handleTextChange = (text: string) => {
+    if (widget.innerWidget.type === 'text') {
+      dispatch(
+        updateWidget({
+          ...widget,
+          innerWidget: { ...widget.innerWidget, text },
         })
       );
     }
@@ -440,6 +394,7 @@ export default function WidgetShell({
             editable={editable ? isEditMode : false}
             autoFocus={isEditMode}
             onHeightChange={handleHeightChange}
+            onTextChange={handleTextChange}
           />
         );
       case 'section':
@@ -734,6 +689,7 @@ export default function WidgetShell({
   };
 
   const handleWidgetClick = (e: React.MouseEvent) => {
+    console.log('widgetFrom:', widget.from, 'widgetTo:', widget.to);
     if (isArrowMode) {
       dispatch(addLinkWidgets(widget));
     }
@@ -898,7 +854,7 @@ export default function WidgetShell({
           }`,
           outlineOffset: '0px', // 음수 값을 주면 안쪽으로 들어갑니다
           borderRadius: '4px',
-          transition: 'height 0.3s ease-in-out', // 높이 변경 애니메이션 추가
+          transition: 'height 0.3s ease-in-out', // 높이 ���경 애니메이션 추가
         }}
         onClick={handleWidgetClick}
         onMouseDown={handleMouseDown}

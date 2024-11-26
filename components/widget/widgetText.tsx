@@ -5,12 +5,15 @@ import '@blocknote/core/fonts/inter.css';
 import '@blocknote/react/style.css';
 import { useEffect, useRef, useState } from 'react';
 import { BlockNoteView } from '@blocknote/mantine';
+import { updateWidget } from '@/lib/redux/features/whiteboardSlice';
+import { useDispatch } from 'react-redux';
 
 interface WidgetTextProps extends TextWidget {
   editable: boolean;
   autoFocus?: boolean;
   onHeightChange: (height: number) => void;
   isOpen?: boolean;
+  onTextChange: (text: string) => void;
 }
 
 export default function WidgetText({
@@ -19,10 +22,12 @@ export default function WidgetText({
   autoFocus,
   isOpen,
   onHeightChange,
+  onTextChange,
   ...props
 }: WidgetTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentHeight, setCurrentHeight] = useState(184);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const loadMarkdown = async () => {
@@ -97,9 +102,18 @@ export default function WidgetText({
     }
   }, [autoFocus, editable, editor]);
 
+  const handleDocumentChange = () => {
+    console.log('editor changed');
+    onTextChange(JSON.stringify(editor.document));
+  };
+
   return (
     <div ref={containerRef} style={{ position: 'relative' }}>
-      <BlockNoteView editor={editor} editable={editable} />
+      <BlockNoteView
+        editor={editor}
+        editable={editable}
+        onChange={handleDocumentChange}
+      />
     </div>
   );
 }
