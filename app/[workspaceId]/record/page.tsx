@@ -166,6 +166,7 @@ export default function RecordView() {
             <RecordCard
               key={board.id}
               cardId={board.id}
+              workspaceId={data.workspaceId}
               cardTitle={board.data.focus}
               cardConclusion={`최종 수정: ${new Date(
                 board.updatedAt

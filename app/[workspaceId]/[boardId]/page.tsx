@@ -1,35 +1,43 @@
+"use client";
+
 import dynamic from "next/dynamic";
 import { fetchBoardDetail } from "./action";
+import { useState, useEffect } from "react";
 
-// 서버 컴포넌트에서 데이터 가져오기
-async function getBoardData(boardId: string) {
-  try {
-    const data = await fetchBoardDetail(boardId);
-    return data;
-  } catch (error) {
-    console.error("보드 데이터 가져오기 실패:", error);
-    return null;
-  }
-}
-
-export default async function Board({
-  params,
-}: {
-  params: { boardId: string };
-}) {
-  // 동적 import 유지
+export default function Board({ params }: { params: { boardId: string } }) {
   const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
     ssr: false,
   });
 
-  console.log("params", params);
+  const [boardData, setBoardData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // 보드 데이터 가져오기
-  const boardData = await getBoardData(params.boardId);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await fetchBoardDetail(params.boardId);
+        setBoardData(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [params.boardId]);
+
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error) return <div>에러: {error}</div>;
 
   return (
     <div>
-      <Whiteboard />
+      <Whiteboard data={boardData} />
     </div>
   );
 }
