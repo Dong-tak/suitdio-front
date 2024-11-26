@@ -108,6 +108,44 @@ export default function Whiteboard() {
     (state: RootState) => state.arrow.selectedArrows
   );
 
+  const [activeShells, setActiveShells] = useState<{
+    editModeShells: Set<string>;
+    popupOpenShells: Set<string>;
+  }>({
+    editModeShells: new Set(),
+    popupOpenShells: new Set(),
+  });
+
+  const handleShellEditModeChange = (widgetId: string, isEdit: boolean) => {
+    setActiveShells((prev) => {
+      const newEditModeShells = new Set(prev.editModeShells);
+      if (isEdit) {
+        newEditModeShells.add(widgetId);
+      } else {
+        newEditModeShells.delete(widgetId);
+      }
+      return {
+        ...prev,
+        editModeShells: newEditModeShells,
+      };
+    });
+  };
+
+  const handleShellPopupOpenChange = (widgetId: string, isOpen: boolean) => {
+    setActiveShells((prev) => {
+      const newPopupOpenShells = new Set(prev.popupOpenShells);
+      if (isOpen) {
+        newPopupOpenShells.add(widgetId);
+      } else {
+        newPopupOpenShells.delete(widgetId);
+      }
+      return {
+        ...prev,
+        popupOpenShells: newPopupOpenShells,
+      };
+    });
+  };
+
   // 섹션 드래그 상태 추가
   const [sectionDraft, setSectionDraft] = useState<{
     x: number;
@@ -870,7 +908,11 @@ export default function Whiteboard() {
 
   // 현재 마우스 위치로 클립보드 붙여넣기
   useEffect(() => {
-    if (tool !== 'url') {
+    if (
+      tool !== 'url' &&
+      activeShells.editModeShells.size === 0 &&
+      activeShells.popupOpenShells.size === 0
+    ) {
       const handlePaste = (e: ClipboardEvent) => {
         e.preventDefault();
         const pastedText = e.clipboardData?.getData('text');
@@ -1356,6 +1398,12 @@ export default function Whiteboard() {
             resizeable={widget.innerWidget.resizeable}
             headerBar={widget.innerWidget.headerBar}
             footerBar={widget.innerWidget.footerBar}
+            onEditModeChange={(isEdit) =>
+              handleShellEditModeChange(widget.id, isEdit)
+            }
+            onPopupOpenChange={(isOpen) =>
+              handleShellPopupOpenChange(widget.id, isOpen)
+            }
           />
         ))}
         <CreateBoardDialog
