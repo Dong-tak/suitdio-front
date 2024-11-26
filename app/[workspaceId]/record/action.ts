@@ -13,17 +13,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 export const initializeWorkspaceData = async () => {
   try {
-    const response = await fetch(
-      `/api/proxy/record/workspace/0HS78Z813DVX6/boards/`,
-      {
-        method: "GET",
-      }
-    );
-
-    if (!response.ok)
-      throw new Error("워크스페이스 데이터를 가져오는데 실패했습니다");
-
-    const { boards } = await response.json();
+    const boards = await fetchBoards("0HS78Z813DVX6");
     return {
       workspaceId: boards[0].workspaceId,
       boards: boards,

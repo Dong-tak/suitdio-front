@@ -1,8 +1,8 @@
-import { configureStore } from '@reduxjs/toolkit';
-import whiteboardReducer from './features/whiteboardSlice';
-import arrowReducer from './features/arrowSlice';
-import registerReducer from './features/registerSlice';
-import { createWebSocketMiddleware } from './middleware/websocketMiddleware';
+import { configureStore } from "@reduxjs/toolkit";
+import whiteboardReducer from "./features/whiteboardSlice";
+import arrowReducer from "./features/arrowSlice";
+import registerReducer from "./features/registerSlice";
+import { createWebSocketMiddleware } from "./middleware/websocketMiddleware";
 
 export const store = configureStore({
   reducer: {

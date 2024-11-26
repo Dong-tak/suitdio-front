@@ -34,18 +34,19 @@ export default function RecordView() {
 
   useEffect(() => {
     const controller = new AbortController();
+    let mounted = true;
 
     const initializeData = async () => {
       try {
         setIsLoading(true);
         const result = await initializeWorkspaceData();
-        if (!controller.signal.aborted) {
+        if (mounted && !controller.signal.aborted) {
           setData(result);
         }
       } catch (error) {
         console.error(error);
       } finally {
-        if (!controller.signal.aborted) {
+        if (mounted && !controller.signal.aborted) {
           setIsLoading(false);
         }
       }
@@ -54,6 +55,7 @@ export default function RecordView() {
     initializeData();
 
     return () => {
+      mounted = false;
       controller.abort();
     };
   }, []);
