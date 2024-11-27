@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import { AllWidgetTypes, ShellWidgetProps, TextWidget } from '@/types/type';
 import { Middleware } from 'redux';
 import { Action } from '@reduxjs/toolkit';
 
@@ -75,6 +75,34 @@ const whiteboardSlice = createSlice({
         state.widgets[index] = action.payload;
       }
     },
+    addWidgetFrom: (
+      state,
+      action: PayloadAction<{
+        widgetId: string;
+        fromWidget: ShellWidgetProps<AllWidgetTypes>;
+      }>
+    ) => {
+      const index = state.widgets.findIndex(
+        (w) => w.id === action.payload.widgetId
+      );
+      if (index !== -1) {
+        state.widgets[index].from.push(action.payload.fromWidget);
+      }
+    },
+    addWidgetTo: (
+      state,
+      action: PayloadAction<{
+        widgetId: string;
+        toWidget: ShellWidgetProps<AllWidgetTypes>;
+      }>
+    ) => {
+      const index = state.widgets.findIndex(
+        (w) => w.id === action.payload.widgetId
+      );
+      if (index !== -1) {
+        state.widgets[index].to.push(action.payload.toWidget);
+      }
+    },
     deleteWidget: (state, action: PayloadAction<string>) => {
       state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       state.history.past.push({
@@ -142,5 +170,7 @@ export const {
   deleteSelectedWidget,
   setEditModeWidgets,
   setIsReduced,
+  addWidgetFrom,
+  addWidgetTo,
 } = whiteboardSlice.actions;
 export default whiteboardSlice.reducer;
