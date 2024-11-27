@@ -49,7 +49,7 @@ export default function RecordView() {
       }
     };
     if (data?.workspaceId) {
-      initializeData(data.workspaceId);
+      // initializeData(data.workspaceId);
     } else {
       console.log('workspaceId 없음');
       initializeData(workspaceId);
