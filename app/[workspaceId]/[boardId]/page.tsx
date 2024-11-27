@@ -1,35 +1,45 @@
-import dynamic from 'next/dynamic';
-import { fetchBoard } from './action';
+"use client";
 
-// 서버 컴포넌트에서 데이터 가져오기
-async function getBoardData(boardId: string) {
-  try {
-    const data = await fetchBoard(boardId);
-    return data;
-  } catch (error) {
-    console.error('보드 데이터 가져오기 실패:', error);
-    return null;
-  }
+import dynamic from "next/dynamic";
+
+import { useState, useEffect } from "react";
+import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
+
+interface BoardData {
+  widgets: ShellWidgetProps<AllWidgetTypes>[];
+  // relations: any[]; // 관계 데이터 타입 정의 필요
 }
 
-export default async function Board({
-  params,
-}: {
-  params: { boardId: string };
-}) {
-  // 동적 import 유지
-  const Whiteboard = dynamic(() => import('@/components/board/whiteboard'), {
+export default function Board({ params }: { params: { boardId: string } }) {
+  const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
     ssr: false,
   });
 
-  console.log('params', params);
+  const [boardData, setBoardData] = useState<BoardData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // 보드 데이터 가져오기
-  // const boardData = await getBoardData(params.boardId);
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       setIsLoading(true);
+  //       setError(null);
+  //       const data = await fetchBoardDetail(params.boardId); // 보드 데이터 가져오는 함수
+  //       setBoardData(data);
+  //     } catch (err) {
+  //       setError(
+  //         err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다"
+  //       );
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
 
-  return (
-    <div>
-      <Whiteboard />
-    </div>
-  );
+  //   fetchData();
+  // }, [params.boardId]);
+
+  if (isLoading) return <div>로딩 중...</div>;
+  if (error) return <div>에러: {error}</div>;
+  // Whiteboard 컴포넌트에 boardData 전달
+  return <div>{boardData && <Whiteboard />}</div>;
 }

@@ -22,48 +22,81 @@ import {
   fetchBoards,
   deleteBoard,
   createBoard,
+  initializeWorkspaceData,
 } from "./action";
 
 export default function RecordView() {
-  const [workspaceId, setWorkspaceId] = useState<string>("");
-  const [boards, setBoards] = useState<Board[]>([]);
+  const [data, setData] = useState<{
+    workspaceId: string;
+    boards: Board[];
+  } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const initWorkspace = async () => {
+    const controller = new AbortController();
+    let mounted = true;
+
+    const initializeData = async () => {
       try {
-        const id = await fetchWorkspace();
-        setWorkspaceId(id);
+        setIsLoading(true);
+        const result = await initializeWorkspaceData();
+        if (mounted && !controller.signal.aborted) {
+          setData(result);
+        }
       } catch (error) {
         console.error(error);
+      } finally {
+        if (mounted && !controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
     };
 
-    initWorkspace();
+    initializeData();
+
+    return () => {
+      mounted = false;
+      controller.abort();
+    };
   }, []);
-
-  useEffect(() => {
-    const loadBoards = async () => {
-      if (!workspaceId) return;
-
-      try {
-        const boardsData = await fetchBoards(workspaceId);
-        setBoards(boardsData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    loadBoards();
-  }, [workspaceId]);
 
   const handleDeleteBoard = async (boardId: string) => {
     try {
       await deleteBoard(boardId);
-      setBoards(boards.filter((board) => board.id !== boardId));
+      setData((prev) =>
+        prev
+          ? {
+              ...prev,
+              boards: prev.boards.filter((board) => board.id !== boardId),
+            }
+          : null
+      );
     } catch (error) {
       console.error(error);
     }
   };
+
+  const handleCreateBoard = async () => {
+    if (!data?.workspaceId) return;
+
+    try {
+      const newBoard = await createBoard(data.workspaceId);
+      setData((prev) =>
+        prev
+          ? {
+              ...prev,
+              boards: [...prev.boards, newBoard],
+            }
+          : null
+      );
+    } catch (error) {
+      console.error("보드 생성 중 오류 발생:", error);
+    }
+  };
+
+  if (isLoading || !data) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <SidebarInset>
@@ -117,15 +150,7 @@ export default function RecordView() {
           className="w-full pl-10 bg-slate-100 border-none"
         />
         <Button
-          onClick={async () => {
-            try {
-              const newBoard = await createBoard("0HS78Z813DVX6");
-              setBoards([...boards, newBoard]);
-              console.log("보드가 생성되었습니다:", newBoard);
-            } catch (error) {
-              console.error("보드 생성 중 오류 발생:", error);
-            }
-          }}
+          onClick={handleCreateBoard}
           className="hover:bg-orange-300 bg-orange-500"
         >
           보드 생성
@@ -137,10 +162,11 @@ export default function RecordView() {
       </div>
       <div className="flex flex-1 flex-col gap-4 px-6 mt-4">
         <div className="grid gap-4 grid-cols-auto-fit">
-          {boards.map((board) => (
+          {data.boards.map((board) => (
             <RecordCard
               key={board.id}
               cardId={board.id}
+              workspaceId={data.workspaceId}
               cardTitle={board.data.focus}
               cardConclusion={`최종 수정: ${new Date(
                 board.updatedAt
