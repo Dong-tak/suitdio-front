@@ -8,7 +8,7 @@ import {
   addMiddleWidget,
   addWidget,
 } from "@/lib/redux/features/whiteboardSlice";
-import { createBoardWithTitle } from "./action";
+import { createBoardWithTitle, createBoard } from "./action";
 
 export default function Home() {
   const [contentTitle, setContentTitle] = useState("");
@@ -20,7 +20,7 @@ export default function Home() {
     setContentTitle(e.target.value);
   };
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
     if (contentTitle.trim()) {
       const boardPosition = {
         x: window.innerWidth / 2 - 250,
@@ -28,12 +28,17 @@ export default function Home() {
       };
 
       const newBoard = createBoardWithTitle(contentTitle, [], boardPosition);
-
       dispatch(addMiddleWidget(newBoard));
 
-      localStorage.setItem("currentBoardId", "1");
+      try {
+        const createdBoard = await createBoard("0HS78Z813DVX6");
+        console.log("보드가 생성되었습니다:", createdBoard);
 
-      router.push("1/");
+        localStorage.setItem("currentBoardId", createdBoard.id);
+        router.push(`${createdBoard.id}/`);
+      } catch (error) {
+        console.error("보드 생성 중 오류 발생:", error);
+      }
     }
   };
 
