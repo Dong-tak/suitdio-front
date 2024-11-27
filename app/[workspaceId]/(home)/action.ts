@@ -1,4 +1,5 @@
 import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
+import api from "@/lib/api";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "";
 
@@ -22,10 +23,10 @@ export const createBoardWithTitle = (
     type: "shell",
     x: boardPosition.x,
     y: boardPosition.y,
-    width: 800,
-    height: 300,
+    width: 750,
+    height: 200,
     resizable: false,
-    editable: false,
+    editable: true,
     draggable: false,
     from: [],
     to: [],
@@ -33,15 +34,15 @@ export const createBoardWithTitle = (
       id: `CenterWidget-${Date.now()}`,
       type: "center",
       titleBlock: contentTitle,
-      width: 800,
-      height: 300,
+      width: 750,
+      height: 200,
       x: boardPosition.x,
       y: boardPosition.y,
       draggable: false,
-      editable: false,
+      editable: true,
       resizeable: false,
       headerBar: true,
-      footerBar: true,
+      footerBar: false,
       text: "",
     },
   };
@@ -77,3 +78,22 @@ export const createBoardWithTitle = (
 //     throw error;
 //   }
 // };
+
+export const createBoard = async (
+  workspaceId: string,
+  contentTitle: string
+) => {
+  try {
+    const response = await api.post(`/record/board/create/${workspaceId}/`, {
+      data: {
+        focus: contentTitle,
+      },
+    });
+
+    console.log("Response:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("보드 생성 중 오류 발생:", error);
+    throw error;
+  }
+};

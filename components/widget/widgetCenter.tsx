@@ -20,9 +20,10 @@ export default function WidgetCenter({
   fontSize,
   autoFocus,
   onHeightChange,
+  height,
 }: WidgetCenterProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [currentHeight, setCurrentHeight] = useState(200);
+  const [currentHeight, setCurrentHeight] = useState(height);
 
   const initialContent: PartialBlock[] | undefined = text
     ? JSON.parse(text)
@@ -62,7 +63,15 @@ export default function WidgetCenter({
   }, [autoFocus, editable, editor]);
 
   return (
-    <div ref={containerRef} style={{ zIndex: -1, position: "relative" }}>
+    <div
+      ref={containerRef}
+      style={{
+        zIndex: 1,
+        position: "relative",
+        minHeight: `${height}px`,
+        height: `${height}px`,
+      }}
+    >
       <BlockNoteView editor={editor} editable={editable} />
     </div>
   );

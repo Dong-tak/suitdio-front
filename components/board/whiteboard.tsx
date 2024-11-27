@@ -65,7 +65,6 @@ import {
 import { calculateArrowPoints, drawArrow } from "../arrow/drawArrow";
 import { useWebSocket } from "@/hooks/use-socket";
 import { getTsid } from "tsid-ts";
-import { fetchBoardDetail } from "@/app/[workspaceId]/board/[boardId]/data/action";
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -660,9 +659,14 @@ export default function Whiteboard() {
 
   const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isSelecting && selectArea) {
-      // 선택 영역 내의 위젯들 찾기
+      // 선택 영역 내의 위젯들 찾기 (center 타입 제외)
       const selectedIds = widgets
         .filter((widget) => {
+          // center 타입인 경우 선택하지 않음
+          if (widget.innerWidget.type === "center") {
+            return false;
+          }
+
           const widgetRight = widget.x + widget.width;
           const widgetBottom = widget.y + widget.height;
           const areaRight = selectArea.startX + selectArea.width;

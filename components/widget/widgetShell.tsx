@@ -557,14 +557,15 @@ export default function WidgetShell({
         return (
           <div className="flex flex-col h-full">
             {headerBar && (
-              <h2 className="text-xl font-semibold text-center">
+              <h2 className="text-xl font-semibold text-start px-4">
                 {widget.innerWidget.titleBlock}
               </h2>
             )}
-            <div className="flex-grow p-4">
+            <div className="flex-grow flex-col">
               <WidgetCenter
                 {...widget.innerWidget}
-                editable={false}
+                height={widget.height}
+                editable={widget.editable && widget.innerWidget.editable}
                 autoFocus={false}
                 onHeightChange={handleHeightChange}
                 fontSize={16}
