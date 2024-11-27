@@ -168,7 +168,7 @@ export default function RecordView() {
             setIsDialogOpen(true);
             setOpen(true);
           }}
-          className="hover:bg-orange-300 bg-orange-500"
+          className="hover:bg-gradient-to-b hover:from-gray-300 hover:to-gray-300 bg-gradient-to-b from-[#ffb300] to-[#ff8f00] shadow-lg"
         >
           보드 생성
         </Button>
