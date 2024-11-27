@@ -36,14 +36,17 @@ export default function RecordCard({
   const params = useParams();
   const workspaceId = params.workspaceId;
 
+  const handleNavigate = () => {
+    router.push(`/${workspaceId}/${cardId}`);
+  };
+
   const handleCardClick = (e: React.MouseEvent) => {
-    // 버튼들이 있는 액션 영역 클릭 시 라우팅 방지
     const actionArea = (e.target as HTMLElement).closest(".card-actions");
     if (actionArea) {
       e.stopPropagation();
       return;
     }
-    router.push(`/${workspaceId}/${cardId}`);
+    handleNavigate();
   };
 
   const handleDeleteClick = (e: React.MouseEvent) => {
@@ -74,7 +77,7 @@ export default function RecordCard({
           </Button>
           <Button
             size="icon"
-            onClick={(e) => e.stopPropagation()}
+            onClick={handleNavigate}
             className="bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-11 h-11"
           >
             <Play className="w-6 h-6" />

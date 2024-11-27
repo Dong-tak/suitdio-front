@@ -1,10 +1,35 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function handler(
+export async function GET(
   req: NextRequest,
   { params }: { params: { path: string[] } }
 ) {
+  return handleRequest(req, params);
+}
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { path: string[] } }
+) {
+  return handleRequest(req, params);
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { path: string[] } }
+) {
+  return handleRequest(req, params);
+}
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { path: string[] } }
+) {
+  return handleRequest(req, params);
+}
+
+async function handleRequest(req: NextRequest, params: { path: string[] }) {
   try {
     const cookieStore = cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
@@ -110,5 +135,3 @@ export async function handler(
     );
   }
 }
-
-export { handler as GET, handler as POST, handler as PUT, handler as DELETE };

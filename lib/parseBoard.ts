@@ -1,51 +1,118 @@
-interface Widget {
-  id: string;
-  type: string;
-  position: {
-    x: number;
-    y: number;
-  };
-  size?: {
-    width: number;
-    height: number;
-  };
-  content?: any;
-  style?: any;
-}
+// import { AllWidgetTypes, ShellWidgetProps, TextWidget } from "@/types/type";
 
-interface BoardData {
-  id: string;
-  data: {
-    widgets?: Record<string, any>;
-    // 다른 보드 관련 데이터들...
-  };
-}
+// interface Position {
+//   x: number;
+//   y: number;
+//   z: number;
+// }
 
-export function parseData(boardData: BoardData): Widget[] {
-  if (!boardData?.data?.widgets) {
-    return [];
-  }
+// interface Size {
+//   width: number;
+//   height: number;
+// }
 
-  try {
-    // 위젯 데이터를 배열로 변환
-    return Object.entries(boardData.data.widgets).map(([id, widget]) => {
-      return {
-        id,
-        type: widget.type || "default",
-        position: {
-          x: widget.position?.x || 0,
-          y: widget.position?.y || 0,
-        },
-        size: widget.size && {
-          width: widget.size.width || 100,
-          height: widget.size.height || 100,
-        },
-        content: widget.content,
-        style: widget.style,
-      };
-    });
-  } catch (error) {
-    console.error("보드 데이터 파싱 중 오류:", error);
-    return [];
-  }
-}
+// interface WidgetInstance {
+//   id: string;
+//   boardId: string;
+//   type: string;
+//   data: {
+//     content: string;
+//     [key: string]: any;
+//   };
+//   position: Position;
+//   size: Size;
+//   state: string;
+//   isDeleted: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+// interface widgetRelations {
+//   id: string;
+//   widget_from: string;
+//   to_instances: string[];
+//   relation: string;
+//   property: Record<string, any>;
+//   is_deleted: boolean;
+//   created_at: string;
+//   updated_at: string;
+// }
+
+// interface BoardResponse {
+//   board: {
+//     id: string;
+//     isDeleted: boolean;
+//     createdAt: string;
+//     updatedAt: string;
+//     workspaceId: string;
+//     data: {
+//       focus: string;
+//     };
+//   };
+//   widgetInstances: WidgetInstance[];
+//   widgetRelations: Array<{
+//     id: string;
+//     widget_from: string;
+//     to_instances: string[];
+//     relation: string;
+//     property: Record<string, any>;
+//     is_deleted: boolean;
+//     created_at: string;
+//     updated_at: string;
+//   }>;
+// }
+
+// export function parseWidgetInstance(
+//   instance: WidgetInstance
+// ): ShellWidgetProps<AllWidgetTypes> {
+//   let innerWidget: AllWidgetTypes;
+
+//   switch (instance.type) {
+//     case "text":
+//       innerWidget = {
+//         id: instance.id,
+//         type: "text",
+//         text: instance.data.content,
+//         fontSize: 16, // 기본값 설정
+//         x: instance.position.x,
+//         y: instance.position.y,
+//         width: instance.size.width,
+//         height: instance.size.height,
+//         draggable: true,
+//         editable: true,
+//         resizeable: true,
+//         headerBar: true,
+//         footerBar: false,
+//       } as TextWidget;
+//       break;
+//     // 다른 위젯 타입들에 대한 케이스 추가
+//     default:
+//       throw new Error(`Unsupported widget type: ${instance.type}`);
+//   }
+
+//   return {
+//     id: instance.id,
+//     type: "shell",
+//     x: instance.position.x,
+//     y: instance.position.y,
+//     width: instance.size.width,
+//     height: instance.size.height,
+//     resizable: true,
+//     editable: true,
+//     draggable: true,
+//     innerWidget,
+//   };
+// }
+
+// export function parseBoardData(response: BoardResponse): {
+//   widgets: ShellWidgetProps<AllWidgetTypes>[];
+//   relations: any[]; // 관계 데이터 타입 정의 필요
+// } {
+//   const widgets = response.widgetInstances
+//     .filter((instance) => !instance.isDeleted)
+//     .map((instance) => parseWidgetInstance(instance));
+
+//   return {
+//     widgets,
+//     relations: response.widgetRelations,
+//   };
+// }

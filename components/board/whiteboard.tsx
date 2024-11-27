@@ -70,7 +70,7 @@ export default function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const widgets = useSelector(
     (state: RootState) => state.whiteboard.widgets
-  ) as ShellWidgetProps<AllWidgetTypes>[widgets];
+  ) as ShellWidgetProps<AllWidgetTypes>[];
 
   const dispatch = useDispatch();
   const [scale, setScale] = useState(1);
