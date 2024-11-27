@@ -18,14 +18,28 @@ import { useEffect, useState } from "react";
 import { Board } from "./action";
 import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
 import { useParams } from "next/navigation";
+import CreateBoardDialog from "@/components/home/creatboard";
+
 export default function RecordView() {
   const [data, setData] = useState<{
     workspaceId: string;
     boards: Board[];
   } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [contentTitle, setContentTitle] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const workspaceId = params.workspaceId as string;
+  const [open, setOpen] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentTitle(e.target.value);
+  };
+
+  const onOpenChange = (open: boolean) => {
+    setOpen(open);
+  };
+
   useEffect(() => {
     const controller = new AbortController();
     let mounted = true;
@@ -55,6 +69,7 @@ export default function RecordView() {
       controller.abort();
     };
   }, []);
+
   const handleDeleteBoard = async (boardId: string) => {
     try {
       await deleteBoard(boardId);
@@ -73,7 +88,9 @@ export default function RecordView() {
   const handleCreateBoard = async () => {
     if (!data?.workspaceId) return;
     try {
-      const newBoard = await createBoard(data.workspaceId);
+      const newBoard = await createBoard(data.workspaceId, contentTitle);
+      setContentTitle("");
+      setIsDialogOpen(false);
       setData((prev) =>
         prev
           ? {
@@ -147,7 +164,10 @@ export default function RecordView() {
           className="w-full pl-10 bg-slate-100 border-none"
         />
         <Button
-          onClick={handleCreateBoard}
+          onClick={() => {
+            setIsDialogOpen(true);
+            setOpen(true);
+          }}
           className="hover:bg-orange-300 bg-orange-500"
         >
           보드 생성
@@ -180,6 +200,13 @@ export default function RecordView() {
         )}
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted md:min-h-min" />
       </div>
+      <CreateBoardDialog
+        contentTitle={contentTitle}
+        handleInputChange={handleInputChange}
+        handleSaveClick={handleCreateBoard}
+        open={open}
+        onOpenChange={onOpenChange}
+      />
     </SidebarInset>
   );
 }

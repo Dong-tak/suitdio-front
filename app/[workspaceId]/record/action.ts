@@ -51,11 +51,11 @@ export const deleteBoard = async (boardId: string) => {
     throw error;
   }
 };
-export const createBoard = async (workspaceId: string) => {
+export const createBoard = async (workspaceId: string, focus: string) => {
   try {
     const response = await api.post(`/record/board/create/${workspaceId}/`, {
       data: {
-        focus: "hi",
+        focus: focus,
       },
     });
     return response.data;
