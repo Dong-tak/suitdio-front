@@ -95,8 +95,12 @@ export default function RecordView() {
     }
   };
 
-  if (isLoading || !data) {
+  if (isLoading) {
     return <div>로딩 중...</div>;
+  }
+
+  if (!data) {
+    return <div>데이터를 불러오는데 실패했습니다.</div>;
   }
 
   return (
@@ -162,20 +166,26 @@ export default function RecordView() {
         <FilterMenu label="필터" items={["수정일", "생성일", "버전"]} />
       </div>
       <div className="flex flex-1 flex-col gap-4 px-6 mt-4">
-        <div className="grid gap-4 grid-cols-auto-fit">
-          {data.boards.map((board) => (
-            <RecordCard
-              key={board.id}
-              cardId={board.id}
-              workspaceId={data.workspaceId}
-              cardTitle={board.data.focus}
-              cardConclusion={`최종 수정: ${new Date(
-                board.updatedAt
-              ).toLocaleDateString("ko-KR")}`}
-              onDelete={handleDeleteBoard}
-            />
-          ))}
-        </div>
+        {data.boards.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            생성된 보드가 없습니다. 새 보드를 생성해주세요.
+          </div>
+        ) : (
+          <div className="grid gap-4 grid-cols-auto-fit">
+            {data.boards.map((board) => (
+              <RecordCard
+                key={board.id}
+                cardId={board.id}
+                workspaceId={data.workspaceId}
+                cardTitle={board.data.focus}
+                cardConclusion={`최종 수정: ${new Date(
+                  board.updatedAt
+                ).toLocaleDateString("ko-KR")}`}
+                onDelete={handleDeleteBoard}
+              />
+            ))}
+          </div>
+        )}
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted md:min-h-min" />
       </div>
     </SidebarInset>

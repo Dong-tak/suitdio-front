@@ -16,7 +16,7 @@ export const initializeWorkspaceData = async (workspaceId: string) => {
     const boards = await fetchBoards(workspaceId);
     console.log("boards:", boards);
     return {
-      workspaceId: boards[0].workspaceId,
+      workspaceId: workspaceId,
       boards: boards,
     };
   } catch (error) {
