@@ -18,6 +18,7 @@ import { ArrowLeft, ArrowRight, Ellipsis, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Board } from './action';
 import { deleteBoard, createBoard, initializeWorkspaceData } from './action';
+import { useParams } from 'next/navigation';
 
 export default function RecordView() {
   const [data, setData] = useState<{
@@ -25,6 +26,8 @@ export default function RecordView() {
     boards: Board[];
   } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const params = useParams();
+  const workspaceId = params.workspaceId as string;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -47,6 +50,9 @@ export default function RecordView() {
     };
     if (data?.workspaceId) {
       initializeData(data.workspaceId);
+    } else {
+      console.log('workspaceId 없음');
+      initializeData(workspaceId);
     }
 
     return () => {
