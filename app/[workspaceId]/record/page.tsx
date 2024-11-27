@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import { Board } from "./action";
 import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
 import { useParams } from "next/navigation";
+
+import { Spinner } from "@/components/ui/spinner";
 export default function RecordView() {
   const [data, setData] = useState<{
     workspaceId: string;
@@ -88,7 +90,12 @@ export default function RecordView() {
   };
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner size={32} />
+        <span className="ml-2">Loading...</span>
+      </div>
+    );
   }
 
   if (!data) {
@@ -150,7 +157,7 @@ export default function RecordView() {
           onClick={handleCreateBoard}
           className="hover:bg-orange-300 bg-orange-500"
         >
-          보드 생성
+          + Create new
         </Button>
       </div>
       <div className="flex items-center gap-2 px-6 justify-start mt-2">

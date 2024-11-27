@@ -37,7 +37,7 @@ export default function RecordCard({
   const workspaceId = params.workspaceId;
 
   const handleNavigate = () => {
-    router.push(`/${workspaceId}/${cardId}`);
+    router.push(`/${workspaceId}/board/${cardId}`);
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
