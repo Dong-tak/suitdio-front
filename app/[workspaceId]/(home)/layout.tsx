@@ -1,12 +1,10 @@
-import "../../globals.css";
+import '../../globals.css';
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/sidebar/app-sidebar";
-
-
+} from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/sidebar/app-sidebar';
 
 export default function RootLayout({
   children,
