@@ -1,6 +1,6 @@
 import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "";
 
 interface BoardPosition {
   x: number;
@@ -49,31 +49,31 @@ export const createBoardWithTitle = (
   return newBoard;
 };
 
-export const createBoard = async (workspaceId: string) => {
-  try {
-    const response = await fetch(
-      `${API_BASE_URL}record/board/create/${workspaceId}/`,
-      {
-        method: "POST",
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: {
-            focus: "new board",
-          },
-        }),
-      }
-    );
+// export const createBoard = async (workspaceId: string) => {
+//   try {
+//     const response = await fetch(
+//       `${API_BASE_URL}record/board/create/${workspaceId}/`,
+//       {
+//         method: "POST",
+//         headers: {
+//           ...headers,
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           data: {
+//             focus: "new board",
+//           },
+//         }),
+//       }
+//     );
 
-    if (!response.ok) {
-      throw new Error("보드 생성에 실패했습니다");
-    }
+//     if (!response.ok) {
+//       throw new Error("보드 생성에 실패했습니다");
+//     }
 
-    return await response.json();
-  } catch (error) {
-    console.error("보드 생성 중 오류 발생:", error);
-    throw error;
-  }
-};
+//     return await response.json();
+//   } catch (error) {
+//     console.error("보드 생성 중 오류 발생:", error);
+//     throw error;
+//   }
+// };

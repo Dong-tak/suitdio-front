@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 
-import { useState, useEffect } from "react";
-import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
+import { useState, useEffect } from 'react';
+import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
 
 interface BoardData {
   widgets: ShellWidgetProps<AllWidgetTypes>[];
@@ -11,7 +11,7 @@ interface BoardData {
 }
 
 export default function Board({ params }: { params: { boardId: string } }) {
-  const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
+  const Whiteboard = dynamic(() => import('@/components/board/whiteboard'), {
     ssr: false,
   });
 
@@ -38,8 +38,12 @@ export default function Board({ params }: { params: { boardId: string } }) {
   //   fetchData();
   // }, [params.boardId]);
 
-  if (isLoading) return <div>로딩 중...</div>;
-  if (error) return <div>에러: {error}</div>;
+  // if (isLoading) return <div>로딩 중...</div>;
+  // if (error) return <div>에러: {error}</div>;
   // Whiteboard 컴포넌트에 boardData 전달
-  return <div>{boardData && <Whiteboard />}</div>;
+  return (
+    <div>
+      <Whiteboard />
+    </div>
+  );
 }

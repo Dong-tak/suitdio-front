@@ -1,5 +1,4 @@
 "use client";
-
 import FilterMenu from "@/components/record/filter-menu";
 import RecordCard from "@/components/record/record-card";
 import {
@@ -19,7 +18,6 @@ import { useEffect, useState } from "react";
 import { Board } from "./action";
 import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
 import { useParams } from "next/navigation";
-
 export default function RecordView() {
   const [data, setData] = useState<{
     workspaceId: string;
@@ -28,11 +26,9 @@ export default function RecordView() {
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const workspaceId = params.workspaceId as string;
-
   useEffect(() => {
     const controller = new AbortController();
     let mounted = true;
-
     const initializeData = async (workspaceId: string) => {
       try {
         setIsLoading(true);
@@ -54,13 +50,11 @@ export default function RecordView() {
     } else {
       console.log("workspaceId 없음");
     }
-
     return () => {
       mounted = false;
       controller.abort();
     };
   }, []);
-
   const handleDeleteBoard = async (boardId: string) => {
     try {
       await deleteBoard(boardId);
@@ -76,10 +70,8 @@ export default function RecordView() {
       console.error(error);
     }
   };
-
   const handleCreateBoard = async () => {
     if (!data?.workspaceId) return;
-
     try {
       const newBoard = await createBoard(data.workspaceId);
       setData((prev) =>

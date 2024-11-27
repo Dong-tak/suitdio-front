@@ -13,7 +13,7 @@ const PUBLIC_PATHS = [
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // 2. 공용 경로에 대한 접근 허용
+  // 2. 공용 경로에 대한 접근 허용 ㄴ
   if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();
   }
@@ -24,6 +24,7 @@ export async function middleware(request: NextRequest) {
     const refreshToken = request.cookies.get("refreshToken")?.value;
 
     if (!accessToken || !refreshToken) {
+      console.log("토큰 없어서 안됨");
       return NextResponse.redirect(new URL("/login", request.url));
     }
 

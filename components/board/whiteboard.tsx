@@ -26,6 +26,8 @@ import {
   addWidgetFrom,
   addWidgetTo,
   updateWidget,
+  redo,
+  undo,
 } from '@/lib/redux/features/whiteboardSlice';
 import {
   ShellWidgetProps,
@@ -116,6 +118,8 @@ export default function Whiteboard() {
     editModeShells: new Set(),
     popupOpenShells: new Set(),
   });
+
+  const history = useSelector((state: RootState) => state.whiteboard.history);
 
   const handleShellEditModeChange = (widgetId: string, isEdit: boolean) => {
     setActiveShells((prev) => {
@@ -447,7 +451,7 @@ export default function Whiteboard() {
       x: Math.round(centerX / baseSpacing) * baseSpacing,
       y: Math.round(centerY / baseSpacing) * baseSpacing,
       width: 472,
-      height: 184,
+      height: 136,
       resizable: true,
       editable: true,
       draggable: true,
@@ -1007,6 +1011,31 @@ export default function Whiteboard() {
     };
     dispatch(addWidget(newWidget));
   };
+
+  useEffect(() => {
+    console.log('history:', history);
+  }, [history]);
+
+  // 키보드 이벤트 핸들러 추가
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey) {
+        // Mac의 Cmd 키와 Windows의 Ctrl 키 모두 지원
+        if (e.shiftKey && e.key.toLowerCase() === 'z') {
+          // Cmd/Ctrl + Shift + Z: Redo
+          e.preventDefault();
+          dispatch(redo());
+        } else if (e.key.toLowerCase() === 'z') {
+          // Cmd/Ctrl + Z: Undo
+          e.preventDefault();
+          dispatch(undo());
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [dispatch]);
 
   const handleArrowMode = () => {
     setTool("arrow");

@@ -10,6 +10,9 @@ import {
 } from "@/lib/redux/features/whiteboardSlice";
 import { createBoardWithTitle } from "./action";
 import { createBoard } from "../record/action";
+
+import { useParams } from "next/navigation";
+
 export default function Home() {
   const [contentTitle, setContentTitle] = useState("");
   const [open, setOpen] = useState(false);
