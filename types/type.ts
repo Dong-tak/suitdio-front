@@ -7,59 +7,68 @@ export type AllWidgetTypes =
   | PDFEmbedWidget
   | IframeEmbedWidget
   | SectionWidget
-  | BoardWidget;
+  | BoardWidget
+  | CenterWidget;
 
 // 새로운 타입을 추가할 때 여기에 | NewWidgetType 형태로 추가
 
 export interface WidgetProps {
   id: string;
   type:
-    | 'text'
-    | 'image'
-    | 'pdf'
-    | 'url'
-    | 'boardLink'
-    | 'section'
-    | 'mindmap'
-    | 'shell'
-    | 'brainStorm'
-    | 'search'
-    | 'template'
-    | 'upload'
-    | 'aiSearch'
-    | 'refresh'
-    | 'board';
+    | "text"
+    | "image"
+    | "pdf"
+    | "url"
+    | "boardLink"
+    | "section"
+    | "mindmap"
+    | "shell"
+    | "brainStorm"
+    | "search"
+    | "template"
+    | "upload"
+    | "aiSearch"
+    | "refresh"
+    | "board"
+    | "center";
   isSelected?: boolean;
 }
 
 // 위젯 타입들을 유니온 타입으로 정의
-export type NodeWidgetType = 'text' | 'image' | 'pdf' | 'url' | 'boardLink';
-export type AreaWidgetType = 'section' | 'mindmap';
+export type NodeWidgetType =
+  | "text"
+  | "image"
+  | "pdf"
+  | "url"
+  | "boardLink"
+  | "center";
+export type AreaWidgetType = "section" | "mindmap";
 export type AllWidgetType =
   | NodeWidgetType
   | AreaWidgetType
-  | 'shell'
-  | 'brainStorm'
-  | 'search'
-  | 'template'
-  | 'upload'
-  | 'aiSearch'
-  | 'refresh'
-  | 'arrow';
+  | "shell"
+  | "brainStorm"
+  | "search"
+  | "template"
+  | "upload"
+  | "aiSearch"
+  | "refresh"
+  | "arrow";
 
 // 타입 검사를 위한 상수 배열 (런타임에서 사용)
 export const NODE_WIDGET_TYPES = [
-  'text',
-  'image',
-  'pdf',
-  'url',
-  'boardLink',
+  "text",
+  "image",
+  "pdf",
+  "url",
+  "boardLink",
+  "center",
 ] as const;
-export const AREA_WIDGET_TYPES = ['section', 'mindmap'] as const;
+export const AREA_WIDGET_TYPES = ["section", "mindmap"] as const;
 
 export interface ShellWidgetProps<T extends AllWidgetTypes>
   extends WidgetProps {
-  type: 'shell';
+  type: "shell";
   x: number;
   y: number;
   width: number;
@@ -76,7 +85,7 @@ export interface ShellWidgetProps<T extends AllWidgetTypes>
 }
 
 export interface TextWidget extends WidgetProps {
-  type: 'text';
+  type: "text";
   x?: number; // 추가
   y?: number; // 추가
   text?: string;
@@ -94,9 +103,9 @@ export interface TextWidget extends WidgetProps {
 }
 
 export enum RelationshipType {
-  Unidirectional = 'unidirectional', // 단방향 관계
-  Bidirectional = 'bidirectional', // 양방향 관계
-  Equal = 'equal', // 동등관계
+  Unidirectional = "unidirectional", // 단방향 관계
+  Bidirectional = "bidirectional", // 양방향 관계
+  Equal = "equal", // 동등관계
 }
 
 export interface ArrowHeadState {
@@ -105,7 +114,7 @@ export interface ArrowHeadState {
 }
 
 export interface SectionWidget extends WidgetProps {
-  type: 'section';
+  type: "section";
   x: number;
   y: number;
   width: number;
@@ -121,7 +130,7 @@ export interface SectionWidget extends WidgetProps {
 }
 
 export interface ImageEmbedWidget extends WidgetProps {
-  type: 'image';
+  type: "image";
   src: string;
   name: string;
   x: number;
@@ -136,7 +145,7 @@ export interface ImageEmbedWidget extends WidgetProps {
   isReduced?: boolean;
 }
 export interface PDFEmbedWidget extends WidgetProps {
-  type: 'pdf';
+  type: "pdf";
   x: number;
   y: number;
   width?: number;
@@ -152,7 +161,7 @@ export interface PDFEmbedWidget extends WidgetProps {
 }
 
 export interface IframeEmbedWidget extends WidgetProps {
-  type: 'url';
+  type: "url";
   x?: number;
   y?: number;
   width?: number;
@@ -167,7 +176,23 @@ export interface IframeEmbedWidget extends WidgetProps {
 }
 
 export interface BoardWidget extends WidgetProps {
-  type: 'boardLink';
+  type: "boardLink";
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  titleBlock: string;
+  draggable: boolean;
+  editable: boolean;
+  resizeable: boolean;
+  headerBar: boolean;
+  footerBar: boolean;
+  text: string;
+  isReduced?: boolean;
+}
+
+export interface CenterWidget extends WidgetProps {
+  type: "center";
   x: number;
   y: number;
   width: number;
@@ -210,36 +235,36 @@ export interface WhiteboardAction {
 // }
 
 export function isText(widget: WidgetProps): widget is TextWidget {
-  return widget.type === 'text';
+  return widget.type === "text";
 }
 
 export function isSection(widget: WidgetProps): widget is SectionWidget {
-  return widget.type === 'section';
+  return widget.type === "section";
 }
 
 export function isImageEmbed(widget: WidgetProps): widget is ImageEmbedWidget {
-  return widget.type === 'image';
+  return widget.type === "image";
 }
 
 export const isPDFEmbed = (widget: WidgetProps): widget is PDFEmbedWidget => {
-  return widget.type === 'pdf';
+  return widget.type === "pdf";
 };
 
 export const isIframeEmbed = (
   widget: WidgetProps
 ): widget is IframeEmbedWidget => {
-  return widget.type === 'url';
+  return widget.type === "url";
 };
 
 export const isBoard = (widget: WidgetProps): widget is BoardWidget => {
-  return widget.type === 'boardLink';
+  return widget.type === "boardLink";
 };
 
 export function isWhiteboardAction(
   action: unknown
 ): action is WhiteboardAction {
-  return typeof action === 'object' && action !== null && 'type' in action;
+  return typeof action === "object" && action !== null && "type" in action;
 }
 
 // 호버 상태를 위한 타입 정의
-export type EdgePosition = 'n' | 's' | 'w' | 'e' | null;
+export type EdgePosition = "n" | "s" | "w" | "e" | null;
