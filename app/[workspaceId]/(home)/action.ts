@@ -1,6 +1,6 @@
 import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "";
 
 interface BoardPosition {
   x: number;
