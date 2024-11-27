@@ -1,5 +1,4 @@
 "use client";
-
 import FilterMenu from "@/components/record/filter-menu";
 import RecordCard from "@/components/record/record-card";
 import {
@@ -19,7 +18,6 @@ import { useEffect, useState } from "react";
 import { Board } from "./action";
 import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
 import { useParams } from "next/navigation";
-
 export default function RecordView() {
   const [data, setData] = useState<{
     workspaceId: string;
@@ -28,11 +26,9 @@ export default function RecordView() {
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const workspaceId = params.workspaceId as string;
-
   useEffect(() => {
     const controller = new AbortController();
     let mounted = true;
-
     const initializeData = async (workspaceId: string) => {
       try {
         setIsLoading(true);
@@ -54,13 +50,11 @@ export default function RecordView() {
     } else {
       console.log("workspaceId 없음");
     }
-
     return () => {
       mounted = false;
       controller.abort();
     };
   }, []);
-
   const handleDeleteBoard = async (boardId: string) => {
     try {
       await deleteBoard(boardId);
@@ -76,10 +70,8 @@ export default function RecordView() {
       console.error(error);
     }
   };
-
   const handleCreateBoard = async () => {
     if (!data?.workspaceId) return;
-
     try {
       const newBoard = await createBoard(data.workspaceId);
       setData((prev) =>
@@ -94,11 +86,12 @@ export default function RecordView() {
       console.error("보드 생성 중 오류 발생:", error);
     }
   };
-
-  if (isLoading || !data) {
+  if (isLoading) {
     return <div>로딩 중...</div>;
   }
-
+  if (!data) {
+    return <div>데이터를 불러오는데 실패했습니다.</div>;
+  }
   return (
     <SidebarInset>
       <header className="flex h-11 shrink-0 items-center justify-between px-2">
@@ -162,20 +155,26 @@ export default function RecordView() {
         <FilterMenu label="필터" items={["수정일", "생성일", "버전"]} />
       </div>
       <div className="flex flex-1 flex-col gap-4 px-6 mt-4">
-        <div className="grid gap-4 grid-cols-auto-fit">
-          {data.boards.map((board) => (
-            <RecordCard
-              key={board.id}
-              cardId={board.id}
-              workspaceId={data.workspaceId}
-              cardTitle={board.data.focus}
-              cardConclusion={`최종 수정: ${new Date(
-                board.updatedAt
-              ).toLocaleDateString("ko-KR")}`}
-              onDelete={handleDeleteBoard}
-            />
-          ))}
-        </div>
+        {data.boards.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            생성된 보드가 없습니다. 새 보드를 생성해주세요.
+          </div>
+        ) : (
+          <div className="grid gap-4 grid-cols-auto-fit">
+            {data.boards.map((board) => (
+              <RecordCard
+                key={board.id}
+                cardId={board.id}
+                workspaceId={data.workspaceId}
+                cardTitle={board.data.focus}
+                cardConclusion={`최종 수정: ${new Date(
+                  board.updatedAt
+                ).toLocaleDateString("ko-KR")}`}
+                onDelete={handleDeleteBoard}
+              />
+            ))}
+          </div>
+        )}
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted md:min-h-min" />
       </div>
     </SidebarInset>

@@ -1,5 +1,4 @@
 import api from "@/lib/api";
-
 export interface Board {
   id: string;
   isDeleted: boolean;
@@ -10,13 +9,12 @@ export interface Board {
     focus: string;
   };
 }
-
 export const initializeWorkspaceData = async (workspaceId: string) => {
   try {
     const boards = await fetchBoards(workspaceId);
     console.log("boards:", boards);
     return {
-      workspaceId: boards[0].workspaceId,
+      workspaceId: workspaceId,
       boards: boards,
     };
   } catch (error) {
@@ -24,7 +22,6 @@ export const initializeWorkspaceData = async (workspaceId: string) => {
     throw error;
   }
 };
-
 // export const fetchWorkspace = async () => {
 //   try {
 //     const response = await api.get(`/record/workspace/0HS78Z813DVX6/boards/`);
@@ -35,7 +32,6 @@ export const initializeWorkspaceData = async (workspaceId: string) => {
 //     throw error;
 //   }
 // };
-
 export const fetchBoards = async (workspaceId: string) => {
   try {
     const response = await api.get(`/record/workspace/${workspaceId}/boards/`);
@@ -46,7 +42,6 @@ export const fetchBoards = async (workspaceId: string) => {
     throw error;
   }
 };
-
 export const deleteBoard = async (boardId: string) => {
   try {
     await api.delete(`/record/board/${boardId}/`);
@@ -56,7 +51,6 @@ export const deleteBoard = async (boardId: string) => {
     throw error;
   }
 };
-
 export const createBoard = async (workspaceId: string) => {
   try {
     const response = await api.post(`/record/board/create/${workspaceId}/`, {
