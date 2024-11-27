@@ -28,7 +28,7 @@ import {
   updateWidget,
   redo,
   undo,
-} from '@/lib/redux/features/whiteboardSlice';
+} from "@/lib/redux/features/whiteboardSlice";
 import {
   ShellWidgetProps,
   AllWidgetTypes,
@@ -60,11 +60,10 @@ import {
   setArrows,
   setIsArrowMode,
   setSelectedArrows,
-} from '@/lib/redux/features/arrowSlice';
-import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
-import { useWebSocket } from '@/hooks/use-socket';
-import { getTsid } from 'tsid-ts';
-
+} from "@/lib/redux/features/arrowSlice";
+import { calculateArrowPoints, drawArrow } from "../arrow/drawArrow";
+import { useWebSocket } from "@/hooks/use-socket";
+import { getTsid } from "tsid-ts";
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -661,9 +660,14 @@ export default function Whiteboard() {
 
   const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isSelecting && selectArea) {
-      // 선택 영역 내의 위젯들 찾기
+      // 선택 영역 내의 위젯들 찾기 (center 타입 제외)
       const selectedIds = widgets
         .filter((widget) => {
+          // center 타입인 경우 선택하지 않음
+          if (widget.innerWidget.type === "center") {
+            return false;
+          }
+
           const widgetRight = widget.x + widget.width;
           const widgetBottom = widget.y + widget.height;
           const areaRight = selectArea.startX + selectArea.width;
@@ -914,11 +918,10 @@ export default function Whiteboard() {
   // 현재 마우스 위치로 클립보드 붙여넣기
   useEffect(() => {
     if (
-      tool !== 'url' &&
+      tool !== "url" &&
       activeShells.editModeShells.size === 0 &&
       activeShells.popupOpenShells.size === 0
     ) {
-
       const handlePaste = (e: ClipboardEvent) => {
         e.preventDefault();
         const pastedText = e.clipboardData?.getData("text");
@@ -1013,7 +1016,7 @@ export default function Whiteboard() {
   };
 
   useEffect(() => {
-    console.log('history:', history);
+    console.log("history:", history);
   }, [history]);
 
   // 키보드 이벤트 핸들러 추가
@@ -1021,11 +1024,11 @@ export default function Whiteboard() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey) {
         // Mac의 Cmd 키와 Windows의 Ctrl 키 모두 지원
-        if (e.shiftKey && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey && e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Shift + Z: Redo
           e.preventDefault();
           dispatch(redo());
-        } else if (e.key.toLowerCase() === 'z') {
+        } else if (e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Z: Undo
           e.preventDefault();
           dispatch(undo());
@@ -1033,8 +1036,8 @@ export default function Whiteboard() {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [dispatch]);
 
   const handleArrowMode = () => {
@@ -1092,7 +1095,7 @@ export default function Whiteboard() {
         ...arrowPoints,
       };
 
-      console.log('newArrow:', newArrow);
+      console.log("newArrow:", newArrow);
 
       // Redux store에 화살표 추가
       dispatch(addArrow(newArrow));
@@ -1120,7 +1123,7 @@ export default function Whiteboard() {
               ...fromWidget,
               to: fromWidget.to.filter((to) => to.id !== arrow.toId),
             };
-            console.log('updatedFromWidget:', updatedFromWidget);
+            console.log("updatedFromWidget:", updatedFromWidget);
             dispatch(updateWidget(updatedFromWidget));
           }
 
@@ -1131,7 +1134,7 @@ export default function Whiteboard() {
               ...toWidget,
               from: toWidget.from.filter((from) => from.id !== arrow.fromId),
             };
-            console.log('updatedToWidget:', updatedToWidget);
+            console.log("updatedToWidget:", updatedToWidget);
             dispatch(updateWidget(updatedToWidget));
           }
         });
@@ -1165,10 +1168,10 @@ export default function Whiteboard() {
 
       // 복이 제거된 화살표 배열이 기존과 다르다면 업데이트
       if (uniqueArrows.length !== arrows.length) {
-        console.log('중복 화살표가 제거됨:', uniqueArrows);
+        console.log("중복 화살표가 제거됨:", uniqueArrows);
         dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
       }
-      console.log('Updated arrows:', arrows);
+      console.log("Updated arrows:", arrows);
     }
   }, [arrows]);
 
