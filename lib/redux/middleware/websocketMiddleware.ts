@@ -2,6 +2,7 @@
 
 import { isWhiteboardAction } from '@/types/type';
 import { Middleware } from '@reduxjs/toolkit';
+import { update } from 'lodash';
 import debounce from 'lodash/debounce';
 
 // 디바운스된 소켓 전송 함수 수정
@@ -293,6 +294,7 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
         };
         console.log('WebSocket deleteWidget message:', deleteMessage);
         socket.send(JSON.stringify(deleteMessage));
+
         break;
     }
 

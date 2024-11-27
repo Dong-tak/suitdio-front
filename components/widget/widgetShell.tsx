@@ -16,6 +16,8 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   addSelectedWidget,
+  addWidgetFrom,
+  addWidgetTo,
   deleteSelectedWidget,
   deleteWidget,
   setEditModeWidgets,
@@ -77,6 +79,8 @@ interface WidgetShellProps {
   footerBar: boolean;
   fill?: string;
   memberIds?: string[];
+  onEditModeChange?: (isEditMode: boolean) => void;
+  onPopupOpenChange?: (isPopupOpen: boolean) => void;
 }
 
 //resize 핸들 스타일 함수
@@ -177,6 +181,8 @@ export default function WidgetShell({
   footerBar,
   fill,
   memberIds,
+  onEditModeChange,
+  onPopupOpenChange,
 }: WidgetShellProps) {
   const dispatch = useDispatch();
   const [isDragging, setIsDragging] = useState(false);
@@ -217,6 +223,14 @@ export default function WidgetShell({
   useEffect(() => {
     setIsEditMode(editModeWidgets === widget.id);
   }, [editModeWidgets]);
+
+  useEffect(() => {
+    onEditModeChange?.(isEditMode);
+  }, [isEditMode]);
+
+  useEffect(() => {
+    onPopupOpenChange?.(isPopupOpen);
+  }, [isPopupOpen]);
 
   useEffect(() => {
     if (isSelected) {
@@ -362,6 +376,17 @@ export default function WidgetShell({
     }
   };
 
+  const handleTextChange = (text: string) => {
+    if (widget.innerWidget.type === 'text') {
+      dispatch(
+        updateWidget({
+          ...widget,
+          innerWidget: { ...widget.innerWidget, text },
+        })
+      );
+    }
+  };
+
   // arrow 노드 스타일 함수 수정
   const setArrowNodeStyle = (position: string): React.CSSProperties => {
     const baseStyle: React.CSSProperties = {
@@ -441,6 +466,7 @@ export default function WidgetShell({
             editable={editable ? isEditMode : false}
             autoFocus={isEditMode}
             onHeightChange={handleHeightChange}
+            onTextChange={handleTextChange}
           />
         );
       case "section":
@@ -756,6 +782,7 @@ export default function WidgetShell({
   };
 
   const handleWidgetClick = (e: React.MouseEvent) => {
+    console.log('widgetFrom:', widget.from, 'widgetTo:', widget.to);
     if (isArrowMode) {
       dispatch(addLinkWidgets(widget));
     }
@@ -918,9 +945,9 @@ export default function WidgetShell({
               ? "2px solid #FFB300" //amber-500
               : "none"
           }`,
-          outlineOffset: "0px", // 음수 값을 주면 안쪽으로 들어갑니다
-          borderRadius: "4px",
-          transition: "height 0.3s ease-in-out", // 높이 변경 애니메이션 추가
+          outlineOffset: '0px', // 음수 값을 주면 안쪽으로 들어갑니다
+          borderRadius: '4px',
+          transition: 'height 0.3s ease-in-out', // 높이 ���경 애니메이션 추가
         }}
         onClick={handleWidgetClick}
         onMouseDown={handleMouseDown}
