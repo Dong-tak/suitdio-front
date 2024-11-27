@@ -86,12 +86,15 @@ export default function RecordView() {
       console.error("보드 생성 중 오류 발생:", error);
     }
   };
+
   if (isLoading) {
     return <div>로딩 중...</div>;
   }
+
   if (!data) {
     return <div>데이터를 불러오는데 실패했습니다.</div>;
   }
+
   return (
     <SidebarInset>
       <header className="flex h-11 shrink-0 items-center justify-between px-2">

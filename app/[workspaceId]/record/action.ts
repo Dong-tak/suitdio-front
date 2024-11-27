@@ -55,7 +55,7 @@ export const createBoard = async (workspaceId: string) => {
   try {
     const response = await api.post(`/record/board/create/${workspaceId}/`, {
       data: {
-        focus: "new board",
+        focus: "hi",
       },
     });
     return response.data;

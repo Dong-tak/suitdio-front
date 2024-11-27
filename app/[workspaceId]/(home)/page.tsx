@@ -2,7 +2,7 @@
 
 import HomeView from "@/components/home/homeview";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
   addMiddleWidget,
@@ -10,6 +10,7 @@ import {
 } from "@/lib/redux/features/whiteboardSlice";
 import { createBoardWithTitle } from "./action";
 import { createBoard } from "../record/action";
+
 import { useParams } from "next/navigation";
 
 export default function Home() {
@@ -19,7 +20,6 @@ export default function Home() {
   const dispatch = useDispatch();
   const params = useParams();
   const workspaceId = params.workspaceId as string;
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentTitle(e.target.value);
   };
@@ -36,6 +36,7 @@ export default function Home() {
 
       try {
         const createdBoard = await createBoard(workspaceId);
+        console.log("workspaceId", workspaceId);
         console.log("보드가 생성되었습니다:", createdBoard);
 
         localStorage.setItem("currentBoardId", createdBoard.id);
