@@ -29,6 +29,7 @@ import {
   redo,
   undo,
 } from "@/lib/redux/features/whiteboardSlice";
+
 import {
   ShellWidgetProps,
   AllWidgetTypes,
@@ -163,8 +164,6 @@ export default function Whiteboard() {
     x: number;
     y: number;
   } | null>(null);
-
-  useWebSocket();
 
   // 입력 변경 핸들러
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1174,6 +1173,11 @@ export default function Whiteboard() {
       console.log("Updated arrows:", arrows);
     }
   }, [arrows]);
+
+  // 디버깅을 위한 로그 추가
+  useEffect(() => {
+    console.log("현재 렌더링될 위젯들:", widgets);
+  }, [widgets]);
 
   return (
     <div className="flex flex-col h-screen">

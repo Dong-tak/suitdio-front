@@ -19,6 +19,7 @@ import { Board } from "./action";
 import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
 import { useParams } from "next/navigation";
 import CreateBoardDialog from "@/components/home/creatboard";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function RecordView() {
   const [data, setData] = useState<{
@@ -105,7 +106,12 @@ export default function RecordView() {
   };
 
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner size={32} />
+        <span className="ml-2">Loading...</span>
+      </div>
+    );
   }
 
   if (!data) {
@@ -170,7 +176,7 @@ export default function RecordView() {
           }}
           className="hover:bg-gradient-to-b hover:from-gray-300 hover:to-gray-300 bg-gradient-to-b from-[#ffb300] to-[#ff8f00] shadow-lg"
         >
-          보드 생성
+          + Create new
         </Button>
       </div>
       <div className="flex items-center gap-2 px-6 justify-start mt-2">
