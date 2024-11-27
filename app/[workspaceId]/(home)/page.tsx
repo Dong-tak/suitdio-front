@@ -2,20 +2,21 @@
 
 import HomeView from "@/components/home/homeview";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
   addMiddleWidget,
   addWidget,
 } from "@/lib/redux/features/whiteboardSlice";
-import { createBoardWithTitle, createBoard } from "./action";
-
+import { createBoardWithTitle } from "./action";
+import { createBoard } from "../record/action";
 export default function Home() {
   const [contentTitle, setContentTitle] = useState("");
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-
+  const params = useParams();
+  const workspaceId = params.workspaceId as string;
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentTitle(e.target.value);
   };
@@ -31,11 +32,12 @@ export default function Home() {
       dispatch(addMiddleWidget(newBoard));
 
       try {
-        const createdBoard = await createBoard("0HS78Z813DVX6");
+        const createdBoard = await createBoard(workspaceId);
+        console.log("workspaceId", workspaceId);
         console.log("보드가 생성되었습니다:", createdBoard);
 
         localStorage.setItem("currentBoardId", createdBoard.id);
-        router.push(`${createdBoard.id}/`);
+        router.push(`/board/${createdBoard.id}/`);
       } catch (error) {
         console.error("보드 생성 중 오류 발생:", error);
       }
