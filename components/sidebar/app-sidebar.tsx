@@ -168,27 +168,47 @@ const items = [
   {
     title: "Home",
     url: "/",
-    icon: Home,
+    icon: (
+      <div className="h-5 p-[3px] bg-gradient-to-b from-[#ffb300] to-[#ff8f00] rounded-md justify-start items-center gap-2.5 inline-flex">
+        <Home className="text-white w-3.5 h-3.5 relative" />
+      </div>
+    ),
   },
   {
     title: "Records",
     url: "#",
-    icon: Disc2,
+    icon: (
+      <div className="h-5 p-[3px] bg-gradient-to-b from-[#ffb300] to-[#ff8f00] rounded-md justify-start items-center gap-2.5 inline-flex">
+        <Disc2 className="text-white w-3.5 h-3.5 relative" />
+      </div>
+    ),
   },
   {
     title: "Deck",
     url: "#",
-    icon: Box,
+    icon: (
+      <div className="h-5 p-[3px] bg-gradient-to-b from-white to-slate-100 rounded-md justify-start items-center gap-2.5 inline-flex">
+        <Box className="text-gray-500 w-3.5 h-3.5 relative" />
+      </div>
+    ),
   },
   {
     title: "Draw",
     url: "#",
-    icon: LayoutGrid,
+    icon: (
+      <div className="h-5 p-[3px] bg-gradient-to-b from-white to-slate-100 rounded-md justify-start items-center gap-2.5 inline-flex">
+        <LayoutGrid className="text-gray-500 w-3.5 h-3.5 relative" />
+      </div>
+    ),
   },
   {
     title: "Callender",
     url: "#",
-    icon: Calendar,
+    icon: (
+      <div className="h-5 p-[3px] bg-gradient-to-b from-white to-slate-100 rounded-md justify-start items-center gap-2.5 inline-flex">
+        <Calendar className="text-gray-500 w-3.5 h-3.5 relative" />
+      </div>
+    ),
   },
 ];
 
@@ -232,7 +252,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       : item.url
                   }
                 >
-                  <item.icon />
+                  {item.icon}
                   <span>{item.title}</span>
                 </a>
               </SidebarMenuButton>
