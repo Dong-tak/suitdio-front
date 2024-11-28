@@ -1,22 +1,28 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useState, useEffect, useRef } from "react";
-import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
-import { useWebSocket } from "@/hooks/use-socket";
-import { useParams } from "next/navigation";
-import { Spinner } from "@/components/ui/spinner";
-import { fetchBoardDetail } from "./action";
-import { useDispatch } from "react-redux";
+import dynamic from 'next/dynamic';
+import { useState, useEffect, useRef } from 'react';
+import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
+import { useWebSocket } from '@/hooks/use-socket';
+import { useParams } from 'next/navigation';
+import { Spinner } from '@/components/ui/spinner';
+import { fetchBoardDetail } from './action';
+import { useDispatch } from 'react-redux';
 import {
   addWidget,
   addWidgetFrom,
   addWidgetTo,
   setInitialWidgets,
-} from "@/lib/redux/features/whiteboardSlice";
-interface BoardData {
-  widgets: ShellWidgetProps<AllWidgetTypes>[];
-}
+} from '@/lib/redux/features/whiteboardSlice';
+import { createStore, store } from '@/lib/redux/store';
+import { createWebSocketMiddleware } from '@/lib/redux/middleware/websocketMiddleware';
+
+// 웹소켓 인스턴스를 저장할 전역 변수
+let globalSocket: WebSocket | null = null;
+
+// 웹소켓 getter 함수 추가
+export const getGlobalSocket = () => globalSocket;
+
 export default function Board() {
   const params = useParams();
   const boardId = params.boardId as string;
@@ -27,7 +33,7 @@ export default function Board() {
   const initializeRef = useRef(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
-  const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
+  const Whiteboard = dynamic(() => import('@/components/board/whiteboard'), {
     ssr: false,
   });
 
@@ -40,23 +46,22 @@ export default function Board() {
 
     const initializeBoard = async () => {
       try {
-        console.log("보드 데이터 로딩 시작");
+        console.log('보드 데이터 로딩 시작');
         const data = await fetchBoardDetail(boardId);
-        console.log("보드 데이터 로딩 완료:", data);
+        console.log('보드 데이터 로딩 완료:', data);
 
         if (!mounted) return;
         dispatch(setInitialWidgets(data.widgets));
-
 
         setIsDataLoaded(true);
         setIsLoading(false);
       } catch (err) {
         if (!mounted) return;
-        console.error("초기화 중 에러:", err);
+        console.error('초기화 중 에러:', err);
         setError(
           err instanceof Error
             ? err.message
-            : "보드 데이터를 불러오는데 실패했습니다"
+            : '보드 데이터를 불러오는데 실패했습니다'
         );
         setIsLoading(false);
       }
@@ -78,11 +83,17 @@ export default function Board() {
     );
 
     socket.onopen = () => {
-      console.log("웹소켓 연결 성공");
+      console.log('웹소켓 연결 성공');
       setIsSocketConnected(true);
+      globalSocket = socket; // 전역 변수에 저장
+
+      // 웹소켓 연결 후 새로운 store 생성 및 교체
+      const newStore = createStore([createWebSocketMiddleware()]);
+      Object.assign(store, newStore);
     };
 
     return () => {
+      globalSocket = null; // 전역 변수 초기화
       socket.close();
     };
   }, [isDataLoaded, boardId]);
@@ -90,9 +101,9 @@ export default function Board() {
   // 최종 렌더링 조건
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className='flex items-center justify-center h-screen'>
         <Spinner size={32} />
-        <span className="ml-2">로딩중...</span>
+        <span className='ml-2'>로딩중...</span>
       </div>
     );
   }
