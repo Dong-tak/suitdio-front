@@ -26,8 +26,8 @@ import {
   addWidgetFrom,
   addWidgetTo,
   updateWidget,
-  redo,
-  undo,
+  // redo,
+  // undo,
 } from "@/lib/redux/features/whiteboardSlice";
 
 import {
@@ -65,6 +65,7 @@ import {
 import { calculateArrowPoints, drawArrow } from "../arrow/drawArrow";
 import { useWebSocket } from "@/hooks/use-socket";
 import { getTsid } from "tsid-ts";
+import WidgetCenter from "../widget/widgetCenter";
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -1026,11 +1027,11 @@ export default function Whiteboard() {
         if (e.shiftKey && e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Shift + Z: Redo
           e.preventDefault();
-          dispatch(redo());
+          // dispatch(redo());
         } else if (e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Z: Undo
           e.preventDefault();
-          dispatch(undo());
+          // dispatch(undo());
         }
       }
     };
@@ -1457,6 +1458,23 @@ export default function Whiteboard() {
           isActive={isBrainstormActive}
           setIsActive={setIsBrainstormActive}
           setTool={setTool}
+        />
+        <WidgetCenter
+          editable={true}
+          text={""}
+          fontSize={16}
+          onHeightChange={() => {}}
+          type={"center"}
+          x={window.innerWidth / 2 - 250}
+          y={window.innerHeight / 2 - 250}
+          width={750}
+          height={200}
+          titleBlock={""}
+          draggable={false}
+          resizeable={false}
+          headerBar={true}
+          footerBar={false}
+          id={""}
         />
       </div>
     </div>
