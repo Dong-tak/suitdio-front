@@ -43,9 +43,9 @@ const whiteboardSlice = createSlice({
   reducers: {
     setInitialWidgets: (
       state,
-      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
+      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>[]>
     ) => {
-      state.widgets.push(action.payload);
+      state.widgets = action.payload;
       state.selectedWidget = null;
       state.editModeWidgets = null;
       state.history = {

@@ -185,9 +185,9 @@ export function parseWidgetInstance(
 }
 
 export function parseBoardData(response: BoardResponse) {
-  const widgets = response.widgetInstances
-    .filter((instance) => !instance.isDeleted)
-    .map((instance) => parseWidgetInstance(instance));
+  const widgets = response.widgetInstances.map((instance) =>
+    parseWidgetInstance(instance)
+  );
 
   response.widgetRelations.forEach((relation) => {
     if (!relation.is_deleted) {
