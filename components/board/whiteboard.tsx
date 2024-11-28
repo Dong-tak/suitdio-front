@@ -27,8 +27,8 @@ import {
   addWidgetTo,
   updateWidget,
   setInitialWidgets,
-  // redo,
-  // undo,
+  redo,
+  undo,
 } from "@/lib/redux/features/whiteboardSlice";
 
 import {
@@ -1027,11 +1027,11 @@ export default function Whiteboard() {
         if (e.shiftKey && e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Shift + Z: Redo
           e.preventDefault();
-          // dispatch(redo());
+          dispatch(redo());
         } else if (e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Z: Undo
           e.preventDefault();
-          // dispatch(undo());
+          dispatch(undo());
         }
       }
     };
