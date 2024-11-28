@@ -75,9 +75,7 @@ export const FONT_SIZE = 16;
 export const RESIZE_HANDLE_SIZE = 8;
 export const ZOOM_SPEED = 0.001; // 줌 속도 조절 상수
 
-export default function Whiteboard(
-  initialWidgets?: ShellWidgetProps<AllWidgetTypes>[]
-) {
+export default function Whiteboard() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const widgets = useSelector(
     (state: RootState) => state.whiteboard.widgets
@@ -113,12 +111,6 @@ export default function Whiteboard(
   const selectedArrow = useSelector(
     (state: RootState) => state.arrow.selectedArrows
   );
-
-  if (initialWidgets) {
-    initialWidgets.forEach((widget) => {
-      dispatch(setInitialWidgets(widget));
-    });
-  }
 
   const [activeShells, setActiveShells] = useState<{
     editModeShells: Set<string>;
@@ -1184,9 +1176,9 @@ export default function Whiteboard(
   }, [arrows]);
 
   // 디버깅을 위한 로그 추가
-  useEffect(() => {
-    console.log("현재 렌더링될 위젯들:", widgets);
-  }, [widgets]);
+  // useEffect(() => {
+  //   console.log("현재 렌더링될 위젯들:", widgets);
+  // }, [widgets]);
 
   return (
     <div className="flex flex-col h-screen">

@@ -12,8 +12,11 @@ import {
   addWidget,
   addWidgetFrom,
   addWidgetTo,
+  setInitialWidgets,
 } from "@/lib/redux/features/whiteboardSlice";
-
+interface BoardData {
+  widgets: ShellWidgetProps<AllWidgetTypes>[];
+}
 export default function Board() {
   const params = useParams();
   const boardId = params.boardId as string;
@@ -27,41 +30,23 @@ export default function Board() {
   const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
     ssr: false,
   });
-  const [initialWidgets, setInitialWidgets] = useState<
-    ShellWidgetProps<AllWidgetTypes>[]
-  >([]);
+
+  const [mounted, setMounted] = useState(true);
 
   // 데이터 로딩 로직
   useEffect(() => {
     if (initializeRef.current) return;
     initializeRef.current = true;
 
-    let mounted = true;
-
     const initializeBoard = async () => {
       try {
         console.log("보드 데이터 로딩 시작");
         const data = await fetchBoardDetail(boardId);
         console.log("보드 데이터 로딩 완료:", data);
+
         if (!mounted) return;
+        dispatch(setInitialWidgets(data.widgets));
 
-        setInitialWidgets(data.widgets);
-
-        // 관계 처리 로직
-        data.relations.forEach((relation) => {
-          const fromWidget = data.widgets.find(
-            (w) => w.id === relation.widget_from
-          );
-          if (fromWidget) {
-            relation.to_instances.forEach((toId) => {
-              const toWidget = data.widgets.find((w) => w.id === toId);
-              if (toWidget) {
-                dispatch(addWidgetFrom({ widgetId: toWidget.id, fromWidget }));
-                dispatch(addWidgetTo({ widgetId: fromWidget.id, toWidget }));
-              }
-            });
-          }
-        });
 
         setIsDataLoaded(true);
         setIsLoading(false);
@@ -80,9 +65,9 @@ export default function Board() {
     initializeBoard();
 
     return () => {
-      mounted = false;
+      setMounted(false);
     };
-  }, [boardId, dispatch]);
+  }, [boardId, dispatch, mounted]);
 
   // 웹소켓 연결 - 데이터 로딩 후에만 연결
   useEffect(() => {
@@ -116,7 +101,7 @@ export default function Board() {
   return (
     <div>
       {isDataLoaded && isSocketConnected ? (
-        <Whiteboard {...initialWidgets} />
+        <Whiteboard />
       ) : (
         <div>연결 중...</div>
       )}
