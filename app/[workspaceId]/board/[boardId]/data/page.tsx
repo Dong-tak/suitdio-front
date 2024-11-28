@@ -17,12 +17,6 @@ import {
 import { createStore, store } from '@/lib/redux/store';
 import { createWebSocketMiddleware } from '@/lib/redux/middleware/websocketMiddleware';
 
-// 웹소켓 인스턴스를 저장할 전역 변수
-let globalSocket: WebSocket | null = null;
-
-// 웹소켓 getter 함수 추가
-export const getGlobalSocket = () => globalSocket;
-
 export default function Board() {
   const params = useParams();
   const boardId = params.boardId as string;
@@ -52,6 +46,7 @@ export default function Board() {
 
         if (!mounted) return;
         dispatch(setInitialWidgets(data.widgets));
+        console.log('초기 위젯 설정 완료');
 
         setIsDataLoaded(true);
         setIsLoading(false);
@@ -85,15 +80,13 @@ export default function Board() {
     socket.onopen = () => {
       console.log('웹소켓 연결 성공');
       setIsSocketConnected(true);
-      globalSocket = socket; // 전역 변수에 저장
 
       // 웹소켓 연결 후 새로운 store 생성 및 교체
-      const newStore = createStore([createWebSocketMiddleware()]);
+      const newStore = createStore([createWebSocketMiddleware(socket)]);
       Object.assign(store, newStore);
     };
 
     return () => {
-      globalSocket = null; // 전역 변수 초기화
       socket.close();
     };
   }, [isDataLoaded, boardId]);

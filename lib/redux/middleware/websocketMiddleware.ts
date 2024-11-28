@@ -1,6 +1,5 @@
 // 소켓 미들웨어 타입 정의
 
-import { getGlobalSocket } from '@/app/[workspaceId]/board/[boardId]/data/page';
 import { isWhiteboardAction } from '@/types/type';
 import { Middleware } from '@reduxjs/toolkit';
 import { update } from 'lodash';
@@ -14,11 +13,7 @@ const createDebouncedSend = (socket: WebSocket) => {
   }, 100);
 };
 
-export const createWebSocketMiddleware = (): Middleware => {
-  const socket = getGlobalSocket();
-  if (!socket) {
-    throw new Error('WebSocket is not connected');
-  }
+export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
   const debouncedSend = createDebouncedSend(socket);
 
   return (store) => (next) => (action: unknown) => {
