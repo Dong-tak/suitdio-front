@@ -27,6 +27,9 @@ export default function Board() {
   const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
     ssr: false,
   });
+  const [initialWidgets, setInitialWidgets] = useState<
+    ShellWidgetProps<AllWidgetTypes>[]
+  >([]);
 
   // 데이터 로딩 로직
   useEffect(() => {
@@ -40,15 +43,14 @@ export default function Board() {
         console.log("보드 데이터 로딩 시작");
         const data = await fetchBoardDetail(boardId);
         console.log("보드 데이터 로딩 완료:", data);
-        // if (!mounted) return;
+        if (!mounted) return;
 
-        // Redux store 초기화
-        dispatch({ type: "whiteboard/resetWidgets" });
+        setInitialWidgets(data.widgets);
 
         // 위젯 추가
-        data.widgets.forEach((widget) => {
-          dispatch(addWidget(widget));
-        });
+        // data.widgets.forEach((widget) => {
+        //   dispatch(addWidget(widget));
+        // });
 
         // 관계 처리 로직
         data.relations.forEach((relation) => {
@@ -119,7 +121,7 @@ export default function Board() {
   return (
     <div>
       {isDataLoaded && isSocketConnected ? (
-        <Whiteboard />
+        <Whiteboard {...initialWidgets} />
       ) : (
         <div>연결 중...</div>
       )}
