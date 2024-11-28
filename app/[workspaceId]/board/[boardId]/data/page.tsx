@@ -47,11 +47,6 @@ export default function Board() {
 
         setInitialWidgets(data.widgets);
 
-        // 위젯 추가
-        // data.widgets.forEach((widget) => {
-        //   dispatch(addWidget(widget));
-        // });
-
         // 관계 처리 로직
         data.relations.forEach((relation) => {
           const fromWidget = data.widgets.find(
