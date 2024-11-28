@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import whiteboardReducer from "./features/whiteboardSlice";
 import arrowReducer from "./features/arrowSlice";
 import registerReducer from "./features/registerSlice";
+import { createWebSocketMiddleware } from "./middleware/websocketMiddleware";
 
 export const store = configureStore({
   reducer: {
@@ -9,7 +10,12 @@ export const store = configureStore({
     arrow: arrowReducer,
     register: registerReducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
+  middleware: (getDefaultMiddleware) => {
+    const socket = new WebSocket(
+      `${process.env.NEXT_PUBLIC_WEBSOCKET_BASE_URL}/play/board/${boardId}/`
+    );
+    return getDefaultMiddleware().concat(createWebSocketMiddleware(socket));
+  },
 });
 
 export type RootState = ReturnType<typeof store.getState>;

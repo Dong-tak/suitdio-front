@@ -1,7 +1,6 @@
 // 소켓 미들웨어 타입 정의
 
-import { PayloadAction } from "@reduxjs/toolkit";
-import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
+import { isWhiteboardAction } from "@/types/type";
 import { Middleware } from "@reduxjs/toolkit";
 import { update } from "lodash";
 import debounce from "lodash/debounce";
@@ -14,42 +13,19 @@ const createDebouncedSend = (socket: WebSocket) => {
   }, 100);
 };
 
-// 액션 타입 정의
-interface WhiteboardAddWidgetAction
-  extends PayloadAction<ShellWidgetProps<AllWidgetTypes>> {
-  type: "whiteboard/addWidget";
-}
-
-interface WhiteboardUpdateWidgetAction
-  extends PayloadAction<ShellWidgetProps<AllWidgetTypes>> {
-  type: "whiteboard/updateWidget";
-}
-
-interface WhiteboardDeleteWidgetAction extends PayloadAction<string> {
-  type: "whiteboard/deleteWidget";
-}
-
-type WhiteboardAction =
-  | WhiteboardAddWidgetAction
-  | WhiteboardUpdateWidgetAction
-  | WhiteboardDeleteWidgetAction;
-
 export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
   const debouncedSend = createDebouncedSend(socket);
 
   return (store) => (next) => (action: unknown) => {
     const result = next(action);
 
-    // 타입 가드
+    // 타입 가드 추가
     if (!isWhiteboardAction(action)) return result;
 
-    // 타입 단언
-    const whiteboardAction = action as WhiteboardAction;
-
-    switch (whiteboardAction.type) {
+    switch (action.type) {
       case "whiteboard/addWidget":
         let addMessage;
-        switch (whiteboardAction.payload.innerWidget.type) {
+        switch (action.payload.innerWidget.type) {
           case "text":
             addMessage = {
               type: "action",
@@ -59,19 +35,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "create",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
-                    type: whiteboardAction.payload.innerWidget.type,
+                    id: action.payload.id,
+                    type: action.payload.innerWidget.type,
                     data: {
-                      content: whiteboardAction.payload.innerWidget.text,
+                      content: action.payload.innerWidget.text,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -88,19 +64,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "create",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
+                    id: action.payload.id,
                     type: "embed_url",
                     data: {
-                      src: whiteboardAction.payload.innerWidget.src,
+                      src: action.payload.innerWidget.src,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -117,19 +93,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "create",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
+                    id: action.payload.id,
                     type: "embed_pdf",
                     data: {
-                      src: whiteboardAction.payload.innerWidget.src,
+                      src: action.payload.innerWidget.src,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -146,19 +122,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "create",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
+                    id: action.payload.id,
                     type: "embed_img",
                     data: {
-                      src: whiteboardAction.payload.innerWidget.src,
+                      src: action.payload.innerWidget.src,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -174,7 +150,7 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
       case "whiteboard/updateWidget":
         // 업데이트는 디바운스 적용
         let updateMessage;
-        switch (whiteboardAction.payload.innerWidget.type) {
+        switch (action.payload.innerWidget.type) {
           case "text":
             updateMessage = debouncedSend({
               type: "action",
@@ -184,19 +160,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "update",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
-                    type: whiteboardAction.payload.innerWidget.type,
+                    id: action.payload.id,
+                    type: action.payload.innerWidget.type,
                     data: {
-                      content: whiteboardAction.payload.innerWidget.text,
+                      content: action.payload.innerWidget.text,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -213,19 +189,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "update",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
+                    id: action.payload.id,
                     type: "embed_url",
                     data: {
-                      src: whiteboardAction.payload.innerWidget.src,
+                      src: action.payload.innerWidget.src,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -242,19 +218,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "update",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
+                    id: action.payload.id,
                     type: "embed_pdf",
                     data: {
-                      src: whiteboardAction.payload.innerWidget.src,
+                      src: action.payload.innerWidget.src,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -271,19 +247,19 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
                   action: "update",
                   type: "widget",
                   data: {
-                    id: whiteboardAction.payload.id,
+                    id: action.payload.id,
                     type: "embed_img",
                     data: {
-                      src: whiteboardAction.payload.innerWidget.src,
+                      src: action.payload.innerWidget.src,
                     },
                     position: {
-                      x: whiteboardAction.payload.x,
-                      y: whiteboardAction.payload.y,
+                      x: action.payload.x,
+                      y: action.payload.y,
                       z: 1,
                     },
                     size: {
-                      width: whiteboardAction.payload.width,
-                      height: whiteboardAction.payload.height,
+                      width: action.payload.width,
+                      height: action.payload.height,
                     },
                     state: "default",
                   },
@@ -303,7 +279,7 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
               action: "delete",
               type: "widget",
               data: {
-                id: whiteboardAction.payload,
+                id: action.payload,
               },
             },
           ],
@@ -317,15 +293,3 @@ export const createWebSocketMiddleware = (socket: WebSocket): Middleware => {
     return result;
   };
 };
-
-// 타입 가드 함수 수정
-function isWhiteboardAction(action: unknown): action is WhiteboardAction {
-  if (typeof action !== "object" || action === null) return false;
-
-  const { type } = action as { type: string };
-  return (
-    type === "whiteboard/addWidget" ||
-    type === "whiteboard/updateWidget" ||
-    type === "whiteboard/deleteWidget"
-  );
-}
