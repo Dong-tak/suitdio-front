@@ -56,5 +56,5 @@ export default function Board() {
 
   if (error) return <div>에러: {error}</div>;
 
-  return <div>{boardData && <Whiteboard />}</div>;
+  return <div>{boardData && <Whiteboard {...boardData.widgets} />}</div>;
 }

@@ -26,8 +26,9 @@ import {
   addWidgetFrom,
   addWidgetTo,
   updateWidget,
-  redo,
-  undo,
+  setInitialWidgets,
+  // redo,
+  // undo,
 } from "@/lib/redux/features/whiteboardSlice";
 
 import {
@@ -74,7 +75,9 @@ export const FONT_SIZE = 16;
 export const RESIZE_HANDLE_SIZE = 8;
 export const ZOOM_SPEED = 0.001; // 줌 속도 조절 상수
 
-export default function Whiteboard() {
+export default function Whiteboard(
+  initialWidgets?: ShellWidgetProps<AllWidgetTypes>[]
+) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const widgets = useSelector(
     (state: RootState) => state.whiteboard.widgets
@@ -110,6 +113,12 @@ export default function Whiteboard() {
   const selectedArrow = useSelector(
     (state: RootState) => state.arrow.selectedArrows
   );
+
+  if (initialWidgets) {
+    initialWidgets.forEach((widget) => {
+      dispatch(setInitialWidgets(widget));
+    });
+  }
 
   const [activeShells, setActiveShells] = useState<{
     editModeShells: Set<string>;
@@ -1026,11 +1035,11 @@ export default function Whiteboard() {
         if (e.shiftKey && e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Shift + Z: Redo
           e.preventDefault();
-          dispatch(redo());
+          // dispatch(redo());
         } else if (e.key.toLowerCase() === "z") {
           // Cmd/Ctrl + Z: Undo
           e.preventDefault();
-          dispatch(undo());
+          // dispatch(undo());
         }
       }
     };
