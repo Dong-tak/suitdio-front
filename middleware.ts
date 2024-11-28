@@ -8,6 +8,7 @@ const PUBLIC_PATHS = [
   "/verify",
   "/setuserid-social",
   "/setuserid",
+  "/auth/google/callback",
 ];
 
 export async function middleware(request: NextRequest) {
