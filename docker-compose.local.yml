@@ -1,0 +1,32 @@
+services:
+  app:
+    image: tothedock/tothedocks:localfastapi
+    build:
+      context: .
+      dockerfile: Dockerfile.local
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://shik:REDACTED@@db:5432/suitbag
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=shik
+      - POSTGRES_PASSWORD=REDACTED@
+      - POSTGRES_DB=suitbag
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:

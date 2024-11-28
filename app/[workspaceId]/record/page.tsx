@@ -1,5 +1,4 @@
 "use client";
-
 import FilterMenu from "@/components/record/filter-menu";
 import RecordCard from "@/components/record/record-card";
 import {
@@ -19,20 +18,32 @@ import { useEffect, useState } from "react";
 import { Board } from "./action";
 import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
 import { useParams } from "next/navigation";
+import CreateBoardDialog from "@/components/home/creatboard";
+import { Spinner } from "@/components/ui/spinner";
 
 export default function RecordView() {
   const [data, setData] = useState<{
     workspaceId: string;
     boards: Board[];
   } | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [contentTitle, setContentTitle] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const workspaceId = params.workspaceId as string;
+  const [open, setOpen] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setContentTitle(e.target.value);
+  };
+
+  const onOpenChange = (open: boolean) => {
+    setOpen(open);
+  };
 
   useEffect(() => {
     const controller = new AbortController();
     let mounted = true;
-
     const initializeData = async (workspaceId: string) => {
       try {
         setIsLoading(true);
@@ -54,7 +65,6 @@ export default function RecordView() {
     } else {
       console.log("workspaceId 없음");
     }
-
     return () => {
       mounted = false;
       controller.abort();
@@ -76,12 +86,12 @@ export default function RecordView() {
       console.error(error);
     }
   };
-
   const handleCreateBoard = async () => {
     if (!data?.workspaceId) return;
-
     try {
-      const newBoard = await createBoard(data.workspaceId);
+      const newBoard = await createBoard(data.workspaceId, contentTitle);
+      setContentTitle("");
+      setIsDialogOpen(false);
       setData((prev) =>
         prev
           ? {
@@ -95,8 +105,17 @@ export default function RecordView() {
     }
   };
 
-  if (isLoading || !data) {
-    return <div>로딩 중...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner size={32} />
+        <span className="ml-2">Loading...</span>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div>데이터를 불러오는데 실패했습니다.</div>;
   }
 
   return (
@@ -151,10 +170,13 @@ export default function RecordView() {
           className="w-full pl-10 bg-slate-100 border-none"
         />
         <Button
-          onClick={handleCreateBoard}
-          className="hover:bg-orange-300 bg-orange-500"
+          onClick={() => {
+            setIsDialogOpen(true);
+            setOpen(true);
+          }}
+          className="hover:bg-gradient-to-b hover:from-gray-300 hover:to-gray-300 bg-gradient-to-b from-[#ffb300] to-[#ff8f00] shadow-lg"
         >
-          보드 생성
+          + Create new
         </Button>
       </div>
       <div className="flex items-center gap-2 px-6 justify-start mt-2">
@@ -162,22 +184,35 @@ export default function RecordView() {
         <FilterMenu label="필터" items={["수정일", "생성일", "버전"]} />
       </div>
       <div className="flex flex-1 flex-col gap-4 px-6 mt-4">
-        <div className="grid gap-4 grid-cols-auto-fit">
-          {data.boards.map((board) => (
-            <RecordCard
-              key={board.id}
-              cardId={board.id}
-              workspaceId={data.workspaceId}
-              cardTitle={board.data.focus}
-              cardConclusion={`최종 수정: ${new Date(
-                board.updatedAt
-              ).toLocaleDateString("ko-KR")}`}
-              onDelete={handleDeleteBoard}
-            />
-          ))}
-        </div>
+        {data.boards.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            생성된 보드가 없습니다. 새 보드를 생성해주세요.
+          </div>
+        ) : (
+          <div className="grid gap-4 grid-cols-auto-fit">
+            {data.boards.map((board) => (
+              <RecordCard
+                key={board.id}
+                cardId={board.id}
+                workspaceId={data.workspaceId}
+                cardTitle={board.data.focus}
+                cardConclusion={`최종 수정: ${new Date(
+                  board.updatedAt
+                ).toLocaleDateString("ko-KR")}`}
+                onDelete={handleDeleteBoard}
+              />
+            ))}
+          </div>
+        )}
         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted md:min-h-min" />
       </div>
+      <CreateBoardDialog
+        contentTitle={contentTitle}
+        handleInputChange={handleInputChange}
+        handleSaveClick={handleCreateBoard}
+        open={open}
+        onOpenChange={onOpenChange}
+      />
     </SidebarInset>
   );
 }

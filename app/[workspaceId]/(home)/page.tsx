@@ -1,8 +1,8 @@
 "use client";
 
 import HomeView from "@/components/home/homeview";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
   addMiddleWidget,
@@ -15,29 +15,36 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
+  const params = useParams();
+  const workspaceId = params.workspaceId as string;
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentTitle(e.target.value);
   };
 
   const handleSaveClick = async () => {
-    if (contentTitle.trim()) {
-      const boardPosition = {
-        x: window.innerWidth / 2 - 250,
-        y: window.innerHeight / 2 - 250,
-      };
-
-      const newBoard = createBoardWithTitle(contentTitle, [], boardPosition);
-      dispatch(addMiddleWidget(newBoard));
+    if (contentTitle.trim() && !isLoading) {
+      setIsLoading(true);
 
       try {
-        const createdBoard = await createBoard("0HS78Z813DVX6");
-        console.log("보드가 생성되었습니다:", createdBoard);
+        const boardPosition = {
+          x: window.innerWidth / 2 - 250,
+          y: window.innerHeight / 2 - 250,
+        };
 
-        localStorage.setItem("currentBoardId", createdBoard.id);
-        router.push(`${createdBoard.id}/`);
+        const newBoard = createBoardWithTitle(contentTitle, [], boardPosition);
+        dispatch(addMiddleWidget(newBoard));
+
+        const Board = await createBoard(workspaceId, contentTitle);
+        console.log("보드가 생성되었습니다:", Board);
+
+        localStorage.setItem("currentBoardId", Board.id);
+        router.push(`/${workspaceId}/board/${Board.id}/`);
       } catch (error) {
         console.error("보드 생성 중 오류 발생:", error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };

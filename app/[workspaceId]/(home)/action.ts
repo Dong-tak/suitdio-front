@@ -1,6 +1,7 @@
 import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
+import api from "@/lib/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+const API_BASE_URL = process.env.NEXT_PUBLIC_POST_API_URL || "";
 
 interface BoardPosition {
   x: number;
@@ -22,10 +23,10 @@ export const createBoardWithTitle = (
     type: "shell",
     x: boardPosition.x,
     y: boardPosition.y,
-    width: 800,
-    height: 300,
+    width: 750,
+    height: 200,
     resizable: false,
-    editable: false,
+    editable: true,
     draggable: false,
     from: [],
     to: [],
@@ -33,15 +34,15 @@ export const createBoardWithTitle = (
       id: `CenterWidget-${Date.now()}`,
       type: "center",
       titleBlock: contentTitle,
-      width: 800,
-      height: 300,
+      width: 750,
+      height: 200,
       x: boardPosition.x,
       y: boardPosition.y,
       draggable: false,
-      editable: false,
+      editable: true,
       resizeable: false,
       headerBar: true,
-      footerBar: true,
+      footerBar: false,
       text: "",
     },
   };
@@ -49,29 +50,48 @@ export const createBoardWithTitle = (
   return newBoard;
 };
 
-export const createBoard = async (workspaceId: string) => {
+// export const createBoard = async (workspaceId: string) => {
+//   try {
+//     const response = await fetch(
+//       `${API_BASE_URL}record/board/create/${workspaceId}/`,
+//       {
+//         method: "POST",
+//         headers: {
+//           ...headers,
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//           data: {
+//             focus: "new board",
+//           },
+//         }),
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error("보드 생성에 실패했습니다");
+//     }
+
+//     return await response.json();
+//   } catch (error) {
+//     console.error("보드 생성 중 오류 발생:", error);
+//     throw error;
+//   }
+// };
+
+export const createBoard = async (
+  workspaceId: string,
+  contentTitle: string
+) => {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}record/board/create/${workspaceId}/`,
-      {
-        method: "POST",
-        headers: {
-          ...headers,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          data: {
-            focus: "new board",
-          },
-        }),
-      }
-    );
+    const response = await api.post(`/record/board/create/${workspaceId}/`, {
+      data: {
+        focus: contentTitle,
+      },
+    });
 
-    if (!response.ok) {
-      throw new Error("보드 생성에 실패했습니다");
-    }
-
-    return await response.json();
+    console.log("Response:", response.data);
+    return response.data;
   } catch (error) {
     console.error("보드 생성 중 오류 발생:", error);
     throw error;

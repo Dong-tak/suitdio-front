@@ -1,16 +1,21 @@
 "use client";
 
 import dynamic from "next/dynamic";
-
 import { useState, useEffect } from "react";
 import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
+import { useWebSocket } from "@/hooks/use-socket";
+import { useParams } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
 
 interface BoardData {
   widgets: ShellWidgetProps<AllWidgetTypes>[];
-  // relations: any[]; // 관계 데이터 타입 정의 필요
 }
 
-export default function Board({ params }: { params: { boardId: string } }) {
+export default function Board() {
+  const params = useParams();
+  const boardId = params.boardId as string;
+  const socket = useWebSocket(boardId);
+
   const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
     ssr: false,
   });
@@ -19,27 +24,37 @@ export default function Board({ params }: { params: { boardId: string } }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setIsLoading(true);
-  //       setError(null);
-  //       const data = await fetchBoardDetail(params.boardId); // 보드 데이터 가져오는 함수
-  //       setBoardData(data);
-  //     } catch (err) {
-  //       setError(
-  //         err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다"
-  //       );
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    if (!socket) return;
 
-  //   fetchData();
-  // }, [params.boardId]);
+    // 웹소켓 연결이 완료되면 로딩 상태 해제
+    socket.onopen = () => {
+      setBoardData({ widgets: [] });
+      setIsLoading(false);
+    };
 
-  if (isLoading) return <div>로딩 중...</div>;
+    socket.onerror = (error) => {
+      setError("웹소켓 연결에 실패했습니다.");
+      setIsLoading(false);
+    };
+
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
+  }, [socket]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Spinner size={32} />
+        <span className="ml-2">Loading...</span>
+      </div>
+    );
+  }
+
   if (error) return <div>에러: {error}</div>;
-  // Whiteboard 컴포넌트에 boardData 전달
+
   return <div>{boardData && <Whiteboard />}</div>;
 }

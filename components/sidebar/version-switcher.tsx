@@ -14,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import FrameIcon from "@/public/Frame 427319672@2x.svg";
+import WorkspaceIcon from "@/public/Frame 427319672@2x.svg";
 
 export function VersionSwitcher({
   versions,
@@ -32,16 +32,17 @@ export function VersionSwitcher({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground justify-center items-center"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <FrameIcon className="w-full h-full" />
+              <div className="flex justify-center items-center my-auto gap-2">
+                <div className="justify-center items-center">
+                  <WorkspaceIcon className="size-5" />
+                </div>
+                <div className="flex flex-col gap-0.5 leading-none">
+                  <span className="font-semibold">Velroy&apos;s SUITDIO</span>
+                </div>
+                <ChevronsUpDown className="ml-auto" />
               </div>
-              <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">Velroy&apos;s SUITDIO</span>
-                <span className="">v{selectedVersion}</span>
-              </div>
-              <ChevronsUpDown className="ml-auto" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent

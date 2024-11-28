@@ -13,6 +13,18 @@ const nextConfig = {
     });
     return config;
   },
+  images: {
+    domains: ["mileque-bag.s3.amazonaws.com"],
+    // 또는 더 안전한 방법으로:
+    remotePatterns: [
+      {
+        // protocol: 'https',
+        hostname: "mileque-bag.s3.amazonaws.com",
+        port: "",
+        pathname: "/uploads/**",
+      },
+    ],
+  },
   env: {
     NEXT_PUBLIC_POST_API_URL: process.env.NEXT_PUBLIC_POST_API_URL,
   },
