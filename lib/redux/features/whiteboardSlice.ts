@@ -41,7 +41,6 @@ const whiteboardSlice = createSlice({
   name: "whiteboard",
   initialState,
   reducers: {
-
     setInitialWidgets: (
       state,
       action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
@@ -54,7 +53,6 @@ const whiteboardSlice = createSlice({
         future: [],
       };
     },
-=======
 
     addWidget: (
       state,
