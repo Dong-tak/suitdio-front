@@ -45,8 +45,8 @@ export default function Board() {
         console.log("보드 데이터 로딩 완료:", data);
 
         if (!mounted) return;
-
         dispatch(setInitialWidgets(data.widgets));
+
 
         setIsDataLoaded(true);
         setIsLoading(false);
