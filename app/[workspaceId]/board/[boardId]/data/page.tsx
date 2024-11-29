@@ -77,7 +77,7 @@ export default function Board() {
     if (!isDataLoaded) return;
 
     const socket = new WebSocket(
-      `${process.env.NEXT_PUBLIC_WEBSOCKET_BASE_URL}/v1/play/board/${boardId}/`
+      `${process.env.NEXT_PUBLIC_WEBSOCKET_BASE_URL}/play/board/${boardId}/`
     );
 
     socket.onopen = () => {
