@@ -1,4 +1,4 @@
-import { AllWidgetTypes, Arrow, ShellWidgetProps } from '@/types/type';
+import { AllWidgetTypes, Arrow, ShellWidgetProps } from "@/types/type";
 
 export const calculateArrowPoints = (
   fromWidget: ShellWidgetProps<AllWidgetTypes>,
@@ -36,9 +36,15 @@ export const calculateArrowPoints = (
 
   let fromPoint, toPoint;
 
-  // 방향에 따라 시작점과 끝점 결정
-  if (Math.abs(dx) > Math.abs(dy)) {
-    // 수평 방향
+  // 두 도형의 x축 겹침 여부 확인
+  const fromRight = fromWidget.x + fromWidget.width;
+  const toLeft = toWidget.x;
+  const isOverlappingX = !(
+    fromRight < toLeft || fromWidget.x > toWidget.x + toWidget.width
+  );
+
+  if (!isOverlappingX) {
+    // x축 겹치지 않을 때는 기존 로직대로
     if (dx > 0) {
       fromPoint = fromCenters[3]; // 출발 도형의 우측
       toPoint = toCenters[2]; // 도착 도형의 좌측
@@ -47,7 +53,7 @@ export const calculateArrowPoints = (
       toPoint = toCenters[3]; // 도착 도형의 우측
     }
   } else {
-    // 수직 방향
+    // x축이 겹칠 때는 수직 방향으로
     if (dy > 0) {
       fromPoint = fromCenters[1]; // 출발 도형의 하단
       toPoint = toCenters[0]; // 도착 도형의 상단
@@ -59,41 +65,52 @@ export const calculateArrowPoints = (
 
   // 중간 지점 계산
   const midX = (fromPoint.x + toPoint.x) / 2;
+  const midY = (fromPoint.y + toPoint.y) / 2;
 
   // 수직 진입을 위한 오프셋 계산
-  const verticalOffset = 30; // 수직 진입 거리
+  const verticalOffset =
+    Math.abs(dx) > Math.abs(dy)
+      ? Math.abs(toPoint.x - fromPoint.x) / 2
+      : Math.abs(toPoint.y - fromPoint.y) / 2;
 
-  let startControlX, startControlY, endControlX, endControlY;
+  let points;
 
   if (Math.abs(dx) > Math.abs(dy)) {
     // 수평 방향
-    startControlX = fromPoint.x + (dx > 0 ? verticalOffset : -verticalOffset);
-    startControlY = fromPoint.y;
-    endControlX = toPoint.x + (dx > 0 ? -verticalOffset : verticalOffset);
-    endControlY = toPoint.y;
+    points = [
+      fromPoint.x,
+      fromPoint.y, // 시작점
+      fromPoint.x + (dx > 0 ? verticalOffset : -verticalOffset),
+      fromPoint.y, // 첫 번째 꺾임점
+      midX,
+      fromPoint.y, // 중간 수평점
+      midX,
+      toPoint.y, // 중간 수직점
+      toPoint.x + (dx > 0 ? -verticalOffset : verticalOffset),
+      toPoint.y, // 마지막 꺾임점
+      toPoint.x,
+      toPoint.y, // 끝점
+    ];
   } else {
     // 수직 방향
-    startControlX = fromPoint.x;
-    startControlY = fromPoint.y + (dy > 0 ? verticalOffset : -verticalOffset);
-    endControlX = toPoint.x;
-    endControlY = toPoint.y + (dy > 0 ? -verticalOffset : verticalOffset);
+    points = [
+      fromPoint.x,
+      fromPoint.y, // 시작점
+      fromPoint.x,
+      fromPoint.y + (dy > 0 ? verticalOffset : -verticalOffset), // 첫 번째 꺾임점
+      fromPoint.x,
+      midY, // 중간 수직점
+      toPoint.x,
+      midY, // 중간 수평점
+      toPoint.x,
+      toPoint.y + (dy > 0 ? -verticalOffset : verticalOffset), // 마지막 꺾임점
+      toPoint.x,
+      toPoint.y, // 끝점
+    ];
   }
 
   return {
-    points: [
-      fromPoint.x,
-      fromPoint.y, // 시작점
-      startControlX,
-      startControlY, // 시작 제어점
-      midX,
-      startControlY, // 중간점 1
-      midX,
-      endControlY, // 중간점 2
-      endControlX,
-      endControlY, // 끝 제어점
-      toPoint.x,
-      toPoint.y, // 끝점
-    ],
+    points,
     arrowTipX: toPoint.x,
     arrowTipY: toPoint.y,
   };
@@ -113,27 +130,72 @@ export const drawArrow = (
 
   // 화살표 선 그리기
   ctx.beginPath();
-  ctx.strokeStyle = '#000000';
+  ctx.strokeStyle = "#000000";
   ctx.lineWidth = 2; // scale에 따라 선 굵기 조정
-  ctx.lineJoin = 'round';
+  ctx.lineJoin = "round";
 
   // 시작점
   ctx.moveTo(points[0], points[1]);
 
   // 각 꺾임 점을 순회하며 곡선 그리기
-  for (let i = 2; i < points.length - 2; i += 6) {
+  for (let i = 0; i < points.length - 2; i += 2) {
     const x2a = points[i];
     const y2a = points[i + 1];
-    const x2 = points[i + 2];
-    const y2 = points[i + 3];
-    const x2b = points[i + 4];
-    const y2b = points[i + 5];
 
-    ctx.lineTo(x2a, y2a);
+    if (i === 0) {
+      ctx.moveTo(x2a, y2a);
+      continue;
+    }
 
-    // 꺾임 부분 곡선 처리
-    // const radius = 15 / scale; // scale에 따라 곡률 반지름 조정
-    // ctx.arcTo(x2, y2, x2b, y2b, radius);
+    const radius = 15;
+    ctx.font = "12px Arial";
+    ctx.textAlign = "left";
+
+    // arcTo 설명을 위한 디버깅 표시
+    if (points.length >= 8) {
+      // 최소 4개의 점이 필요
+      const x2b = points[i + 2];
+      const y2b = points[i + 3];
+
+      // 포인트 표시
+      // 첫 번째 점 (빨간색)
+      ctx.fillStyle = "red";
+      ctx.beginPath();
+      ctx.arc(x2a, y2a, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillText("첫 번째 선분 제어점", x2a + 10, y2a - 10);
+
+      // 두 번째 점 (파란색)
+      ctx.fillStyle = "blue";
+      ctx.beginPath();
+      ctx.arc(x2b, y2b, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillText("두 번째 선분 제어점", x2b + 10, y2b + 20);
+
+      // 두 선분을 점선으로 표시 (arcTo의 제어선)
+      ctx.setLineDash([5, 5]);
+      ctx.strokeStyle = "gray";
+      ctx.beginPath();
+      ctx.moveTo(points[i - 2], points[i - 1]); // 이전 점
+      ctx.lineTo(x2a, y2a); // 첫 번째 제어점
+      ctx.lineTo(x2b, y2b); // 두 번째 제어점
+      ctx.stroke();
+
+      // radius 원호 표시
+      ctx.strokeStyle = "purple";
+      ctx.beginPath();
+      ctx.arc(x2a, y2a, radius, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 실제 선 그리기
+      ctx.setLineDash([]); // 점선 제거
+      ctx.strokeStyle = "black";
+      ctx.beginPath();
+      ctx.moveTo(points[i - 2], points[i - 1]);
+      ctx.arcTo(x2a, y2a, x2b, y2b, radius);
+      ctx.lineTo(x2b, y2b);
+      ctx.stroke();
+    }
   }
 
   // 마지막 선분
@@ -162,7 +224,7 @@ export const drawArrow = (
     endY - headLength * Math.sin(angle + headAngle)
   );
   ctx.closePath();
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = "#000000";
   ctx.fill();
 
   ctx.restore();

@@ -1,7 +1,7 @@
 "use client";
 
 import HomeView from "@/components/home/homeview";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
@@ -20,6 +20,8 @@ export default function Home() {
   const params = useParams();
   const workspaceId = params.workspaceId as string;
   const [isLoading, setIsLoading] = useState(false);
+  const [currentHeight, setCurrentHeight] = useState(200);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentTitle(e.target.value);
@@ -59,6 +61,29 @@ export default function Home() {
     x: number;
     y: number;
   }
+  // useEffect(() => {
+  //   const updateHeight = () => {
+  //     if (containerRef.current) {
+  //       const newHeight = containerRef.current.clientHeight;
+  //       if (newHeight !== currentHeight) {
+  //         setCurrentHeight(newHeight);
+  //         onHeightChange(newHeight);
+  //       }
+  //     }
+  //   };
+
+  //   updateHeight();
+
+  //   const resizeObserver = new ResizeObserver(updateHeight);
+  //   if (containerRef.current) {
+  //     resizeObserver.observe(containerRef.current);
+  //   }
+
+  //   return () => {
+  //     resizeObserver.disconnect();
+  //   };
+  // }, [currentHeight, onHeightChange]);
+
   //중앙 위젯 생성 처리
   const createBoardWithTitle = (
     contentTitle: string,
@@ -98,38 +123,6 @@ export default function Home() {
     return newBoard;
   };
 
-  const handleHeightChange = (height: number) => {
-    dispatch(
-      updateWidget({
-        height,
-        type: "shell",
-        x: 0,
-        y: 0,
-        width: 0,
-        resizable: false,
-        editable: true,
-        draggable: false,
-        innerWidget: {
-          id: "",
-          type: "center",
-          titleBlock: "",
-          width: 0,
-          height: height,
-          x: 0,
-          y: 0,
-          draggable: false,
-          editable: true,
-          resizeable: false,
-          headerBar: true,
-          footerBar: false,
-          text: "",
-        },
-        from: [],
-        to: [],
-        id: "",
-      })
-    );
-  };
   return (
     <div>
       <HomeView
