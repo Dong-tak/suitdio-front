@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import dynamic from 'next/dynamic';
-import { useState, useEffect, useRef } from 'react';
-import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
-import { useParams } from 'next/navigation';
-import { Spinner } from '@/components/ui/spinner';
-import { fetchBoardDetail } from './action';
-import { useDispatch } from 'react-redux';
+import dynamic from "next/dynamic";
+import { useState, useEffect, useRef } from "react";
+import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
+import { useParams } from "next/navigation";
+import { Spinner } from "@/components/ui/spinner";
+import { fetchBoardDetail } from "./action";
+import { useDispatch } from "react-redux";
 import {
   addWidget,
   addWidgetFrom,
@@ -14,9 +14,9 @@ import {
   deleteWidget,
   setInitialWidgets,
   updateWidget,
-} from '@/lib/redux/features/whiteboardSlice';
-import { setWebSocket } from '@/lib/redux/middleware/websocketMiddleware';
-import { parseBoardData, parseWidgetInstance } from '@/lib/parseBoard';
+} from "@/lib/redux/features/whiteboardSlice";
+import { setWebSocket } from "@/lib/redux/middleware/websocketMiddleware";
+import { parseBoardData, parseWidgetInstance } from "@/lib/parseBoard";
 
 export default function Board() {
   const params = useParams();
@@ -28,7 +28,7 @@ export default function Board() {
   const initializeRef = useRef(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
-  const Whiteboard = dynamic(() => import('@/components/board/whiteboard'), {
+  const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
     ssr: false,
   });
 
@@ -41,23 +41,23 @@ export default function Board() {
 
     const initializeBoard = async () => {
       try {
-        console.log('보드 데이터 로딩 시작');
+        console.log("보드 데이터 로딩 시작");
         const data = await fetchBoardDetail(boardId);
-        console.log('보드 데이터 로딩 완료:', data);
+        console.log("보드 데이터 로딩 완료:", data);
 
         if (!mounted) return;
         dispatch(setInitialWidgets(data.widgets));
-        console.log('초기 위젯 설정 완료');
+        console.log("초기 위젯 설정 완료");
 
         setIsDataLoaded(true);
         setIsLoading(false);
       } catch (err) {
         if (!mounted) return;
-        console.error('초기화 중 에러:', err);
+        console.error("초기화 중 에러:", err);
         setError(
           err instanceof Error
             ? err.message
-            : '보드 데이터를 불러오는데 실패했습니다'
+            : "보드 데이터를 불러오는데 실패했습니다"
         );
         setIsLoading(false);
       }
@@ -79,28 +79,51 @@ export default function Board() {
     );
 
     socket.onopen = () => {
-      console.log('웹소켓 연결 성공');
+      console.log("웹소켓 연결 성공");
       setIsSocketConnected(true);
       setWebSocket(socket);
     };
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log('웹소켓 메시지 수신:', data);
+      console.log("웹소켓 메시지 수신:", data);
 
-      switch (data.type) {
-        case 'widget:created':
-          const parsedWidget = parseWidgetInstance(data.widget);
-          console.log('파싱된 위젯:', parsedWidget);
-          dispatch(addWidget(parsedWidget));
-          break;
-        case 'widget:updated':
-          dispatch(updateWidget(parseWidgetInstance(data.widget)));
-          break;
-        case 'widget:deleted':
-          dispatch(deleteWidget(data.widgetId));
-          break;
+      console.log("actions:", data.actions);
+      const len = data.actions.length;
+
+      for (let i = 0; i < len; i++) {
+        const action = data.actions[i];
+        console.log("action:", action);
+        switch (action.action) {
+          case "create":
+            const parsedWidget = parseWidgetInstance(action.data);
+            console.log("파싱된 위젯:", parsedWidget);
+            // dispatch(addWidget(parsedWidget));
+            break;
+          case "update":
+            const parsedWidget1 = parseWidgetInstance(action.data);
+            console.log("파싱된 위젯:", parsedWidget1);
+            // dispatch(updateWidget(parseWidgetInstance(action.data)));
+            break;
+          case "delete":
+            dispatch(deleteWidget(action.data.id));
+            break;
+        }
       }
+
+      // switch (data.actions.action) {
+      //   case "create":
+      //     const parsedWidget = parseWidgetInstance(data.widget);
+      //     console.log("파싱된 위젯:", parsedWidget);
+      //     // dispatch(addWidget(parsedWidget));
+      //     break;
+      //   case "widget:updated":
+      //     dispatch(updateWidget(parseWidgetInstance(data.widget)));
+      //     break;
+      //   case "widget:deleted":
+      //     dispatch(deleteWidget(data.widgetId));
+      //     break;
+      // }
     };
 
     return () => {
@@ -111,9 +134,9 @@ export default function Board() {
   // 최종 렌더링 조건
   if (isLoading) {
     return (
-      <div className='flex items-center justify-center h-screen'>
+      <div className="flex items-center justify-center h-screen">
         <Spinner size={32} />
-        <span className='ml-2'>로딩중...</span>
+        <span className="ml-2">로딩중...</span>
       </div>
     );
   }
