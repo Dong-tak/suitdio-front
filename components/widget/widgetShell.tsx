@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useEffect, useState } from 'react';
 import {
   AllWidgetTypes,
   EdgePosition,
@@ -8,11 +8,11 @@ import {
   SectionWidget,
   isSection,
   Arrow,
-} from "@/types/type";
-import WidgetText from "./widgetText";
-import WidgetBoard from "./widgetBoard";
-import WidgetSection from "./widgetSection";
-import { useDispatch, useSelector } from "react-redux";
+} from '@/types/type';
+import WidgetText from './widgetText';
+import WidgetBoard from './widgetBoard';
+import WidgetSection from './widgetSection';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   addSelectedWidget,
@@ -24,17 +24,17 @@ import {
   setIsReduced,
   setSelectedWidget,
   updateWidget,
-} from "@/lib/redux/features/whiteboardSlice";
+} from '@/lib/redux/features/whiteboardSlice';
 import {
   snap,
   snapHeight,
   snapWidgetPosition,
   snapWidgetResize,
-} from "@/lib/utils/snapping";
-import { RootState } from "@/lib/redux/store";
-import { Button } from "../ui/button";
-import { ChevronDown, Ellipsis, Info } from "lucide-react";
-import SvgIcon from "@/lib/utils/svgIcon";
+} from '@/lib/utils/snapping';
+import { RootState } from '@/lib/redux/store';
+import { Button } from '../ui/button';
+import { ChevronDown, Ellipsis, Info } from 'lucide-react';
+import SvgIcon from '@/lib/utils/svgIcon';
 import {
   arrowModeSvg,
   chevronDownSvg8px,
@@ -44,14 +44,13 @@ import {
   recordSvg,
   sixBoltSvg,
   wideFrameSvg8px,
-} from "@/lib/utils/svgBag";
+} from '@/lib/utils/svgBag';
 import {
   isCompletelyContained,
   updateSectionAndMembers,
   updateSectionResize,
   limitMovementInSection,
-} from "@/lib/utils/sectionHelpers";
-import { FaPause } from "react-icons/fa";
+} from '@/lib/utils/sectionHelpers';
 import {
   addArrow,
   addLinkWidgets,
@@ -60,14 +59,15 @@ import {
   setIsArrowMode,
   setSelectedArrows,
   updateArrow,
-} from "@/lib/redux/features/arrowSlice";
-import WidgetImage from "./widgetImage";
-import WidgetPdf from "./widgetPdf";
-import WidgetUrl from "./widgetUrl";
-import WidgetPopup from "@/components/state/popup";
-import { calculateArrowPoints } from "../arrow/drawArrow";
-import { getTsid } from "tsid-ts";
-import WidgetCenter from "./widgetCenter";
+} from '@/lib/redux/features/arrowSlice';
+import WidgetImage from './widgetImage';
+import WidgetPdf from './widgetPdf';
+import WidgetUrl from './widgetUrl';
+import WidgetPopup from '@/components/state/popup';
+import { calculateArrowPoints } from '../arrow/drawArrow';
+import { getTsid } from 'tsid-ts';
+import WidgetCenter from './widgetCenter';
+import { useDebounceDispatch } from '@/hooks/use-debounce';
 interface WidgetShellProps {
   widget: ShellWidgetProps<AllWidgetTypes>;
   scale: number;
@@ -86,84 +86,84 @@ interface WidgetShellProps {
 //resize 핸들 스타일 함수
 const getHandleStyle = (position: string): React.CSSProperties => {
   const baseStyle: React.CSSProperties = {
-    position: "absolute",
-    backgroundColor: "transparent",
+    position: 'absolute',
+    backgroundColor: 'transparent',
   };
 
   switch (position) {
     // 모서리 핸들
-    case "nw":
+    case 'nw':
       return {
         ...baseStyle,
-        top: "-8px",
-        left: "-8px",
-        width: "16px",
-        height: "16px",
-        cursor: "nw-resize",
+        top: '-8px',
+        left: '-8px',
+        width: '16px',
+        height: '16px',
+        cursor: 'nw-resize',
       };
-    case "ne":
+    case 'ne':
       return {
         ...baseStyle,
-        top: "-8px",
-        right: "-8px",
-        width: "16px",
-        height: "16px",
-        cursor: "ne-resize",
+        top: '-8px',
+        right: '-8px',
+        width: '16px',
+        height: '16px',
+        cursor: 'ne-resize',
       };
-    case "sw":
+    case 'sw':
       return {
         ...baseStyle,
-        bottom: "-8px",
-        left: "-8px",
-        width: "16px",
-        height: "16px",
-        cursor: "sw-resize",
+        bottom: '-8px',
+        left: '-8px',
+        width: '16px',
+        height: '16px',
+        cursor: 'sw-resize',
       };
-    case "se":
+    case 'se':
       return {
         ...baseStyle,
-        bottom: "-8px",
-        right: "-8px",
-        width: "16px",
-        height: "16px",
-        cursor: "se-resize",
+        bottom: '-8px',
+        right: '-8px',
+        width: '16px',
+        height: '16px',
+        cursor: 'se-resize',
       };
     // 면 핸들
-    case "n":
+    case 'n':
       return {
         ...baseStyle,
-        top: "-4px",
-        left: "16px", // 모서리 핸들을 피해서 시작
-        right: "16px", // 모서리 핸들을 피해서 끝
-        height: "8px",
-        cursor: "n-resize",
+        top: '-4px',
+        left: '16px', // 모서리 핸들을 피해서 시작
+        right: '16px', // 모서리 핸들을 피해서 끝
+        height: '8px',
+        cursor: 'n-resize',
       };
-    case "s":
+    case 's':
       return {
         ...baseStyle,
-        bottom: "-4px",
-        left: "16px",
-        right: "16px",
-        height: "8px",
-        cursor: "s-resize",
+        bottom: '-4px',
+        left: '16px',
+        right: '16px',
+        height: '8px',
+        cursor: 's-resize',
       };
-    case "w":
+    case 'w':
       return {
         ...baseStyle,
-        left: "-4px",
-        top: "16px",
-        bottom: "16px",
-        width: "8px",
-        cursor: "w-resize",
+        left: '-4px',
+        top: '16px',
+        bottom: '16px',
+        width: '8px',
+        cursor: 'w-resize',
       };
-    case "e":
+    case 'e':
       return {
         ...baseStyle,
-        right: "-4px",
-        top: "16px",
-        bottom: "16px",
-        width: "8px",
-        cursor: "e-resize",
+        right: '-4px',
+        top: '16px',
+        bottom: '16px',
+        width: '8px',
+        cursor: 'e-resize',
       };
     default:
       return baseStyle;
@@ -213,6 +213,24 @@ export default function WidgetShell({
   );
   const arrows = useSelector((state: RootState) => state.arrow.arrows);
 
+  const [visualPosition, setVisualPosition] = useState({
+    x: widget.x,
+    y: widget.y,
+    width: widget.width,
+    height: widget.height,
+  });
+
+  const { debouncedUpdateWidget } = useDebounceDispatch();
+
+  useEffect(() => {
+    setVisualPosition({
+      x: widget.x,
+      y: widget.y,
+      width: widget.width,
+      height: widget.height,
+    });
+  }, [widget.x, widget.y, widget.width, widget.height]);
+
   useEffect(() => {
     setIsSelected(selectedWidget?.includes(widget.id) ?? false);
     if (selectedWidget !== null && selectedWidget !== editModeWidgets) {
@@ -234,18 +252,18 @@ export default function WidgetShell({
 
   useEffect(() => {
     if (isSelected) {
-      window.addEventListener("keydown", handleKeyDown);
-      return () => window.removeEventListener("keydown", handleKeyDown);
+      window.addEventListener('keydown', handleKeyDown);
+      return () => window.removeEventListener('keydown', handleKeyDown);
     }
   }, [isSelected]);
 
   useEffect(() => {
     if (isDragging || isResizing) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
       return () => {
-        window.removeEventListener("mousemove", handleMouseMove);
-        window.removeEventListener("mouseup", handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
       };
     }
   }, [isDragging, isResizing]);
@@ -279,7 +297,7 @@ export default function WidgetShell({
         ...arrowPoints,
       };
 
-      console.log("newArrow:", newArrow);
+      console.log('newArrow:', newArrow);
 
       // Redux store에 화살표 추가
       dispatch(addArrow(newArrow));
@@ -310,10 +328,10 @@ export default function WidgetShell({
 
       // 중복이 제거된 화살표 배열이 기존과 다르다면 업데이트
       if (uniqueArrows.length !== arrows.length) {
-        console.log("중복 화살표가 제거됨:", uniqueArrows);
+        console.log('중복 화살표가 제거됨:', uniqueArrows);
         dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
       }
-      console.log("Updated arrows:", arrows);
+      console.log('Updated arrows:', arrows);
     }
   }, [arrows]);
 
@@ -367,70 +385,72 @@ export default function WidgetShell({
       const snappedHeight = snapHeight(height);
       setSnappedHeight(snappedHeight);
       console.log(snappedHeight);
-      dispatch(
-        updateWidget({
-          ...widget,
-          height: snappedHeight,
-        })
-      );
+      debouncedUpdateWidget({
+        ...widget,
+        height: snappedHeight,
+      });
+      // dispatch(
+      //   updateWidget({
+      //     ...widget,
+      //     height: snappedHeight,
+      //   })
+      // );
     }
   };
 
   const handleTextChange = (text: string) => {
-    if (widget.innerWidget.type === "text") {
-      dispatch(
-        updateWidget({
-          ...widget,
-          innerWidget: { ...widget.innerWidget, text },
-        })
-      );
+    if (widget.innerWidget.type === 'text') {
+      debouncedUpdateWidget({
+        ...widget,
+        innerWidget: { ...widget.innerWidget, text },
+      });
     }
   };
 
   // arrow 노드 스타일 함수 수정
   const setArrowNodeStyle = (position: string): React.CSSProperties => {
     const baseStyle: React.CSSProperties = {
-      position: "absolute",
-      width: hoveredEdge === position ? "10px" : "6px", // hover 시 크기 증가
-      height: hoveredEdge === position ? "10px" : "6px",
-      backgroundColor: "#FFB300",
+      position: 'absolute',
+      width: hoveredEdge === position ? '10px' : '6px', // hover 시 크기 증가
+      height: hoveredEdge === position ? '10px' : '6px',
+      backgroundColor: '#FFB300',
       outline:
         hoveredEdge === position
-          ? "none"
+          ? 'none'
           : `${
               isEditMode
-                ? "2px solid black"
+                ? '2px solid black'
                 : isSelected
-                ? "2px solid #BBDEFB"
-                : "#e0e0e0"
+                ? '2px solid #BBDEFB'
+                : '#e0e0e0'
             }`,
-      borderRadius: "50%",
-      display: hoveredEdge === position ? "block" : "none",
-      cursor: "pointer",
+      borderRadius: '50%',
+      display: hoveredEdge === position ? 'block' : 'none',
+      cursor: 'pointer',
       zIndex: 10, // resize 핸들보다 위에 표시
-      transition: "all 0.2s ease",
+      transition: 'all 0.2s ease',
     };
 
     const positions = {
       n: {
-        top: hoveredEdge === "n" ? "-6px" : "-4px",
-        left: "50%",
-        transform: "translateX(-50%)",
+        top: hoveredEdge === 'n' ? '-6px' : '-4px',
+        left: '50%',
+        transform: 'translateX(-50%)',
       },
       s: {
-        bottom: hoveredEdge === "s" ? "-6px" : "-4px",
-        left: "50%",
-        transform: "translateX(-50%)",
+        bottom: hoveredEdge === 's' ? '-6px' : '-4px',
+        left: '50%',
+        transform: 'translateX(-50%)',
       },
       w: {
-        left: hoveredEdge === "w" ? "-6px" : "-4px",
-        top: "50%",
-        transform: "translateY(-50%)",
+        left: hoveredEdge === 'w' ? '-6px' : '-4px',
+        top: '50%',
+        transform: 'translateY(-50%)',
       },
       e: {
-        right: hoveredEdge === "e" ? "-6px" : "-4px",
-        top: "50%",
-        transform: "translateY(-50%)",
+        right: hoveredEdge === 'e' ? '-6px' : '-4px',
+        top: '50%',
+        transform: 'translateY(-50%)',
       },
     };
 
@@ -458,7 +478,7 @@ export default function WidgetShell({
 
   const renderInnerWidget = () => {
     switch (widget.innerWidget.type) {
-      case "text":
+      case 'text':
         return (
           <WidgetText
             {...widget.innerWidget}
@@ -469,14 +489,14 @@ export default function WidgetShell({
             onTextChange={handleTextChange}
           />
         );
-      case "section":
+      case 'section':
         const sectionWidget = {
           ...widget,
-          type: "shell" as const,
+          type: 'shell' as const,
           innerWidget: {
             ...widget.innerWidget,
-            type: "section" as const,
-            fill: widget.innerWidget.fill || "rgba(200, 200, 200, 0.2)",
+            type: 'section' as const,
+            fill: widget.innerWidget.fill || 'rgba(200, 200, 200, 0.2)',
             memberIds: (widget.innerWidget as SectionWidget).memberIds || [],
           },
         } satisfies ShellWidgetProps<SectionWidget>;
@@ -487,17 +507,15 @@ export default function WidgetShell({
             isSelected={isSelected}
             onSelect={() => dispatch(addSelectedWidget(widget.id))}
             onChange={(newAttrs) => {
-              dispatch(
-                updateWidget({
-                  ...widget,
-                  ...newAttrs,
-                })
-              );
+              debouncedUpdateWidget({
+                ...widget,
+                ...newAttrs,
+              });
             }}
             shapes={widgets}
             updateShapes={(newShapes) => {
               newShapes.forEach((shape) => {
-                dispatch(updateWidget(shape));
+                debouncedUpdateWidget(shape);
               });
             }}
             scale={scale}
@@ -505,16 +523,16 @@ export default function WidgetShell({
           />
         );
 
-      case "boardLink":
+      case 'boardLink':
         return (
-          <div className="flex flex-col h-full">
+          <div className='flex flex-col h-full'>
             {headerBar && (
-              <h2 className="text-xl font-semibold text-center">
+              <h2 className='text-xl font-semibold text-center'>
                 {widget.innerWidget.titleBlock}
               </h2>
             )}
 
-            <div className="flex-grow p-4">
+            <div className='flex-grow p-4'>
               <WidgetBoard
                 {...widget.innerWidget}
                 editable={false}
@@ -525,7 +543,7 @@ export default function WidgetShell({
             </div>
           </div>
         );
-      case "image":
+      case 'image':
         return (
           <WidgetImage
             {...widget.innerWidget}
@@ -534,7 +552,7 @@ export default function WidgetShell({
             isReduced={isReduced}
           />
         );
-      case "pdf":
+      case 'pdf':
         return (
           <WidgetPdf
             {...widget.innerWidget}
@@ -543,7 +561,7 @@ export default function WidgetShell({
             isReduced={isReduced}
           />
         );
-      case "url":
+      case 'url':
         return (
           <WidgetUrl
             {...widget.innerWidget}
@@ -553,15 +571,15 @@ export default function WidgetShell({
             isReduced={isReduced}
           />
         );
-      case "center":
+      case 'center':
         return (
-          <div className="flex flex-col h-full">
+          <div className='flex flex-col h-full'>
             {headerBar && (
-              <h2 className="text-xl font-semibold text-start px-4">
+              <h2 className='text-xl font-semibold text-start px-4'>
                 {widget.innerWidget.titleBlock}
               </h2>
             )}
-            <div className="flex-grow flex-col">
+            <div className='flex-grow flex-col'>
               <WidgetCenter
                 {...widget.innerWidget}
                 height={widget.height}
@@ -586,7 +604,7 @@ export default function WidgetShell({
 
       if (
         e.target instanceof HTMLElement &&
-        e.target.classList.contains("resize-handle") &&
+        e.target.classList.contains('resize-handle') &&
         resizeable
       ) {
         setIsResizing(true);
@@ -613,18 +631,23 @@ export default function WidgetShell({
       const dx = snappedX / scale - widget.x;
       const dy = snappedY / scale - widget.y;
 
+      // 시각적 위치 즉시 업데이트
+      setVisualPosition({
+        ...visualPosition,
+        x: snappedX / scale,
+        y: snappedY / scale,
+      });
+
       if (Array.isArray(selectedWidget) && selectedWidget.includes(widget.id)) {
         // Shift 키가 눌려있지 않으면 기존 선택 해제
         selectedWidget.forEach((id) => {
           const targetWidget = widgets.find((w) => w.id === id);
           if (targetWidget) {
-            dispatch(
-              updateWidget({
-                ...targetWidget,
-                x: targetWidget.x + dx,
-                y: targetWidget.y + dy,
-              })
-            );
+            debouncedUpdateWidget({
+              ...targetWidget,
+              x: targetWidget.x + dx,
+              y: targetWidget.y + dy,
+            });
           }
         });
       }
@@ -633,7 +656,7 @@ export default function WidgetShell({
         // 섹션 이동 시 멤버들도 함께 이동
         const updatedShapes = updateSectionAndMembers(widget, dx, dy, widgets);
         updatedShapes.forEach((shape) => {
-          dispatch(updateWidget(shape));
+          debouncedUpdateWidget(shape);
         });
       } // 객체를 드래그하는 경우
       else {
@@ -655,43 +678,34 @@ export default function WidgetShell({
 
             if (isNowContained && !isCurrentlyMember) {
               // 객체가 섹션 내부에 있고, 현재 멤버가 아니라면 추가
-              dispatch(
-                updateWidget({
-                  ...otherWidget,
-                  innerWidget: {
-                    ...otherWidget.innerWidget,
-                    memberIds: [
-                      ...otherWidget.innerWidget.memberIds,
-                      widget.id,
-                    ],
-                  },
-                })
-              );
+              debouncedUpdateWidget({
+                ...otherWidget,
+                innerWidget: {
+                  ...otherWidget.innerWidget,
+                  memberIds: [...otherWidget.innerWidget.memberIds, widget.id],
+                },
+              });
             } else if (!isNowContained && isCurrentlyMember) {
               // 객체가 섹션 내부에 없고, 현재 멤버라면 제거
-              dispatch(
-                updateWidget({
-                  ...otherWidget,
-                  innerWidget: {
-                    ...otherWidget.innerWidget,
-                    memberIds: otherWidget.innerWidget.memberIds.filter(
-                      (id: string) => id !== widget.id
-                    ),
-                  },
-                })
-              );
+              debouncedUpdateWidget({
+                ...otherWidget,
+                innerWidget: {
+                  ...otherWidget.innerWidget,
+                  memberIds: otherWidget.innerWidget.memberIds.filter(
+                    (id: string) => id !== widget.id
+                  ),
+                },
+              });
             }
           }
         });
 
         // 객체 위치 업데이트
-        dispatch(
-          updateWidget({
-            ...widget,
-            x: newX,
-            y: newY,
-          })
-        );
+        debouncedUpdateWidget({
+          ...widget,
+          x: newX,
+          y: newY,
+        });
       }
     } else if (isResizing) {
       // 기존 크기 조절 로직 유지
@@ -706,6 +720,14 @@ export default function WidgetShell({
           isNodeWidget ? 8 : 0
         );
 
+        // 시각적 위치 즉시 업데이트 추가
+        setVisualPosition({
+          x: newPositions.x,
+          y: newPositions.y,
+          width: newPositions.width,
+          height: newPositions.height,
+        });
+
         const updatedShapes = updateSectionResize(
           widget,
           newPositions.width,
@@ -716,7 +738,7 @@ export default function WidgetShell({
         );
 
         updatedShapes.forEach((shape) => {
-          dispatch(updateWidget(shape));
+          debouncedUpdateWidget(shape);
         });
       } else {
         // 일반 위젯의 크기 조절
@@ -729,12 +751,18 @@ export default function WidgetShell({
           isNodeWidget ? 8 : 0
         );
 
-        dispatch(
-          updateWidget({
-            ...widget,
-            ...newPositions,
-          })
-        );
+        // 시각적 위치 즉시 업데이트 추가
+        setVisualPosition({
+          x: newPositions.x,
+          y: newPositions.y,
+          width: newPositions.width,
+          height: newPositions.height,
+        });
+
+        debouncedUpdateWidget({
+          ...widget,
+          ...newPositions,
+        });
       }
     }
 
@@ -752,9 +780,9 @@ export default function WidgetShell({
     e.preventDefault();
     e.stopPropagation();
     if (
-      widget.innerWidget.type === "text" ||
-      widget.innerWidget.type === "url" ||
-      widget.innerWidget.type === "pdf"
+      widget.innerWidget.type === 'text' ||
+      widget.innerWidget.type === 'url' ||
+      widget.innerWidget.type === 'pdf'
     ) {
       dispatch(setEditModeWidgets(widget.id));
       dispatch(setSelectedWidget(null));
@@ -764,8 +792,8 @@ export default function WidgetShell({
   // 키보드 삭제 이벤트
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isEditMode) return;
-    if (isSelected && (e.key === "Delete" || e.key === "Backspace"))
-      if (widget.innerWidget.type !== "center") {
+    if (isSelected && (e.key === 'Delete' || e.key === 'Backspace'))
+      if (widget.innerWidget.type !== 'center') {
         //중앙 위젯 예외 처리
         dispatch(deleteWidget(widget.id));
       }
@@ -783,7 +811,7 @@ export default function WidgetShell({
   };
 
   const handleWidgetClick = (e: React.MouseEvent) => {
-    console.log("widgetFrom:", widget.from, "widgetTo:", widget.to);
+    console.log('widgetFrom:', widget.from, 'widgetTo:', widget.to);
     if (isArrowMode) {
       dispatch(addLinkWidgets(widget));
     }
@@ -806,36 +834,32 @@ export default function WidgetShell({
 
   // 축소 버튼 클릭 핸들러
   const handleReduceButtonClick = () => {
-    console.log("reduce button clicked");
+    console.log('reduce button clicked');
     const newIsReduced = !isReduced;
     setIsReduced(newIsReduced);
     console.log(isReduced);
     if (newIsReduced) {
-      dispatch(
-        updateWidget({
-          ...widget,
-          innerWidget: {
-            ...widget.innerWidget,
-            resizeable: false,
-            editable: false,
-            headerBar: false,
-          },
-          height: 132,
-        })
-      );
+      debouncedUpdateWidget({
+        ...widget,
+        innerWidget: {
+          ...widget.innerWidget,
+          resizeable: false,
+          editable: false,
+          headerBar: false,
+        },
+        height: 132,
+      });
     } else {
-      dispatch(
-        updateWidget({
-          ...widget,
-          innerWidget: {
-            ...widget.innerWidget,
-            headerBar: true,
-            resizeable: true,
-            editable: true,
-          },
-          height: snappedHeight,
-        })
-      );
+      debouncedUpdateWidget({
+        ...widget,
+        innerWidget: {
+          ...widget.innerWidget,
+          headerBar: true,
+          resizeable: true,
+          editable: true,
+        },
+        height: snappedHeight,
+      });
     }
   };
 
@@ -851,205 +875,205 @@ export default function WidgetShell({
       {isReduced && (
         <div
           className={` h-[40px] flex w-fit border ${
-            isSelected ? "block" : "hidden"
+            isSelected ? 'block' : 'hidden'
           }`}
           style={{
-            position: "absolute",
+            position: 'absolute',
             left: `${(widget.x + offset.x + 4) * scale}px`,
             top: `${(widget.y + offset.y - 40) * scale}px`, // 위젯 위에 배치
             transform: `scale(${scale})`,
-            transformOrigin: "0 0",
+            transformOrigin: '0 0',
             zIndex: 999,
           }}
         >
-          <div className="flex items-center">
+          <div className='flex items-center'>
             <Button
-              size="icon"
-              className=" rounded-none p-2 bg-white"
+              size='icon'
+              className=' rounded-none p-2 bg-white'
               onClick={handleReduceButtonClick}
             >
               <SvgIcon
-                fill="none"
+                fill='none'
                 width={8}
                 height={9}
-                className="flex items-center justify-center"
+                className='flex items-center justify-center'
               >
                 {chevronDownSvg8px}
               </SvgIcon>
             </Button>
             <Button
-              size="icon"
-              className=" rounded-none p-2 bg-white"
+              size='icon'
+              className=' rounded-none p-2 bg-white'
               onClick={handlePopupButtonClick}
             >
               <SvgIcon
-                fill="none"
+                fill='none'
                 width={8}
                 height={9}
-                className="flex items-center justify-center"
+                className='flex items-center justify-center'
               >
                 {wideFrameSvg8px}
               </SvgIcon>
             </Button>
           </div>
-          <div className="flex items-center">
-            <Button size="icon" className=" rounded-none p-2 bg-white">
+          <div className='flex items-center'>
+            <Button size='icon' className=' rounded-none p-2 bg-white'>
               <SvgIcon
-                fill="none"
+                fill='none'
                 width={8}
                 height={9}
-                className="flex items-center justify-center text-black"
+                className='flex items-center justify-center text-black'
               >
                 {arrowModeSvg}
               </SvgIcon>
             </Button>
-            <Button size="icon" className=" rounded-none p-2 bg-white">
-              <Info className="text-black" />
+            <Button size='icon' className=' rounded-none p-2 bg-white'>
+              <Info className='text-black' />
             </Button>
-            <Button size="icon" className=" rounded-none p-2 bg-white">
-              <Ellipsis className="text-black" />
+            <Button size='icon' className=' rounded-none p-2 bg-white'>
+              <Ellipsis className='text-black' />
             </Button>
           </div>
         </div>
       )}
       <div
-        className="widget-shell group"
+        className='widget-shell group'
         style={{
-          position: "absolute",
-          zIndex: widget.innerWidget.type === "section" ? 1 : 2,
-          padding: "4px",
-          margin: isNodeWidget ? `${4 * scale}px` : "0",
-          left: `${(widget.x + offset.x) * scale}px`, // offset을 더한 후 scale 적용
-          top: `${(widget.y + offset.y) * scale}px`, // offset을 더한 후 scale 적용
-          width: `${widget.width}px`,
-          height: `${widget.height}px`,
+          position: 'absolute',
+          zIndex: widget.innerWidget.type === 'section' ? 1 : 2,
+          padding: '4px',
+          margin: isNodeWidget ? `${4 * scale}px` : '0',
+          left: `${(visualPosition.x + offset.x) * scale}px`, // offset을 더한 후 scale 적용
+          top: `${(visualPosition.y + offset.y) * scale}px`, // offset을 더한 후 scale 적용
+          width: `${visualPosition.width}px`,
+          height: `${visualPosition.height}px`,
           transform: `scale(${scale})`,
-          transformOrigin: "0 0",
+          transformOrigin: '0 0',
           backgroundColor:
-            widget.innerWidget.type === "section"
-              ? "rgba(200, 200, 200, 0.2)"
-              : "white",
-          opacity: widget.innerWidget.type === "section" ? 0.8 : 1,
+            widget.innerWidget.type === 'section'
+              ? 'rgba(200, 200, 200, 0.2)'
+              : 'white',
+          opacity: widget.innerWidget.type === 'section' ? 0.8 : 1,
           border: `2px solid ${
             isEditMode
-              ? "black"
+              ? 'black'
               : isSelected
-              ? "#FFB300"
+              ? '#FFB300'
               : isArrowMode
-              ? "#F1F5F9"
-              : "#e0e0e0"
+              ? '#F1F5F9'
+              : '#e0e0e0'
           }`,
           outline: `${
             isEditMode
-              ? "2px solid black"
+              ? '2px solid black'
               : isSelected
-              ? "2px solid #FFB300" //amber-500
-              : "none"
+              ? '2px solid #FFB300' //amber-500
+              : 'none'
           }`,
-          outlineOffset: "0px", // 음수 값을 주면 안쪽으로 들어갑니다
-          borderRadius: "4px",
-          transition: "height 0.3s ease-in-out", // 높이 ���경 애니메이션 추가
+          outlineOffset: '0px', // 음수 값을 주면 안쪽으로 들어갑니다
+          borderRadius: '4px',
+          transition: 'height 0.3s ease-in-out', // 높이 ���경 애니메이션 추가
         }}
         onClick={handleWidgetClick}
         onMouseDown={handleMouseDown}
         onDoubleClick={handleDoubleClick}
       >
         {headerBar && (
-          <div className="transition-opacity duration-200 hover:bg-gray-100 header-bar opacity-0 group-hover:opacity-100">
-            <div className="flex items-center">
+          <div className='transition-opacity duration-200 hover:bg-gray-100 header-bar opacity-0 group-hover:opacity-100'>
+            <div className='flex items-center'>
               <Button
-                size="icon"
-                className=" rounded-none p-2 bg-white"
+                size='icon'
+                className=' rounded-none p-2 bg-white'
                 onClick={handleReduceButtonClick}
               >
                 <SvgIcon
-                  fill="none"
+                  fill='none'
                   width={8}
                   height={9}
-                  className="flex items-center justify-center"
+                  className='flex items-center justify-center'
                 >
                   {chevronDownSvg8px}
                 </SvgIcon>
               </Button>
               <Button
-                id="popupbutton"
-                size="icon"
-                className=" rounded-none p-2 bg-white"
+                id='popupbutton'
+                size='icon'
+                className=' rounded-none p-2 bg-white'
                 onClick={handlePopupButtonClick}
               >
                 <SvgIcon
-                  fill="none"
+                  fill='none'
                   width={8}
                   height={9}
-                  className="flex items-center justify-center"
+                  className='flex items-center justify-center'
                 >
                   {wideFrameSvg8px}
                 </SvgIcon>
               </Button>
             </div>
-            <div className="flex items-center">
-              <Button size="icon" className=" rounded-none p-2 bg-white">
+            <div className='flex items-center'>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
                 <SvgIcon
-                  fill="none"
+                  fill='none'
                   width={8}
                   height={9}
-                  className="flex items-center justify-center text-black"
+                  className='flex items-center justify-center text-black'
                 >
                   {arrowModeSvg}
                 </SvgIcon>
               </Button>
-              <Button size="icon" className=" rounded-none p-2 bg-white">
-                <Info className="text-black" />
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <Info className='text-black' />
               </Button>
-              <Button size="icon" className=" rounded-none p-2 bg-white">
-                <Ellipsis className="text-black" />
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
+                <Ellipsis className='text-black' />
               </Button>
             </div>
           </div>
         )}
         <div
           className={`h-full w-full overflow-hidden ${
-            isEditMode ? "edit-mode-container" : ""
+            isEditMode ? 'edit-mode-container' : ''
           }`}
         >
           {renderInnerWidget()}
         </div>
         {footerBar && (
-          <div className="footer-bar">
-            <div className="flex items-center justify-between space-x-1  h-full pl-4">
-              <div className="text-[12px] text-muted-foreground">v 3.26</div>
-              <div className="w-[2px] h-[2px] bg-muted-foreground rounded-full" />
-              <div className="text-[12px] text-muted-foreground">24.08.17</div>
-              <div className="w-[2px] h-[2px] bg-muted-foreground rounded-full" />
-              <div className="text-[12px] text-muted-foreground">08:28</div>
+          <div className='footer-bar'>
+            <div className='flex items-center justify-between space-x-1  h-full pl-4'>
+              <div className='text-[12px] text-muted-foreground'>v 3.26</div>
+              <div className='w-[2px] h-[2px] bg-muted-foreground rounded-full' />
+              <div className='text-[12px] text-muted-foreground'>24.08.17</div>
+              <div className='w-[2px] h-[2px] bg-muted-foreground rounded-full' />
+              <div className='text-[12px] text-muted-foreground'>08:28</div>
             </div>
-            <div className="flex items-center">
-              <Button size="icon" className=" rounded-none p-2 bg-white">
+            <div className='flex items-center'>
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
                 <SvgIcon
-                  fill="none"
+                  fill='none'
                   width={8}
                   height={9}
-                  className="flex items-center justify-center text-black"
+                  className='flex items-center justify-center text-black'
                 >
                   {sixBoltSvg}
                 </SvgIcon>
               </Button>
-              <Button size="icon" className=" rounded-none p-2 bg-white">
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
                 <SvgIcon
-                  fill="none"
+                  fill='none'
                   width={8}
                   height={9}
-                  className="flex items-center justify-center text-black"
+                  className='flex items-center justify-center text-black'
                 >
                   {pauseSvg}
                 </SvgIcon>
               </Button>
-              <Button size="icon" className=" rounded-none p-2 bg-white">
+              <Button size='icon' className=' rounded-none p-2 bg-white'>
                 <SvgIcon
-                  fill="none"
+                  fill='none'
                   width={8}
                   height={9}
-                  className="flex items-center justify-center text-black"
+                  className='flex items-center justify-center text-black'
                 >
                   {recordSvg}
                 </SvgIcon>
@@ -1063,61 +1087,61 @@ export default function WidgetShell({
         <>
           {resizeable && (
             <>
-              <div className="resize-handle nw" style={getHandleStyle("nw")} />
-              <div className="resize-handle ne" style={getHandleStyle("ne")} />
-              <div className="resize-handle sw" style={getHandleStyle("sw")} />
-              <div className="resize-handle se" style={getHandleStyle("se")} />
+              <div className='resize-handle nw' style={getHandleStyle('nw')} />
+              <div className='resize-handle ne' style={getHandleStyle('ne')} />
+              <div className='resize-handle sw' style={getHandleStyle('sw')} />
+              <div className='resize-handle se' style={getHandleStyle('se')} />
             </>
           )}
           <div
-            className="resize-handle n"
-            style={getHandleStyle("n")}
-            onMouseEnter={() => handleEdgeHover("n")}
+            className='resize-handle n'
+            style={getHandleStyle('n')}
+            onMouseEnter={() => handleEdgeHover('n')}
             onMouseLeave={() => handleEdgeHover(null)}
           />
           <div
-            className="resize-handle s"
-            style={getHandleStyle("s")}
-            onMouseEnter={() => handleEdgeHover("s")}
+            className='resize-handle s'
+            style={getHandleStyle('s')}
+            onMouseEnter={() => handleEdgeHover('s')}
             onMouseLeave={() => handleEdgeHover(null)}
           />
           <div
-            className="resize-handle w"
-            style={getHandleStyle("w")}
-            onMouseEnter={() => handleEdgeHover("w")}
+            className='resize-handle w'
+            style={getHandleStyle('w')}
+            onMouseEnter={() => handleEdgeHover('w')}
             onMouseLeave={() => handleEdgeHover(null)}
           />
           <div
-            className="resize-handle e"
-            style={getHandleStyle("e")}
-            onMouseEnter={() => handleEdgeHover("e")}
+            className='resize-handle e'
+            style={getHandleStyle('e')}
+            onMouseEnter={() => handleEdgeHover('e')}
             onMouseLeave={() => handleEdgeHover(null)}
           />
         </>
-        <div className="arrow-node-container">
+        <div className='arrow-node-container'>
           <div
-            className="arrow-node n"
-            style={setArrowNodeStyle("n")}
-            onMouseEnter={(e) => handleArrowNodeHover("n", true, e)}
-            onMouseLeave={(e) => handleArrowNodeHover("n", false, e)}
+            className='arrow-node n'
+            style={setArrowNodeStyle('n')}
+            onMouseEnter={(e) => handleArrowNodeHover('n', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('n', false, e)}
           />
           <div
-            className="arrow-node s"
-            style={setArrowNodeStyle("s")}
-            onMouseEnter={(e) => handleArrowNodeHover("s", true, e)}
-            onMouseLeave={(e) => handleArrowNodeHover("s", false, e)}
+            className='arrow-node s'
+            style={setArrowNodeStyle('s')}
+            onMouseEnter={(e) => handleArrowNodeHover('s', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('s', false, e)}
           />
           <div
-            className="arrow-node w"
-            style={setArrowNodeStyle("w")}
-            onMouseEnter={(e) => handleArrowNodeHover("w", true, e)}
-            onMouseLeave={(e) => handleArrowNodeHover("w", false, e)}
+            className='arrow-node w'
+            style={setArrowNodeStyle('w')}
+            onMouseEnter={(e) => handleArrowNodeHover('w', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('w', false, e)}
           />
           <div
-            className="arrow-node e"
-            style={setArrowNodeStyle("e")}
-            onMouseEnter={(e) => handleArrowNodeHover("e", true, e)}
-            onMouseLeave={(e) => handleArrowNodeHover("e", false, e)}
+            className='arrow-node e'
+            style={setArrowNodeStyle('e')}
+            onMouseEnter={(e) => handleArrowNodeHover('e', true, e)}
+            onMouseLeave={(e) => handleArrowNodeHover('e', false, e)}
           />
         </div>
       </div>
