@@ -11,7 +11,9 @@ import {
   addWidget,
   addWidgetFrom,
   addWidgetTo,
+  deleteWidget,
   setInitialWidgets,
+  updateWidget,
 } from '@/lib/redux/features/whiteboardSlice';
 import { setWebSocket } from '@/lib/redux/middleware/websocketMiddleware';
 
@@ -79,6 +81,22 @@ export default function Board() {
       console.log('웹소켓 연결 성공');
       setIsSocketConnected(true);
       setWebSocket(socket);
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      switch (data.type) {
+        case 'widget:created':
+          dispatch(addWidget(data.widget));
+          break;
+        case 'widget:updated':
+          dispatch(updateWidget(data.widget));
+          break;
+        case 'widget:deleted':
+          dispatch(deleteWidget(data.widgetId));
+          break;
+      }
     };
 
     return () => {
