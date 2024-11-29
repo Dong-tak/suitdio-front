@@ -1,6 +1,12 @@
 'use client';
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, {
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import {
   Type,
   AppWindowMacIcon,
@@ -29,6 +35,7 @@ import {
   setInitialWidgets,
   redo,
   undo,
+  deleteWidget,
 } from '@/lib/redux/features/whiteboardSlice';
 
 import {
@@ -64,8 +71,8 @@ import {
   setSelectedArrows,
 } from '@/lib/redux/features/arrowSlice';
 import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
-import { useWebSocket } from '@/hooks/use-socket';
 import { getTsid } from 'tsid-ts';
+import { debounce } from 'lodash';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -1178,11 +1185,6 @@ export default function Whiteboard() {
       console.log('Updated arrows:', arrows);
     }
   }, [arrows]);
-
-  // 디버깅을 위한 로그 추가
-  // useEffect(() => {
-  //   console.log("현재 렌더링될 위젯들:", widgets);
-  // }, [widgets]);
 
   return (
     <div className='flex flex-col h-screen'>

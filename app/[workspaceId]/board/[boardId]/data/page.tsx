@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useRef } from 'react';
 import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
-import { useWebSocket } from '@/hooks/use-socket';
 import { useParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import { fetchBoardDetail } from './action';
@@ -14,8 +13,7 @@ import {
   addWidgetTo,
   setInitialWidgets,
 } from '@/lib/redux/features/whiteboardSlice';
-import { createStore, store } from '@/lib/redux/store';
-import { createWebSocketMiddleware } from '@/lib/redux/middleware/websocketMiddleware';
+import { setWebSocket } from '@/lib/redux/middleware/websocketMiddleware';
 
 export default function Board() {
   const params = useParams();
@@ -32,7 +30,6 @@ export default function Board() {
   });
 
   const [mounted, setMounted] = useState(true);
-  const storeInitializedRef = useRef(false);
 
   // 데이터 로딩 로직
   useEffect(() => {
@@ -81,20 +78,7 @@ export default function Board() {
     socket.onopen = () => {
       console.log('웹소켓 연결 성공');
       setIsSocketConnected(true);
-
-      // store가 아직 초기화되지 않은 경우에만 실행
-      if (!storeInitializedRef.current) {
-        const currentState = store.getState();
-        const newStore = createStore([createWebSocketMiddleware(socket)]);
-
-        newStore.dispatch({
-          type: 'whiteboard/setInitialWidgets',
-          payload: currentState.whiteboard.widgets,
-        });
-
-        Object.assign(store, newStore);
-        storeInitializedRef.current = true;
-      }
+      setWebSocket(socket);
     };
 
     return () => {
