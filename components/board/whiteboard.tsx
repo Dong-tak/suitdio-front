@@ -70,6 +70,7 @@ import tsid, { getTsid } from "tsid-ts";
 import { Spinner } from "../ui/spinner";
 import { Board, fetchBoards } from "@/app/[workspaceId]/record/action";
 import { useParams } from "next/navigation";
+import { AIChat } from "../ui/ai";
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -584,7 +585,7 @@ export default function Whiteboard() {
           return;
       }
 
-      // 공통 shell 위��� 생성
+      // 공통 shell 위 생성
       const newWidget: ShellWidgetProps<AllWidgetTypes> = {
         id: Date.now().toString(),
         type: "shell",
@@ -1260,6 +1261,8 @@ export default function Whiteboard() {
     canvasRef.current?.addEventListener("mousedown", handleNextClick);
   };
 
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+
   return (
     <div className="flex flex-col h-screen">
       {/* 툴바 */}
@@ -1436,10 +1439,10 @@ export default function Whiteboard() {
           <Button
             variant={tool === "aiSearch" ? "toolSelect" : "white"}
             size="icon"
-            onClick={() => setTool("aiSearch")}
+            onClick={() => setIsAIChatOpen(!isAIChatOpen)}
           >
             <HiOutlineSparkles className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <span className="sr-only">AI Assistant</span>
           </Button>
         </div>
       </div>
@@ -1548,6 +1551,7 @@ export default function Whiteboard() {
           setIsActive={setIsBrainstormActive}
           setTool={setTool}
         />
+        <AIChat isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
       </div>
     </div>
   );
