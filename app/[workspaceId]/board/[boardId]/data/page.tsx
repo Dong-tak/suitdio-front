@@ -32,6 +32,7 @@ export default function Board() {
   });
 
   const [mounted, setMounted] = useState(true);
+  const storeInitializedRef = useRef(false);
 
   // 데이터 로딩 로직
   useEffect(() => {
@@ -81,9 +82,19 @@ export default function Board() {
       console.log('웹소켓 연결 성공');
       setIsSocketConnected(true);
 
-      // 웹소켓 연결 후 새로운 store 생성 및 교체
-      const newStore = createStore([createWebSocketMiddleware(socket)]);
-      Object.assign(store, newStore);
+      // store가 아직 초기화되지 않은 경우에만 실행
+      if (!storeInitializedRef.current) {
+        const currentState = store.getState();
+        const newStore = createStore([createWebSocketMiddleware(socket)]);
+
+        newStore.dispatch({
+          type: 'whiteboard/setInitialWidgets',
+          payload: currentState.whiteboard.widgets,
+        });
+
+        Object.assign(store, newStore);
+        storeInitializedRef.current = true;
+      }
     };
 
     return () => {

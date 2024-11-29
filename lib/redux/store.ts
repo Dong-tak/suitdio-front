@@ -2,7 +2,6 @@ import { configureStore, Middleware } from '@reduxjs/toolkit';
 import whiteboardReducer from './features/whiteboardSlice';
 import arrowReducer from './features/arrowSlice';
 import registerReducer from './features/registerSlice';
-import { createWebSocketMiddleware } from './middleware/websocketMiddleware';
 
 // 초기 store 생성 (웹소켓 미들웨어 없이)
 export const createStore = (additionalMiddleware?: Middleware[]) => {
