@@ -67,6 +67,12 @@ const whiteboardSlice = createSlice({
       state.history.future = []; // 새 액션이 발생하면 future 초기화
       state.lastSavedState = [...state.widgets];
     },
+    addWebsocketWidget: (
+      state,
+      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
+    ) => {
+      state.widgets.push(action.payload);
+    },
     addMiddleWidget: (
       state,
       action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
@@ -88,6 +94,15 @@ const whiteboardSlice = createSlice({
         state.widgets[index] = action.payload;
         state.history.future = []; // 새 액션이 발생하면 future 초기화
         state.lastSavedState = [...state.widgets];
+      }
+    },
+    updateWebsocketWidget: (
+      state,
+      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>>
+    ) => {
+      const index = state.widgets.findIndex((w) => w.id === action.payload.id);
+      if (index !== -1) {
+        state.widgets[index] = action.payload;
       }
     },
     deleteWidget: (state, action: PayloadAction<string>) => {
@@ -252,6 +267,8 @@ export const {
   setInitialWidgets,
   addWidget,
   updateWidget,
+  addWebsocketWidget,
+  updateWebsocketWidget,
   deleteWidget,
   addMiddleWidget,
   setSelectedWidget,

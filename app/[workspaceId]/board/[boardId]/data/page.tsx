@@ -8,11 +8,13 @@ import { Spinner } from "@/components/ui/spinner";
 import { fetchBoardDetail } from "./action";
 import { useDispatch } from "react-redux";
 import {
+  addWebsocketWidget,
   addWidget,
   addWidgetFrom,
   addWidgetTo,
   deleteWidget,
   setInitialWidgets,
+  updateWebsocketWidget,
   updateWidget,
 } from "@/lib/redux/features/whiteboardSlice";
 import { setWebSocket } from "@/lib/redux/middleware/websocketMiddleware";
@@ -75,7 +77,7 @@ export default function Board() {
     if (!isDataLoaded) return;
 
     const socket = new WebSocket(
-      `ws://localhost:8000/v1/play/board/${boardId}/`
+      `${process.env.NEXT_PUBLIC_WEBSOCKET_BASE_URL}/v1/play/board/${boardId}/`
     );
 
     socket.onopen = () => {
@@ -98,12 +100,12 @@ export default function Board() {
           case "create":
             const parsedWidget = parseWidgetInstance(action.data);
             console.log("파싱된 위젯:", parsedWidget);
-            // dispatch(addWidget(parsedWidget));
+            dispatch(addWebsocketWidget(parsedWidget));
             break;
           case "update":
             const parsedWidget1 = parseWidgetInstance(action.data);
             console.log("파싱된 위젯:", parsedWidget1);
-            // dispatch(updateWidget(parseWidgetInstance(action.data)));
+            dispatch(updateWebsocketWidget(parsedWidget1));
             break;
           case "delete":
             dispatch(deleteWidget(action.data.id));
