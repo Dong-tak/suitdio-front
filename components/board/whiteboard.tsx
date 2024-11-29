@@ -47,20 +47,21 @@ import {
   IframeEmbedWidget,
   SelectArea,
   Arrow,
-} from '@/types/type';
-import '@blocknote/core/fonts/inter.css';
-import '@blocknote/mantine/style.css';
-import WidgetShell from '../widget/widgetShell';
-import SvgIcon from '@/lib/utils/svgIcon';
-import { sectionSvg } from '@/lib/utils/svgBag';
-import { HiOutlineSparkles } from 'react-icons/hi2';
-import { Separator } from '../ui/separator';
-import { createTextNode } from '@/lib/utils/textNodeCreator';
-import BrainstormInput from '../widget/widgetBrainstorm';
-import CreateBoardDialog from '../home/creatboard';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
+  BoardWidget,
+} from "@/types/type";
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
+import WidgetShell from "../widget/widgetShell";
+import SvgIcon from "@/lib/utils/svgIcon";
+import { sectionSvg } from "@/lib/utils/svgBag";
+import { HiOutlineSparkles } from "react-icons/hi2";
+import { Separator } from "../ui/separator";
+import { createTextNode } from "@/lib/utils/textNodeCreator";
+import BrainstormInput from "../widget/widgetBrainstorm";
+import CreateBoardDialog from "../home/creatboard";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import {
   addArrow,
   deleteArrow,
@@ -69,10 +70,14 @@ import {
   setArrows,
   setIsArrowMode,
   setSelectedArrows,
-} from '@/lib/redux/features/arrowSlice';
-import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
-import { getTsid } from 'tsid-ts';
-import { debounce } from 'lodash';
+} from "@/lib/redux/features/arrowSlice";
+import { calculateArrowPoints, drawArrow } from "../arrow/drawArrow";
+import { useWebSocket } from "@/hooks/use-socket";
+import tsid, { getTsid } from "tsid-ts";
+import { Spinner } from "../ui/spinner";
+import { Board, fetchBoards } from "@/app/[workspaceId]/record/action";
+import { useParams } from "next/navigation";
+import { AIChat } from "../ui/ai";
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -591,7 +596,7 @@ export default function Whiteboard() {
           return;
       }
 
-      // 공통 shell 위젯 생성
+      // 공통 shell 위 생성
       const newWidget: ShellWidgetProps<AllWidgetTypes> = {
         id: Date.now().toString(),
         type: 'shell',
@@ -1185,6 +1190,88 @@ export default function Whiteboard() {
       console.log('Updated arrows:', arrows);
     }
   }, [arrows]);
+  // 디버깅을 위한 로그 추가
+  // useEffect(() => {
+  //   console.log("현재 렌더링될 위젯들:", widgets);
+  // }, [widgets]);
+  // 보드 리스트를 가져오는 함수
+  const [boardList, setBoardList] = useState<Board[]>([]);
+  const [isBoardListLoading, setIsBoardListLoading] = useState(false);
+  const params = useParams();
+  const workspaceId = params.workspaceId as string;
+
+  // fetchBoards 함수 수정
+  const fetchBoardList = async () => {
+    try {
+      setIsBoardListLoading(true);
+      const boards = await fetchBoards(workspaceId);
+      setBoardList(boards);
+    } catch (error) {
+      console.error("보드 리스트 로딩 실패:", error);
+    } finally {
+      setIsBoardListLoading(false);
+    }
+  };
+
+  // fetchBoardList 함수 아래에 handleBoardSelect 함수 추가
+  const handleBoardSelect = (board: Board) => {
+    handleAddBoard();
+    setBoardPosition(null);
+    setContentTitle(board.data.focus);
+
+    const boardUrl = `/${workspaceId}/board/${board.id}/data/`;
+
+    // MouseEvent 타입을 DOM 이벤트로 변경
+    const handleNextClick = (e: MouseEvent) => {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const x = (e.clientX - rect.left - offset.x * scale) / scale;
+      const y = (e.clientY - rect.top - offset.y * scale) / scale;
+
+      const innerWidget: BoardWidget = {
+        id: getTsid().toString(),
+        type: "boardLink",
+        titleBlock: board.data.focus,
+        text: boardUrl,
+        x: Math.round(x / baseSpacing) * baseSpacing,
+        y: Math.round(y / baseSpacing) * baseSpacing,
+        width: 472,
+        height: 300,
+        draggable: true,
+        editable: true,
+        resizeable: true,
+        headerBar: true,
+        footerBar: false,
+      };
+
+      const newWidget: ShellWidgetProps<AllWidgetTypes> = {
+        id: getTsid().toString(),
+        type: "shell",
+        x: Math.round(x / baseSpacing) * baseSpacing,
+        y: Math.round(y / baseSpacing) * baseSpacing,
+        width: 472,
+        height: 300,
+        resizable: true,
+        editable: true,
+        draggable: true,
+        from: [],
+        to: [],
+        innerWidget,
+      };
+
+      dispatch(addWidget(newWidget));
+      setTool("select");
+
+      // 이벤트 리스너 제거
+      canvasRef.current?.removeEventListener("mousedown", handleNextClick);
+    };
+
+    // 다음 클릭을 위한 이벤트 리스너 추가
+    canvasRef.current?.addEventListener("mousedown", handleNextClick);
+  };
+
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
 
   return (
     <div className='flex flex-col h-screen'>
@@ -1216,37 +1303,47 @@ export default function Whiteboard() {
             <MoveRight className='h-4 w-4' />
             <span className='sr-only'>Text tool</span>
           </Button>
-          <Button
-            variant={tool === 'section' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('section')}
-            className='group'
-          >
-            <SvgIcon
-              fill='none'
-              width={16}
-              height={16}
-              className='flex items-center justify-center'
-            >
-              {sectionSvg({
-                isActive: tool === 'section',
-                className: 'group-hover:stroke-teal-500',
-              })}
-            </SvgIcon>
-            <span className='sr-only'>Text tool</span>
-          </Button>
-          <Button
-            variant={tool === 'boardLink' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => {
-              setTool('boardLink');
-              handleAddBoard();
-            }}
-          >
-            <Disc2 className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
-          </Button>
-          <Separator orientation='vertical' className='h-6' />
+
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={tool === "boardLink" ? "toolSelect" : "white"}
+                size="icon"
+                onClick={() => {
+                  setTool("boardLink");
+                  fetchBoardList();
+                }}
+              >
+                <Disc2 className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium leading-none">Select Board</h4>
+                </div>
+                {isBoardListLoading ? (
+                  <div className="flex justify-center py-4">
+                    <Spinner size={24} />
+                  </div>
+                ) : (
+                  <div className="max-h-[300px] overflow-y-auto space-y-2">
+                    {boardList.map((board: Board) => (
+                      <Button
+                        key={board.id}
+                        variant="ghost"
+                        className="w-full justify-start"
+                        onClick={() => handleBoardSelect(board)}
+                      >
+                        <Disc2 className="mr-2 h-4 w-4" />
+                        {board.data.focus}
+                      </Button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           <Button
             variant={tool === 'brainStorm' ? 'toolSelect' : 'white'}
             size='icon'
@@ -1351,12 +1448,12 @@ export default function Whiteboard() {
           </Button>
           <Separator orientation='vertical' className='h-6' />
           <Button
-            variant={tool === 'aiSearch' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('aiSearch')}
+            variant={tool === "aiSearch" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setIsAIChatOpen(!isAIChatOpen)}
           >
-            <HiOutlineSparkles className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <HiOutlineSparkles className="h-4 w-4" />
+            <span className="sr-only">AI Assistant</span>
           </Button>
         </div>
       </div>
@@ -1465,6 +1562,7 @@ export default function Whiteboard() {
           setIsActive={setIsBrainstormActive}
           setTool={setTool}
         />
+        <AIChat isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
       </div>
     </div>
   );
