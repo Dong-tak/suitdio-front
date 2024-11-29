@@ -16,6 +16,7 @@ import {
   updateWidget,
 } from '@/lib/redux/features/whiteboardSlice';
 import { setWebSocket } from '@/lib/redux/middleware/websocketMiddleware';
+import { parseBoardData, parseWidgetInstance } from '@/lib/parseBoard';
 
 export default function Board() {
   const params = useParams();
@@ -85,13 +86,16 @@ export default function Board() {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log('웹소켓 메시지 수신:', data);
 
       switch (data.type) {
         case 'widget:created':
-          dispatch(addWidget(data.widget));
+          const parsedWidget = parseWidgetInstance(data.widget);
+          console.log('파싱된 위젯:', parsedWidget);
+          dispatch(addWidget(parsedWidget));
           break;
         case 'widget:updated':
-          dispatch(updateWidget(data.widget));
+          dispatch(updateWidget(parseWidgetInstance(data.widget)));
           break;
         case 'widget:deleted':
           dispatch(deleteWidget(data.widgetId));
