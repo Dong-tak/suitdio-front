@@ -779,7 +779,6 @@ export default function WidgetShell({
   // 호버 이벤트 핸들러
   const handleEdgeHover = (position: EdgePosition) => {
     setHoveredEdge(position);
-    console.log(`Hovered edge: ${position}`); // 디버깅용
   };
 
   const handleWidgetClick = (e: React.MouseEvent) => {
