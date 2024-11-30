@@ -11,6 +11,7 @@ import {
 } from "@/lib/redux/features/whiteboardSlice";
 import { createBoard } from "./action";
 import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Home() {
   const [contentTitle, setContentTitle] = useState("");
@@ -124,7 +125,8 @@ export default function Home() {
   };
 
   return (
-    <div>
+    <SidebarInset>
+      <SidebarTrigger className="-ml-1" />
       <HomeView
         contentTitle={contentTitle}
         handleInputChange={handleInputChange}
@@ -132,6 +134,6 @@ export default function Home() {
         open={open}
         onOpenChange={onOpenChange}
       />
-    </div>
+    </SidebarInset>
   );
 }

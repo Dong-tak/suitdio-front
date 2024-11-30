@@ -20,8 +20,14 @@ import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
 import { useParams } from "next/navigation";
 import CreateBoardDialog from "@/components/home/creatboard";
 import { Spinner } from "@/components/ui/spinner";
+import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
+import { useDispatch } from "react-redux";
+import { addMiddleWidget } from "@/lib/redux/features/whiteboardSlice";
+import { useRouter } from "next/navigation";
 
 export default function RecordView() {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [data, setData] = useState<{
     workspaceId: string;
     boards: Board[];
@@ -105,6 +111,32 @@ export default function RecordView() {
     }
   };
 
+  const handleSaveClick = async () => {
+    if (contentTitle.trim() && !isLoading) {
+      setIsLoading(true);
+
+      try {
+        const boardPosition = {
+          x: window.innerWidth / 2 - 250,
+          y: window.innerHeight / 2 - 250,
+        };
+
+        const newBoard = createBoardWithTitle(contentTitle, [], boardPosition);
+        dispatch(addMiddleWidget(newBoard));
+
+        const Board = await createBoard(workspaceId, contentTitle);
+        console.log("보드가 생성되었습니다:", Board);
+
+        localStorage.setItem("currentBoardId", Board.id);
+        router.push(`/${workspaceId}/board/${Board.id}/`);
+      } catch (error) {
+        console.error("보드 생성 중 오류 발생:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -117,6 +149,50 @@ export default function RecordView() {
   if (!data) {
     return <div>데이터를 불러오는데 실패했습니다.</div>;
   }
+
+  interface BoardPosition {
+    x: number;
+    y: number;
+  }
+
+  //중앙 위젯 생성 처리
+  const createBoardWithTitle = (
+    contentTitle: string,
+    widgets: ShellWidgetProps<AllWidgetTypes>[],
+    boardPosition: BoardPosition,
+    initialHeight: number = 200
+  ) => {
+    const newBoard: ShellWidgetProps<AllWidgetTypes> = {
+      id: `CenterWidget-${Date.now()}`, // 유니크한 ID 생성
+      type: "shell",
+      x: boardPosition.x,
+      y: boardPosition.y,
+      width: 750,
+      height: initialHeight,
+      resizable: true,
+      editable: true,
+      draggable: false,
+      from: [],
+      to: [],
+      innerWidget: {
+        id: `CenterWidget-${Date.now()}`,
+        type: "center",
+        titleBlock: contentTitle,
+        width: 750,
+        height: initialHeight,
+        x: boardPosition.x,
+        y: boardPosition.y,
+        draggable: false,
+        editable: true,
+        resizeable: false,
+        headerBar: true,
+        footerBar: false,
+        text: "",
+      },
+    };
+
+    return newBoard;
+  };
 
   return (
     <SidebarInset>
@@ -209,7 +285,8 @@ export default function RecordView() {
       <CreateBoardDialog
         contentTitle={contentTitle}
         handleInputChange={handleInputChange}
-        handleSaveClick={handleCreateBoard}
+        handleSaveClick={handleSaveClick}
+        handleCreateBoard={handleCreateBoard}
         open={open}
         onOpenChange={onOpenChange}
       />

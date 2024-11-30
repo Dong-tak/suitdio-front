@@ -158,34 +158,34 @@ export const drawArrow = (
       const y2b = points[i + 3];
 
       // 포인트 표시
-      // 첫 번째 점 (빨간색)
-      ctx.fillStyle = "red";
-      ctx.beginPath();
-      ctx.arc(x2a, y2a, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillText("첫 번째 선분 제어점", x2a + 10, y2a - 10);
+      // // 첫 번째 점 (빨간색)
+      // ctx.fillStyle = "red";
+      // ctx.beginPath();
+      // ctx.arc(x2a, y2a, 3, 0, Math.PI * 2);
+      // ctx.fill();
+      // ctx.fillText("첫 번째 선분 제어점", x2a + 10, y2a - 10);
 
-      // 두 번째 점 (파란색)
-      ctx.fillStyle = "blue";
-      ctx.beginPath();
-      ctx.arc(x2b, y2b, 3, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillText("두 번째 선분 제어점", x2b + 10, y2b + 20);
+      // // 두 번째 점 (파란색)
+      // ctx.fillStyle = "blue";
+      // ctx.beginPath();
+      // ctx.arc(x2b, y2b, 3, 0, Math.PI * 2);
+      // ctx.fill();
+      // ctx.fillText("두 번째 선분 제어점", x2b + 10, y2b + 20);
 
-      // 두 선분을 점선으로 표시 (arcTo의 제어선)
-      ctx.setLineDash([5, 5]);
-      ctx.strokeStyle = "gray";
-      ctx.beginPath();
-      ctx.moveTo(points[i - 2], points[i - 1]); // 이전 점
-      ctx.lineTo(x2a, y2a); // 첫 번째 제어점
-      ctx.lineTo(x2b, y2b); // 두 번째 제어점
-      ctx.stroke();
+      // // 두 선분을 점선으로 표시 (arcTo의 제어선)
+      // ctx.setLineDash([5, 5]);
+      // ctx.strokeStyle = "gray";
+      // ctx.beginPath();
+      // ctx.moveTo(points[i - 2], points[i - 1]); // 이전 점
+      // ctx.lineTo(x2a, y2a); // 첫 번째 제어점
+      // ctx.lineTo(x2b, y2b); // 두 번째 제어점
+      // ctx.stroke();
 
-      // radius 원호 표시
-      ctx.strokeStyle = "purple";
-      ctx.beginPath();
-      ctx.arc(x2a, y2a, radius, 0, Math.PI * 2);
-      ctx.stroke();
+      // // radius 원호 표시
+      // ctx.strokeStyle = "purple";
+      // ctx.beginPath();
+      // ctx.arc(x2a, y2a, radius, 0, Math.PI * 2);
+      // ctx.stroke();
 
       // 실제 선 그리기
       ctx.setLineDash([]); // 점선 제거

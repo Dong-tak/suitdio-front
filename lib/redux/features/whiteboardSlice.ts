@@ -166,6 +166,12 @@ const whiteboardSlice = createSlice({
     setIsReduced: (state, action: PayloadAction<boolean>) => {
       state.isReduced = action.payload;
     },
+    setWidgets: (
+      state,
+      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>[]>
+    ) => {
+      state.widgets = action.payload;
+    },
   },
 });
 
@@ -182,5 +188,6 @@ export const {
   setIsReduced,
   addWidgetFrom,
   addWidgetTo,
+  setWidgets,
 } = whiteboardSlice.actions;
 export default whiteboardSlice.reducer;

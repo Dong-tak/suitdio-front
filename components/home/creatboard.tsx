@@ -21,6 +21,7 @@ interface CreateBoardDialogProps {
   className?: string;
   open?: boolean; // open prop 추가
   onOpenChange?: (open: boolean) => void; // onOpenChange prop 추가
+  handleCreateBoard?: () => void;
 }
 
 export default function CreateBoardDialog({
@@ -30,6 +31,7 @@ export default function CreateBoardDialog({
   className,
   open,
   onOpenChange,
+  handleCreateBoard,
 }: CreateBoardDialogProps) {
   // Ctrl+Enter 핸들러
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
