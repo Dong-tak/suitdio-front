@@ -45,16 +45,18 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
     // 요청 본문을 미리 한 번만 읽어옴
     const requestBody = req.method !== "GET" ? await req.text() : undefined;
 
+    // 첫본 요청의 모든 헤더를 복사
+    const forwardHeaders = new Headers(req.headers);
+    // Authorization 헤더만 덮어쓰기
+    forwardHeaders.set("Authorization", `Bearer ${currentAccessToken}`);
+
     // 첫 번째 API 요청
     let response = await fetch(
       `${process.env.NEXT_PUBLIC_POST_API_URL}/${path}/`,
       {
         method: req.method,
-        headers: {
-          Authorization: `Bearer ${currentAccessToken}`,
-          "Content-Type": "application/json",
-        },
-        body: requestBody, // 저장된 본문 사용
+        headers: forwardHeaders,
+        body: requestBody,
       }
     );
 
@@ -91,11 +93,8 @@ async function handleRequest(req: NextRequest, params: { path: string[] }) {
           `${process.env.NEXT_PUBLIC_POST_API_URL}/${path}/`, // URL 끝에 / 추가
           {
             method: req.method,
-            headers: {
-              Authorization: `Bearer ${currentAccessToken}`,
-              "Content-Type": "application/json",
-            },
-            body: requestBody, // 저장된 본문 재사용
+            headers: forwardHeaders,
+            body: requestBody,
           }
         );
       }
