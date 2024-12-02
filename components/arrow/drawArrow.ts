@@ -74,27 +74,40 @@ export const calculateArrowPoints = (
       : Math.abs(toPoint.y - fromPoint.y) / 2;
 
   let points;
-  if (Math.abs(dx) > Math.abs(dy)) {
-    // 수평 방향
+  // 시작점과 끝점이 수직 또는 수평으로 정렬되어 있는지 확인
+  const isAligned = fromPoint.x === toPoint.x || fromPoint.y === toPoint.y;
+
+  if (isAligned) {
+    // 직선으로 연결
     points = [
       fromPoint.x,
       fromPoint.y, // 시작점
-      midX,
-      fromPoint.y, // 중간 수평점
-      midX,
-      toPoint.y, // 중간 수직점
+      toPoint.x,
+      toPoint.y, // 끝점
+    ];
+  } else if (!isOverlappingX) {
+    // 수평 방향일 때
+    const centerX = (fromPoint.x + toPoint.x) / 2;
+    points = [
+      fromPoint.x,
+      fromPoint.y, // 시작점
+      centerX,
+      fromPoint.y, // 첫 번째 꺾임점
+      centerX,
+      toPoint.y, // 두 번째 꺾임점
       toPoint.x,
       toPoint.y, // 끝점
     ];
   } else {
-    // 수직 방향
+    // 수직 방향일 때
+    const centerY = (fromPoint.y + toPoint.y) / 2;
     points = [
       fromPoint.x,
       fromPoint.y, // 시작점
       fromPoint.x,
-      midY, // 중간 수직점
+      centerY, // 첫 번째 꺾임점
       toPoint.x,
-      midY, // 중간 수평점
+      centerY, // 두 번째 꺾임점
       toPoint.x,
       toPoint.y, // 끝점
     ];
