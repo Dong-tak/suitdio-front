@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { debounce } from 'lodash'; // lodash 임포트
-import { SectionWidget, AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import React, { useEffect, useState, useCallback } from "react";
+import { debounce } from "lodash"; // lodash 임포트
+import { SectionWidget, AllWidgetTypes, ShellWidgetProps } from "@/types/type";
 import {
   isCompletelyContained,
   isWithinBounds,
-} from '@/lib/utils/sectionHelpers';
+} from "@/lib/utils/sectionHelpers";
 
 interface WidgetSectionProps {
   widget: ShellWidgetProps<SectionWidget>;
@@ -57,6 +57,7 @@ export default function WidgetSection({
       const newMembers = shapes
         .filter((shape) => {
           if (shape.id === widget.id) return false;
+          if (shape.innerWidget.type === "center") return false; // 중앙 위젯은 섹션 내부에 포함되지 않음
           const isContained = isCompletelyContained(shape, widget);
           const isWithinMargin = isWithinBounds(shape, boundsWithMargin);
           const isMember =
@@ -66,10 +67,10 @@ export default function WidgetSection({
         .map((shape) => shape.id);
 
       // 멤버십이 변경된 경우에만 업데이트
-      const sortedNewMembers = [...newMembers].sort().join(',');
+      const sortedNewMembers = [...newMembers].sort().join(",");
       const sortedCurrentMembers = [...(widget.innerWidget.memberIds || [])]
         .sort()
-        .join(',');
+        .join(",");
 
       if (sortedNewMembers !== sortedCurrentMembers) {
         onChange({
@@ -93,22 +94,22 @@ export default function WidgetSection({
 
   return (
     <div
-      className='section-container'
+      className="section-container"
       style={{
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
+        width: "100%",
+        height: "100%",
+        position: "absolute",
         top: 0,
         left: 0,
-        backgroundColor: 'rgba(200, 200, 200, 0.2)',
+        backgroundColor: "rgba(200, 200, 200, 0.2)",
         opacity: 0.8,
-        pointerEvents: 'all',
-        cursor: isDragging ? 'grabbing' : 'grab',
+        pointerEvents: "all",
+        cursor: isDragging ? "grabbing" : "grab",
       }}
     >
       <div
-        className='section-content'
-        style={{ width: '100%', height: '100%' }}
+        className="section-content"
+        style={{ width: "100%", height: "100%" }}
       />
     </div>
   );

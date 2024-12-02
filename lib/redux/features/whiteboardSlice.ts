@@ -175,6 +175,12 @@ const whiteboardSlice = createSlice({
       state.isReduced = action.payload;
     },
 
+    setWidgets: (
+      state,
+      action: PayloadAction<ShellWidgetProps<AllWidgetTypes>[]>
+    ) => {
+      state.widgets = action.payload;
+
     // Undo 액션
     undo: (state) => {
       if (state.history.past.length === 0) return;
@@ -259,6 +265,7 @@ const whiteboardSlice = createSlice({
           }
           break;
       }
+
     },
   },
 });
@@ -278,6 +285,7 @@ export const {
   setIsReduced,
   addWidgetFrom,
   addWidgetTo,
+  setWidgets,
   undo,
   redo,
 } = whiteboardSlice.actions;

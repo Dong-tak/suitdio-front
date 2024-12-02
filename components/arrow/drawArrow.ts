@@ -1,4 +1,4 @@
-import { AllWidgetTypes, Arrow, ShellWidgetProps } from '@/types/type';
+import { AllWidgetTypes, Arrow, ShellWidgetProps } from "@/types/type";
 
 export const calculateArrowPoints = (
   fromWidget: ShellWidgetProps<AllWidgetTypes>,
@@ -36,9 +36,15 @@ export const calculateArrowPoints = (
 
   let fromPoint, toPoint;
 
-  // 방향에 따라 시작점과 끝점 결정
-  if (Math.abs(dx) > Math.abs(dy)) {
-    // 수평 방향
+  // 두 도형의 x축 겹침 여부 확인
+  const fromRight = fromWidget.x + fromWidget.width;
+  const toLeft = toWidget.x;
+  const isOverlappingX = !(
+    fromRight < toLeft || fromWidget.x > toWidget.x + toWidget.width
+  );
+
+  if (!isOverlappingX) {
+    // x축 겹치지 않을 때는 기존 로직대로
     if (dx > 0) {
       fromPoint = fromCenters[3]; // 출발 도형의 우측
       toPoint = toCenters[2]; // 도착 도형의 좌측
@@ -47,7 +53,7 @@ export const calculateArrowPoints = (
       toPoint = toCenters[3]; // 도착 도형의 우측
     }
   } else {
-    // 수직 방향
+    // x축이 겹칠 때는 수직 방향으로
     if (dy > 0) {
       fromPoint = fromCenters[1]; // 출발 도형의 하단
       toPoint = toCenters[0]; // 도착 도형의 상단
@@ -59,41 +65,56 @@ export const calculateArrowPoints = (
 
   // 중간 지점 계산
   const midX = (fromPoint.x + toPoint.x) / 2;
+  const midY = (fromPoint.y + toPoint.y) / 2;
 
   // 수직 진입을 위한 오프셋 계산
-  const verticalOffset = 30; // 수직 진입 거리
+  const verticalOffset =
+    Math.abs(dx) > Math.abs(dy)
+      ? Math.abs(toPoint.x - fromPoint.x) / 2
+      : Math.abs(toPoint.y - fromPoint.y) / 2;
 
-  let startControlX, startControlY, endControlX, endControlY;
+  let points;
+  // 시작점과 끝점이 수직 또는 수평으로 정렬되어 있는지 확인
+  const isAligned = fromPoint.x === toPoint.x || fromPoint.y === toPoint.y;
 
-  if (Math.abs(dx) > Math.abs(dy)) {
-    // 수평 방향
-    startControlX = fromPoint.x + (dx > 0 ? verticalOffset : -verticalOffset);
-    startControlY = fromPoint.y;
-    endControlX = toPoint.x + (dx > 0 ? -verticalOffset : verticalOffset);
-    endControlY = toPoint.y;
+  if (isAligned) {
+    // 직선으로 연결
+    points = [
+      fromPoint.x,
+      fromPoint.y, // 시작점
+      toPoint.x,
+      toPoint.y, // 끝점
+    ];
+  } else if (!isOverlappingX) {
+    // 수평 방향일 때
+    const centerX = (fromPoint.x + toPoint.x) / 2;
+    points = [
+      fromPoint.x,
+      fromPoint.y, // 시작점
+      centerX,
+      fromPoint.y, // 첫 번째 꺾임점
+      centerX,
+      toPoint.y, // 두 번째 꺾임점
+      toPoint.x,
+      toPoint.y, // 끝점
+    ];
   } else {
-    // 수직 방향
-    startControlX = fromPoint.x;
-    startControlY = fromPoint.y + (dy > 0 ? verticalOffset : -verticalOffset);
-    endControlX = toPoint.x;
-    endControlY = toPoint.y + (dy > 0 ? -verticalOffset : verticalOffset);
+    // 수직 방향일 때
+    const centerY = (fromPoint.y + toPoint.y) / 2;
+    points = [
+      fromPoint.x,
+      fromPoint.y, // 시작점
+      fromPoint.x,
+      centerY, // 첫 번째 꺾임점
+      toPoint.x,
+      centerY, // 두 번째 꺾임점
+      toPoint.x,
+      toPoint.y, // 끝점
+    ];
   }
 
   return {
-    points: [
-      fromPoint.x,
-      fromPoint.y, // 시작점
-      startControlX,
-      startControlY, // 시작 제어점
-      midX,
-      startControlY, // 중간점 1
-      midX,
-      endControlY, // 중간점 2
-      endControlX,
-      endControlY, // 끝 제어점
-      toPoint.x,
-      toPoint.y, // 끝점
-    ],
+    points,
     arrowTipX: toPoint.x,
     arrowTipY: toPoint.y,
   };
@@ -108,35 +129,48 @@ export const drawArrow = (
   const { points } = arrow;
 
   ctx.save();
-  //   ctx.scale(scale, scale);
-  //   ctx.translate(offset.x, offset.y);
-
-  // 화살표 선 그리기
   ctx.beginPath();
-  ctx.strokeStyle = '#000000';
-  ctx.lineWidth = 2; // scale에 따라 선 굵기 조정
-  ctx.lineJoin = 'round';
+  ctx.strokeStyle = "#000000";
+  ctx.lineWidth = 2;
+  ctx.lineJoin = "round";
 
-  // 시작점
+  if (points.length < 4) return;
+
+  // 시작점으로 이동
   ctx.moveTo(points[0], points[1]);
 
-  // 각 꺾임 점을 순회하며 곡선 그리기
-  for (let i = 2; i < points.length - 2; i += 6) {
-    const x2a = points[i];
-    const y2a = points[i + 1];
-    const x2 = points[i + 2];
-    const y2 = points[i + 3];
-    const x2b = points[i + 4];
-    const y2b = points[i + 5];
+  // 곡선 반지름
+  const radius = 15;
 
-    ctx.lineTo(x2a, y2a);
+  // 각 꺾임점을 순회하며 둥근 모서리 그리기
+  for (let i = 2; i < points.length - 2; i += 2) {
+    const x1 = points[i - 2];
+    const y1 = points[i - 1];
+    const x2 = points[i];
+    const y2 = points[i + 1];
+    const x3 = points[i + 2];
+    const y3 = points[i + 3];
 
-    // 꺾임 부분 곡선 처리
-    // const radius = 15 / scale; // scale에 따라 곡률 반지름 조정
-    // ctx.arcTo(x2, y2, x2b, y2b, radius);
+    // 현재 선분과 다음 선분의 방향이 다를 때만 곡선 처리
+    if ((x1 !== x2 || x2 !== x3) && (y1 !== y2 || y2 !== y3)) {
+      const r = radius;
+
+      // 곡선의 시작점
+      const startX = x2 - Math.sign(x2 - x1) * r;
+      const startY = y2 - Math.sign(y2 - y1) * r;
+
+      // 곡선의 끝점
+      const endX = x2 + Math.sign(x3 - x2) * r;
+      const endY = y2 + Math.sign(y3 - y2) * r;
+
+      ctx.lineTo(startX, startY);
+      ctx.quadraticCurveTo(x2, y2, endX, endY);
+    } else {
+      ctx.lineTo(x2, y2);
+    }
   }
 
-  // 마지막 선분
+  // 마지막 점까지 선 그리기
   ctx.lineTo(points[points.length - 2], points[points.length - 1]);
   ctx.stroke();
 
@@ -162,7 +196,7 @@ export const drawArrow = (
     endY - headLength * Math.sin(angle + headAngle)
   );
   ctx.closePath();
-  ctx.fillStyle = '#000000';
+  ctx.fillStyle = "#000000";
   ctx.fill();
 
   ctx.restore();

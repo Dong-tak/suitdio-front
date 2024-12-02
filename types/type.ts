@@ -102,16 +102,16 @@ export interface TextWidget extends WidgetProps {
   isReduced?: boolean;
 }
 
-export enum RelationshipType {
-  Unidirectional = "unidirectional", // 단방향 관계
-  Bidirectional = "bidirectional", // 양방향 관계
-  Equal = "equal", // 동등관계
-}
+// export enum RelationshipType {
+//   Unidirectional = "unidirectional", // 단방향 관계
+//   Bidirectional = "bidirectional", // 양방향 관계
+//   Equal = "equal", // 동등관계
+// }
 
-export interface ArrowHeadState {
-  left: boolean; // 왼쪽 화살표 머리 표시 여부
-  right: boolean; // 오른쪽 화살표 머리 표시 여부
-}
+// export interface ArrowHeadState {
+//   left: boolean; // 왼쪽 화살표 머리 표시 여부
+//   right: boolean; // 오른쪽 화살표 머리 표시 여부
+// }
 
 export interface SectionWidget extends WidgetProps {
   type: "section";
@@ -205,6 +205,20 @@ export interface CenterWidget extends WidgetProps {
   footerBar: boolean;
   text: string;
   isReduced?: boolean;
+}
+
+export interface MindMapWidget extends WidgetProps {
+  type: "mindmap";
+  children: string[];
+  level: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  isLeft?: boolean;
+  parentId?: string;
+  isSelected?: boolean;
+  text?: string;
 }
 
 export interface Arrow {

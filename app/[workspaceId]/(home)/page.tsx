@@ -1,14 +1,17 @@
 "use client";
 
 import HomeView from "@/components/home/homeview";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import {
   addMiddleWidget,
   addWidget,
+  updateWidget,
 } from "@/lib/redux/features/whiteboardSlice";
-import { createBoardWithTitle, createBoard } from "./action";
+import { createBoard } from "./action";
+import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Home() {
   const [contentTitle, setContentTitle] = useState("");
@@ -18,6 +21,8 @@ export default function Home() {
   const params = useParams();
   const workspaceId = params.workspaceId as string;
   const [isLoading, setIsLoading] = useState(false);
+  const [currentHeight, setCurrentHeight] = useState(200);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentTitle(e.target.value);
@@ -53,8 +58,75 @@ export default function Home() {
     setOpen(open);
   };
 
+  interface BoardPosition {
+    x: number;
+    y: number;
+  }
+  // useEffect(() => {
+  //   const updateHeight = () => {
+  //     if (containerRef.current) {
+  //       const newHeight = containerRef.current.clientHeight;
+  //       if (newHeight !== currentHeight) {
+  //         setCurrentHeight(newHeight);
+  //         onHeightChange(newHeight);
+  //       }
+  //     }
+  //   };
+
+  //   updateHeight();
+
+  //   const resizeObserver = new ResizeObserver(updateHeight);
+  //   if (containerRef.current) {
+  //     resizeObserver.observe(containerRef.current);
+  //   }
+
+  //   return () => {
+  //     resizeObserver.disconnect();
+  //   };
+  // }, [currentHeight, onHeightChange]);
+
+  //중앙 위젯 생성 처리
+  const createBoardWithTitle = (
+    contentTitle: string,
+    widgets: ShellWidgetProps<AllWidgetTypes>[],
+    boardPosition: BoardPosition,
+    initialHeight: number = 200
+  ) => {
+    const newBoard: ShellWidgetProps<AllWidgetTypes> = {
+      id: `CenterWidget-${Date.now()}`, // 유니크한 ID 생성
+      type: "shell",
+      x: boardPosition.x,
+      y: boardPosition.y,
+      width: 750,
+      height: initialHeight,
+      resizable: true,
+      editable: true,
+      draggable: false,
+      from: [],
+      to: [],
+      innerWidget: {
+        id: `CenterWidget-${Date.now()}`,
+        type: "center",
+        titleBlock: contentTitle,
+        width: 750,
+        height: initialHeight,
+        x: boardPosition.x,
+        y: boardPosition.y,
+        draggable: false,
+        editable: true,
+        resizeable: false,
+        headerBar: true,
+        footerBar: false,
+        text: "",
+      },
+    };
+
+    return newBoard;
+  };
+
   return (
-    <div>
+    <SidebarInset>
+      <SidebarTrigger className="-ml-1" />
       <HomeView
         contentTitle={contentTitle}
         handleInputChange={handleInputChange}
@@ -62,6 +134,6 @@ export default function Home() {
         open={open}
         onOpenChange={onOpenChange}
       />
-    </div>
+    </SidebarInset>
   );
 }

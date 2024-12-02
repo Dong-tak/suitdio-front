@@ -38,6 +38,7 @@ import {
   deleteWidget,
 } from '@/lib/redux/features/whiteboardSlice';
 
+
 import {
   ShellWidgetProps,
   AllWidgetTypes,
@@ -73,11 +74,14 @@ import {
 } from "@/lib/redux/features/arrowSlice";
 import { calculateArrowPoints, drawArrow } from "../arrow/drawArrow";
 import { useWebSocket } from "@/hooks/use-socket";
-import tsid, { getTsid } from "tsid-ts";
+import { getTsid } from "tsid-ts";
+import WidgetCenter from "../widget/widgetCenter";
+import { getSelectedWidgetInfo } from "@/lib/utils/mindMapUtils/mindMapNodeFinder";
 import { Spinner } from "../ui/spinner";
 import { Board, fetchBoards } from "@/app/[workspaceId]/record/action";
 import { useParams } from "next/navigation";
 import { AIChat } from "../ui/ai";
+
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -568,6 +572,8 @@ export default function Whiteboard() {
         width: 0,
         height: 0,
       });
+    } else if (tool === "mindmap") {
+      console.log("mindmap");
     } else {
       let innerWidget: AllWidgetTypes;
       // tool 타입에 따른 innerWidget 설정
@@ -1272,6 +1278,14 @@ export default function Whiteboard() {
   };
 
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+
+  // 마인드맵 시작
+  // 선택된 위젯 정보 가져오기
+  const state = useSelector((state: RootState) => state);
+
+  useEffect(() => {
+    getSelectedWidgetInfo(state);
+  }, [state.whiteboard.selectedWidget]); // selectedWidget이 변경될 때마다 실행
 
   return (
     <div className='flex flex-col h-screen'>
