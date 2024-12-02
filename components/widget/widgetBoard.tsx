@@ -36,7 +36,7 @@ export default function WidgetBoard({
 
   const editor = useCreateBlockNote({
     initialContent,
-    editable: false,
+    // editable: false,
   });
 
   useEffect(() => {
