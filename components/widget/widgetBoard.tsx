@@ -1,21 +1,24 @@
-import { PartialBlock } from '@blocknote/core';
-import { BlockNoteView } from '@blocknote/mantine';
-import { useCreateBlockNote } from '@blocknote/react';
-import '@blocknote/core/fonts/inter.css';
-import '@blocknote/mantine/style.css';
-import { useEffect, useRef, useState } from 'react';
-import { BoardWidget } from '@/types/type';
+import { PartialBlock } from "@blocknote/core";
+import { BlockNoteView } from "@blocknote/mantine";
+import { useCreateBlockNote } from "@blocknote/react";
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
+import { useEffect, useRef, useState } from "react";
+import { BoardWidget } from "@/types/type";
+import Link from "next/link";
 
 interface WidgetBoardProps extends BoardWidget {
   editable: boolean;
   autoFocus?: boolean;
   text: string;
+  titleBlock: string;
   fontSize: number;
   onHeightChange: (height: number) => void;
 }
 
 export default function WidgetBoard({
   text,
+  titleBlock,
   editable,
   fontSize,
   autoFocus,
@@ -24,12 +27,16 @@ export default function WidgetBoard({
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentHeight, setCurrentHeight] = useState(184);
 
-  const initialContent: PartialBlock[] | undefined = text
-    ? JSON.parse(text)
-    : undefined;
+  const initialContent: PartialBlock[] = [
+    {
+      type: "paragraph",
+      content: titleBlock,
+    },
+  ];
 
   const editor = useCreateBlockNote({
     initialContent,
+    editable: false,
   });
 
   useEffect(() => {
@@ -55,15 +62,11 @@ export default function WidgetBoard({
     };
   }, [currentHeight, onHeightChange]);
 
-  useEffect(() => {
-    if (autoFocus && editable) {
-      editor.focus();
-    }
-  }, [autoFocus, editable, editor]);
-
   return (
-    <div ref={containerRef} style={{ zIndex: -1, position: 'relative' }}>
-      <BlockNoteView editor={editor} editable={editable} />
-    </div>
+    <Link href={text} style={{ textDecoration: "none", color: "inherit" }}>
+      <div ref={containerRef} style={{ zIndex: -1, position: "relative" }}>
+        <BlockNoteView editor={editor} editable={false} />
+      </div>
+    </Link>
   );
 }

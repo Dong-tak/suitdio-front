@@ -239,7 +239,7 @@ export interface SelectArea {
 
 export interface WhiteboardAction {
   type: string;
-  payload: unknown;
+  payload: any;
 }
 
 // 타입 가드 함수
