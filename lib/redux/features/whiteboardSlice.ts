@@ -1,8 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AllWidgetTypes, ShellWidgetProps, TextWidget } from "@/types/type";
-
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import { debounce } from 'lodash';
 // 액션 타입 정의
-type ActionType = "CREATE_WIDGET" | "DELETE_WIDGET" | "UPDATE_WIDGET";
+type ActionType = 'CREATE_WIDGET' | 'DELETE_WIDGET' | 'UPDATE_WIDGET';
 
 // 커맨드 인터페이스 정의
 interface Command {
@@ -38,7 +38,7 @@ const initialState: WhiteboardState = {
 };
 
 const whiteboardSlice = createSlice({
-  name: "whiteboard",
+  name: 'whiteboard',
   initialState,
   reducers: {
     setInitialWidgets: (
@@ -60,7 +60,7 @@ const whiteboardSlice = createSlice({
     ) => {
       state.widgets.push(action.payload);
       state.history.past.push({
-        type: "CREATE_WIDGET",
+        type: 'CREATE_WIDGET',
         payload: action.payload,
         timestamp: Date.now(),
       });
@@ -87,7 +87,7 @@ const whiteboardSlice = createSlice({
       if (index !== -1) {
         const oldWidget = state.widgets[index];
         state.history.past.push({
-          type: "UPDATE_WIDGET",
+          type: 'UPDATE_WIDGET',
           payload: oldWidget, // 이전 상태를 저장
           timestamp: Date.now(),
         });
@@ -117,7 +117,7 @@ const whiteboardSlice = createSlice({
       state.widgets = state.widgets.filter((w) => w.id !== action.payload);
       // history에 DELETE_WIDGET 액션 추가
       state.history.past.push({
-        type: "DELETE_WIDGET",
+        type: 'DELETE_WIDGET',
         payload: action.payload,
         timestamp: Date.now(),
       });
@@ -197,15 +197,15 @@ const whiteboardSlice = createSlice({
 
       // 마지막 명령 되돌리기
       switch (lastCommand.type) {
-        case "CREATE_WIDGET":
+        case 'CREATE_WIDGET':
           state.widgets = state.widgets.filter(
             (w) =>
               w.id !==
               (lastCommand.payload as ShellWidgetProps<AllWidgetTypes>).id
           );
           break;
-        case "DELETE_WIDGET":
-          if (typeof lastCommand.payload === "string") {
+        case 'DELETE_WIDGET':
+          if (typeof lastCommand.payload === 'string') {
             const deletedWidget = state.deletedWidgets.filter(
               (w) => w.id === lastCommand.payload
             );
@@ -216,7 +216,7 @@ const whiteboardSlice = createSlice({
             }
           }
           break;
-        case "UPDATE_WIDGET":
+        case 'UPDATE_WIDGET':
           const updatedWidgetIndex = state.lastSavedState.findIndex(
             (w) =>
               w.id ===
@@ -241,19 +241,19 @@ const whiteboardSlice = createSlice({
 
       // 다음 명령 재실행
       switch (nextCommand.type) {
-        case "CREATE_WIDGET":
-          if (typeof nextCommand.payload !== "string") {
+        case 'CREATE_WIDGET':
+          if (typeof nextCommand.payload !== 'string') {
             state.widgets.push(nextCommand.payload);
           }
           break;
-        case "DELETE_WIDGET":
-          if (typeof nextCommand.payload === "string") {
+        case 'DELETE_WIDGET':
+          if (typeof nextCommand.payload === 'string') {
             state.widgets = state.widgets.filter(
               (w) => w.id !== nextCommand.payload
             );
           }
           break;
-        case "UPDATE_WIDGET":
+        case 'UPDATE_WIDGET':
           const updatedWidgetIndex = state.lastSavedState.findIndex(
             (w) =>
               w.id ===

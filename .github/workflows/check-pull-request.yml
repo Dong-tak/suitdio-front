@@ -34,6 +34,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nextjs-cache-
 
+      - name: Clean npm cache
+        run: npm cache clean --force
+
       - name: Create .env file
         run: |
           echo "${{ secrets.ENV }}" > .env
