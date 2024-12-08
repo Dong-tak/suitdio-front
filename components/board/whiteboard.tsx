@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, {
   useRef,
@@ -6,7 +6,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
-} from "react";
+} from 'react';
 import {
   Type,
   AppWindowMacIcon,
@@ -20,10 +20,10 @@ import {
   Tornado,
   Boxes,
   Plus,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState, store } from "@/lib/redux/store";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, store } from '@/lib/redux/store';
 import {
   addWidget,
   setSelectedWidget,
@@ -36,7 +36,7 @@ import {
   redo,
   undo,
   deleteWidget,
-} from "@/lib/redux/features/whiteboardSlice";
+} from '@/lib/redux/features/whiteboardSlice';
 
 import {
   ShellWidgetProps,
@@ -48,20 +48,20 @@ import {
   SelectArea,
   Arrow,
   BoardWidget,
-} from "@/types/type";
-import "@blocknote/core/fonts/inter.css";
-import "@blocknote/mantine/style.css";
-import WidgetShell from "../widget/widgetShell";
-import SvgIcon from "@/lib/utils/svgIcon";
-import { sectionSvg } from "@/lib/utils/svgBag";
-import { HiOutlineSparkles } from "react-icons/hi2";
-import { Separator } from "../ui/separator";
-import { createTextNode } from "@/lib/utils/textNodeCreator";
-import BrainstormInput from "../widget/widgetBrainstorm";
-import CreateBoardDialog from "../home/creatboard";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+} from '@/types/type';
+import '@blocknote/core/fonts/inter.css';
+import '@blocknote/mantine/style.css';
+import WidgetShell from '../widget/widgetShell';
+import SvgIcon from '@/lib/utils/svgIcon';
+import { sectionSvg } from '@/lib/utils/svgBag';
+import { HiOutlineSparkles } from 'react-icons/hi2';
+import { Separator } from '../ui/separator';
+import { createTextNode } from '@/lib/utils/textNodeCreator';
+import BrainstormInput from '../widget/widgetBrainstorm';
+import CreateBoardDialog from '../home/creatboard';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { Label } from '../ui/label';
+import { Input } from '../ui/input';
 import {
   addArrow,
   deleteArrow,
@@ -70,16 +70,17 @@ import {
   setArrows,
   setIsArrowMode,
   setSelectedArrows,
-} from "@/lib/redux/features/arrowSlice";
-import { calculateArrowPoints, drawArrow } from "../arrow/drawArrow";
-import { useWebSocket } from "@/hooks/use-socket";
-import { getTsid } from "tsid-ts";
-import WidgetCenter from "../widget/widgetCenter";
-import { getSelectedWidgetInfo } from "@/lib/utils/mindMapUtils/mindMapNodeFinder";
-import { Spinner } from "../ui/spinner";
-import { Board, fetchBoards } from "@/app/[workspaceId]/record/action";
-import { useParams } from "next/navigation";
-import { AIChat } from "../ui/ai";
+} from '@/lib/redux/features/arrowSlice';
+import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
+import { useWebSocket } from '@/hooks/use-socket';
+import { getTsid } from 'tsid-ts';
+import WidgetCenter from '../widget/widgetCenter';
+import { getSelectedWidgetInfo } from '@/lib/utils/mindMapUtils/mindMapNodeFinder';
+import { Spinner } from '../ui/spinner';
+import { Board, fetchBoards } from '@/app/[workspaceId]/record/action';
+import { useParams } from 'next/navigation';
+import { AIChat } from '../ui/ai';
+import { MemoizedWidgetShell } from '../widget/memoizedWidgetShell';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -98,13 +99,13 @@ export default function Whiteboard() {
   const dispatch = useDispatch();
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [tool, setTool] = useState<"select" | AllWidgetType>("select");
+  const [tool, setTool] = useState<'select' | AllWidgetType>('select');
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [spacePressed, setSpacePressed] = useState(false);
   const [isZooming, setIsZooming] = useState(false);
   const [isBrainstormActive, setIsBrainstormActive] = useState(false); // 브레인스톰 상태 추가
-  const [contentTitle, setContentTitle] = useState(""); // contentTitle 상태 추가
+  const [contentTitle, setContentTitle] = useState(''); // contentTitle 상태 추가
   const [dialogOpen, setDialogOpen] = useState(false); // 다이얼로그 상태 추가
   const [boardPosition, setBoardPosition] = useState<{
     x: number;
@@ -113,7 +114,7 @@ export default function Whiteboard() {
   const [isBoardPlacementMode, setIsBoardPlacementMode] = useState(false);
   const [selectArea, setSelectArea] = useState<SelectArea | null>(null);
   const [isSelecting, setIsSelecting] = useState(false);
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const isArrowMode = useSelector(
     (state: RootState) => state.arrow.isArrowMode
@@ -186,30 +187,30 @@ export default function Whiteboard() {
   };
 
   useEffect(() => {
-    console.log("위젯 상태:", widgets);
+    console.log('위젯 상태:', widgets);
   }, [widgets]);
 
   // 스페이스바 누르면 드래그 모드, 떼면 드래그 모드 종료
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === "Space" && !spacePressed) {
+      if (e.code === 'Space' && !spacePressed) {
         setSpacePressed(true);
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === "Space") {
+      if (e.code === 'Space') {
         setSpacePressed(false);
         setIsPanning(false);
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, [spacePressed]);
 
@@ -226,7 +227,7 @@ export default function Whiteboard() {
         baseSpacing = 48;
       }
 
-      ctx.strokeStyle = "#DBDBDB";
+      ctx.strokeStyle = '#DBDBDB';
       ctx.lineWidth = basePointSize;
 
       // 화면에 보이는 영역의 좌표 계산
@@ -264,10 +265,10 @@ export default function Whiteboard() {
       e.preventDefault();
     };
 
-    container.addEventListener("wheel", preventDefault, { passive: false });
+    container.addEventListener('wheel', preventDefault, { passive: false });
 
     return () => {
-      container.removeEventListener("wheel", preventDefault);
+      container.removeEventListener('wheel', preventDefault);
     };
   }, []);
 
@@ -317,20 +318,20 @@ export default function Whiteboard() {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === "Meta" || e.key === "Control") {
+      if (e.key === 'Meta' || e.key === 'Control') {
         setIsZooming(false);
         setMousePosition(null);
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-    container.addEventListener("wheel", handleGlobalWheel, { passive: false });
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener('mousemove', handleMouseMove);
+    container.addEventListener('wheel', handleGlobalWheel, { passive: false });
+    window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      container.removeEventListener("wheel", handleGlobalWheel);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener('mousemove', handleMouseMove);
+      container.removeEventListener('wheel', handleGlobalWheel);
+      window.removeEventListener('keyup', handleKeyUp);
     };
   }, [scale, offset, isZooming, mousePosition]);
 
@@ -339,7 +340,7 @@ export default function Whiteboard() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -357,7 +358,7 @@ export default function Whiteboard() {
       // 선택된 화살표의 시작점과 끝점에 원 그리기
       if (isSelected) {
         ctx.beginPath();
-        ctx.fillStyle = "#00A3FF";
+        ctx.fillStyle = '#00A3FF';
         ctx.arc(arrow.points[0], arrow.points[1], 5 / scale, 0, 2 * Math.PI);
         ctx.arc(arrow.points[8], arrow.points[9], 5 / scale, 0, 2 * Math.PI);
         ctx.fill();
@@ -366,8 +367,8 @@ export default function Whiteboard() {
 
     // 섹션 드래프트 그리기
     if (sectionDraft) {
-      ctx.fillStyle = "rgba(200, 200, 200, 0.2)";
-      ctx.strokeStyle = "#00A3FF";
+      ctx.fillStyle = 'rgba(200, 200, 200, 0.2)';
+      ctx.strokeStyle = '#00A3FF';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.rect(
@@ -382,8 +383,8 @@ export default function Whiteboard() {
 
     // 선택 영역 그리기
     if (selectArea) {
-      ctx.strokeStyle = "#d97706";
-      ctx.fillStyle = "#fffbeb50";
+      ctx.strokeStyle = '#d97706';
+      ctx.fillStyle = '#fffbeb50';
       ctx.lineWidth = 1 / scale;
       ctx.beginPath();
       ctx.rect(
@@ -408,12 +409,12 @@ export default function Whiteboard() {
     const centerX = (window.innerWidth / 2 - offset.x * scale) / scale;
     const centerY = (window.innerHeight / 2 - offset.y * scale) / scale;
     let innerWidget: AllWidgetTypes;
-    console.log("file:", file.name);
+    console.log('file:', file.name);
 
-    if (file.type.startsWith("image/")) {
+    if (file.type.startsWith('image/')) {
       innerWidget = {
         id: Date.now().toString(),
-        type: "image",
+        type: 'image',
         src: dataUrl,
         x: Math.round(centerX / baseSpacing) * baseSpacing,
         y: Math.round(centerY / baseSpacing) * baseSpacing,
@@ -425,10 +426,10 @@ export default function Whiteboard() {
         headerBar: true,
         footerBar: false,
       };
-    } else if (file.type === "application/pdf") {
+    } else if (file.type === 'application/pdf') {
       innerWidget = {
         id: Date.now().toString(),
-        type: "pdf",
+        type: 'pdf',
         src: dataUrl,
         x: Math.round(centerX / baseSpacing) * baseSpacing,
         y: Math.round(centerY / baseSpacing) * baseSpacing,
@@ -441,12 +442,12 @@ export default function Whiteboard() {
         footerBar: false,
       };
     } else if (
-      file.type === "text/markdown" ||
-      file.type === "text/x-markdown"
+      file.type === 'text/markdown' ||
+      file.type === 'text/x-markdown'
     ) {
       innerWidget = {
         id: Date.now().toString(),
-        type: "text",
+        type: 'text',
         src: dataUrl,
         fontSize: FONT_SIZE,
         x: Math.round(centerX / baseSpacing) * baseSpacing,
@@ -464,7 +465,7 @@ export default function Whiteboard() {
 
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
       id: Date.now().toString(),
-      type: "shell",
+      type: 'shell',
       x: Math.round(centerX / baseSpacing) * baseSpacing,
       y: Math.round(centerY / baseSpacing) * baseSpacing,
       width: 472,
@@ -479,7 +480,7 @@ export default function Whiteboard() {
 
     dispatch(addWidget(newWidget));
     dispatch(addSelectedWidget(newWidget.id));
-    setTool("select");
+    setTool('select');
   };
 
   // 파일 업로드 핸들러(drag 파일이 존재할 경우 바로 실행)
@@ -499,9 +500,9 @@ export default function Whiteboard() {
       return;
     }
 
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*, application/pdf, text/markdown";
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'image/*, application/pdf, text/markdown';
     fileInput.onchange = (e: Event) => {
       const target = e.target as HTMLInputElement;
       if (target.files?.[0]) {
@@ -526,7 +527,7 @@ export default function Whiteboard() {
     const x = (e.clientX - rect.left - offset.x * scale) / scale;
     const y = (e.clientY - rect.top - offset.y * scale) / scale;
 
-    if (tool === "select" || tool === "brainStorm") {
+    if (tool === 'select' || tool === 'brainStorm') {
       if (!e.shiftKey) {
         dispatch(setEditModeWidgets(null));
         setIsSelecting(true);
@@ -548,7 +549,7 @@ export default function Whiteboard() {
         }
       }
       // 보드 생성 모드일 때
-    } else if (tool === "boardLink" && isBoardPlacementMode) {
+    } else if (tool === 'boardLink' && isBoardPlacementMode) {
       const position = {
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
@@ -556,9 +557,9 @@ export default function Whiteboard() {
       setBoardPosition(position);
       setDialogOpen(true);
       setIsBoardPlacementMode(false);
-      setTool("select");
+      setTool('select');
       return;
-    } else if (tool === "section") {
+    } else if (tool === 'section') {
       const startPos = {
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
@@ -570,20 +571,20 @@ export default function Whiteboard() {
         width: 0,
         height: 0,
       });
-    } else if (tool === "mindmap") {
-      console.log("mindmap");
+    } else if (tool === 'mindmap') {
+      console.log('mindmap');
     } else {
       let innerWidget: AllWidgetTypes;
       // tool 타입에 따른 innerWidget 설정
       switch (tool) {
-        case "text":
+        case 'text':
           innerWidget = {
             id: Date.now().toString(),
-            type: "text",
+            type: 'text',
             text: JSON.stringify([
               {
-                type: "paragraph",
-                content: "New Text",
+                type: 'paragraph',
+                content: 'New Text',
               },
             ]),
             fontSize: FONT_SIZE,
@@ -603,7 +604,7 @@ export default function Whiteboard() {
       // 공통 shell 위 생성
       const newWidget: ShellWidgetProps<AllWidgetTypes> = {
         id: Date.now().toString(),
-        type: "shell",
+        type: 'shell',
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
         width: 472,
@@ -618,7 +619,7 @@ export default function Whiteboard() {
 
       dispatch(addWidget(newWidget));
       dispatch(setSelectedWidget([newWidget.id]));
-      setTool("select");
+      setTool('select');
     }
     redraw();
   };
@@ -656,7 +657,7 @@ export default function Whiteboard() {
       redraw();
     }
 
-    if (tool === "section" && sectionDraft) {
+    if (tool === 'section' && sectionDraft) {
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
 
@@ -684,7 +685,7 @@ export default function Whiteboard() {
       const selectedIds = widgets
         .filter((widget) => {
           // center 타입인 경우 선택하지 않음
-          if (widget.innerWidget.type === "center") {
+          if (widget.innerWidget.type === 'center') {
             return false;
           }
 
@@ -729,16 +730,16 @@ export default function Whiteboard() {
       setSelectArea(null);
     }
 
-    if (tool === "section" && sectionDraft) {
+    if (tool === 'section' && sectionDraft) {
       if (sectionDraft.width > 0 && sectionDraft.height > 0) {
         const innerWidget: SectionWidget = {
           id: Date.now().toString(),
-          type: "section",
+          type: 'section',
           x: sectionDraft.x,
           y: sectionDraft.y,
           width: sectionDraft.width,
           height: sectionDraft.height,
-          fill: "rgba(200, 200, 200, 0.2)",
+          fill: 'rgba(200, 200, 200, 0.2)',
           memberIds: [],
           draggable: true,
           editable: false,
@@ -749,7 +750,7 @@ export default function Whiteboard() {
 
         const newWidget: ShellWidgetProps<AllWidgetTypes> = {
           id: Date.now().toString(),
-          type: "shell",
+          type: 'shell',
           x: sectionDraft.x,
           y: sectionDraft.y,
           width: sectionDraft.width,
@@ -765,7 +766,7 @@ export default function Whiteboard() {
         dispatch(addWidget(newWidget));
       }
       setSectionDraft(null);
-      setTool("select");
+      setTool('select');
     }
     setIsPanning(false);
   };
@@ -777,7 +778,7 @@ export default function Whiteboard() {
     return widgets
       .filter(
         (widget): widget is ShellWidgetProps<TextWidget> =>
-          widget.innerWidget.type === "text"
+          widget.innerWidget.type === 'text'
       )
       .map((widget) => widget.innerWidget);
   };
@@ -805,7 +806,7 @@ export default function Whiteboard() {
     // 새로운 위젯을 추가
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
       id: Date.now().toString(),
-      type: "shell",
+      type: 'shell',
       x: newNode.x ?? 0,
       y: newNode.y ?? 0,
       width: 200,
@@ -834,14 +835,14 @@ export default function Whiteboard() {
       // 제목과 내용을 분리
       const initialText = JSON.stringify([
         {
-          type: "paragraph",
-          content: "", // 내용은 빈 문자열로 초기화
+          type: 'paragraph',
+          content: '', // 내용은 빈 문자열로 초기화
         },
       ]);
 
       const newBoard: ShellWidgetProps<AllWidgetTypes> = {
         id: `board-${widgets.length + 1}`,
-        type: "shell",
+        type: 'shell',
         x: boardPosition.x,
         y: boardPosition.y,
         width: 500,
@@ -853,7 +854,7 @@ export default function Whiteboard() {
         to: [],
         innerWidget: {
           id: `board-inner-${widgets.length + 1}`,
-          type: "boardLink",
+          type: 'boardLink',
           titleBlock: contentTitle, // 제목은 contentTitle 사용
           width: 500,
           height: 500,
@@ -871,7 +872,7 @@ export default function Whiteboard() {
       dispatch(addWidget(newBoard));
 
       setDialogOpen(false);
-      setContentTitle("");
+      setContentTitle('');
       setBoardPosition(null);
     },
     [boardPosition, contentTitle, widgets, dispatch]
@@ -886,14 +887,14 @@ export default function Whiteboard() {
   useEffect(() => {
     const container = containerRef.current;
     if (container) {
-      container.addEventListener("dragover", handleDragOver);
-      container.addEventListener("drop", handleDrop);
+      container.addEventListener('dragover', handleDragOver);
+      container.addEventListener('drop', handleDrop);
     }
 
     return () => {
       if (container) {
-        container.removeEventListener("dragover", handleDragOver);
-        container.removeEventListener("drop", handleDrop);
+        container.removeEventListener('dragover', handleDragOver);
+        container.removeEventListener('drop', handleDrop);
       }
     };
   }, []);
@@ -927,24 +928,24 @@ export default function Whiteboard() {
       const isUrl = /^(http|https):\/\/[^ "]+$/.test(url);
       if (isUrl) {
         addUrlWidgets(centerPosition, url);
-        setUrl("https://"); // 입력 필드 초기화
+        setUrl('https://'); // 입력 필드 초기화
       } else {
         addTextWidgets(centerPosition, url);
       }
-      setTool("select");
+      setTool('select');
     }
   };
 
   // 현재 마우스 위치로 클립보드 붙여넣기
   useEffect(() => {
     if (
-      tool !== "url" &&
+      tool !== 'url' &&
       activeShells.editModeShells.size === 0 &&
       activeShells.popupOpenShells.size === 0
     ) {
       const handlePaste = (e: ClipboardEvent) => {
         e.preventDefault();
-        const pastedText = e.clipboardData?.getData("text");
+        const pastedText = e.clipboardData?.getData('text');
 
         if (pastedText && mousePosition) {
           const isUrl = /^(http|https):\/\/[^ "]+$/.test(pastedText);
@@ -960,12 +961,12 @@ export default function Whiteboard() {
         setMousePosition({ x: e.clientX, y: e.clientY });
       };
 
-      document.addEventListener("paste", handlePaste);
-      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener('paste', handlePaste);
+      document.addEventListener('mousemove', handleMouseMove);
 
       return () => {
-        document.removeEventListener("paste", handlePaste);
-        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener('paste', handlePaste);
+        document.removeEventListener('mousemove', handleMouseMove);
       };
     }
   }, [widgets, mousePosition]);
@@ -977,7 +978,7 @@ export default function Whiteboard() {
 
     const innerWidget: TextWidget = {
       id: Date.now().toString(),
-      type: "text",
+      type: 'text',
       mkText: text,
       fontSize: FONT_SIZE,
       draggable: true,
@@ -988,7 +989,7 @@ export default function Whiteboard() {
     };
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
       id: Date.now().toString(),
-      type: "shell",
+      type: 'shell',
       width: 472,
       height: 184,
       x,
@@ -1010,7 +1011,7 @@ export default function Whiteboard() {
 
     const innerWidget: IframeEmbedWidget = {
       id: Date.now().toString(),
-      type: "url",
+      type: 'url',
       src: text,
       draggable: true,
       editable: true,
@@ -1020,7 +1021,7 @@ export default function Whiteboard() {
     };
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
       id: Date.now().toString(),
-      type: "shell",
+      type: 'shell',
       width: 472,
       height: 712, // URL 위젯 기본 높이
       x,
@@ -1036,7 +1037,7 @@ export default function Whiteboard() {
   };
 
   useEffect(() => {
-    console.log("history:", history);
+    console.log('history:', history);
   }, [history]);
 
   // 키보드 이벤트 핸들러 추가
@@ -1044,11 +1045,11 @@ export default function Whiteboard() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey) {
         // Mac의 Cmd 키와 Windows의 Ctrl 키 모두 지원
-        if (e.shiftKey && e.key.toLowerCase() === "z") {
+        if (e.shiftKey && e.key.toLowerCase() === 'z') {
           // Cmd/Ctrl + Shift + Z: Redo
           e.preventDefault();
           dispatch(redo());
-        } else if (e.key.toLowerCase() === "z") {
+        } else if (e.key.toLowerCase() === 'z') {
           // Cmd/Ctrl + Z: Undo
           e.preventDefault();
           dispatch(undo());
@@ -1056,18 +1057,18 @@ export default function Whiteboard() {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [dispatch]);
 
   const handleArrowMode = () => {
-    setTool("arrow");
+    setTool('arrow');
     dispatch(setIsArrowMode(true));
   };
 
   useEffect(() => {
     if (!isArrowMode) {
-      setTool("select");
+      setTool('select');
     }
   }, [isArrowMode]);
 
@@ -1115,7 +1116,7 @@ export default function Whiteboard() {
         ...arrowPoints,
       };
 
-      console.log("newArrow:", newArrow);
+      console.log('newArrow:', newArrow);
 
       // Redux store에 화살표 추가
       dispatch(addArrow(newArrow));
@@ -1132,7 +1133,7 @@ export default function Whiteboard() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
         selectedArrow.length > 0 &&
-        (e.key === "Backspace" || e.key === "Delete")
+        (e.key === 'Backspace' || e.key === 'Delete')
       ) {
         // 선택된 각 화살표에 대해 처리
         selectedArrow.forEach((arrow) => {
@@ -1143,7 +1144,7 @@ export default function Whiteboard() {
               ...fromWidget,
               to: fromWidget.to.filter((to) => to.id !== arrow.toId),
             };
-            console.log("updatedFromWidget:", updatedFromWidget);
+            console.log('updatedFromWidget:', updatedFromWidget);
             dispatch(updateWidget(updatedFromWidget));
           }
 
@@ -1154,7 +1155,7 @@ export default function Whiteboard() {
               ...toWidget,
               from: toWidget.from.filter((from) => from.id !== arrow.fromId),
             };
-            console.log("updatedToWidget:", updatedToWidget);
+            console.log('updatedToWidget:', updatedToWidget);
             dispatch(updateWidget(updatedToWidget));
           }
         });
@@ -1165,8 +1166,8 @@ export default function Whiteboard() {
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedArrow, dispatch]);
 
   useEffect(() => {
@@ -1188,10 +1189,10 @@ export default function Whiteboard() {
 
       // 복이 제거된 화살표 배열이 기존과 다르다면 업데이트
       if (uniqueArrows.length !== arrows.length) {
-        console.log("중복 화살표가 제거됨:", uniqueArrows);
+        console.log('중복 화살표가 제거됨:', uniqueArrows);
         dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
       }
-      console.log("Updated arrows:", arrows);
+      console.log('Updated arrows:', arrows);
     }
   }, [arrows]);
   // 디버깅을 위한 로그 추가
@@ -1211,7 +1212,7 @@ export default function Whiteboard() {
       const boards = await fetchBoards(workspaceId);
       setBoardList(boards);
     } catch (error) {
-      console.error("보드 리스트 로딩 실패:", error);
+      console.error('보드 리스트 로딩 실패:', error);
     } finally {
       setIsBoardListLoading(false);
     }
@@ -1235,7 +1236,7 @@ export default function Whiteboard() {
 
       const innerWidget: BoardWidget = {
         id: getTsid().toString(),
-        type: "boardLink",
+        type: 'boardLink',
         titleBlock: board.data.focus,
         text: boardUrl,
         x: Math.round(x / baseSpacing) * baseSpacing,
@@ -1251,7 +1252,7 @@ export default function Whiteboard() {
 
       const newWidget: ShellWidgetProps<AllWidgetTypes> = {
         id: getTsid().toString(),
-        type: "shell",
+        type: 'shell',
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
         width: 472,
@@ -1265,14 +1266,14 @@ export default function Whiteboard() {
       };
 
       dispatch(addWidget(newWidget));
-      setTool("select");
+      setTool('select');
 
       // 이벤트 리스너 제거
-      canvasRef.current?.removeEventListener("mousedown", handleNextClick);
+      canvasRef.current?.removeEventListener('mousedown', handleNextClick);
     };
 
     // 다음 클릭을 위한 이벤트 리스너 추가
-    canvasRef.current?.addEventListener("mousedown", handleNextClick);
+    canvasRef.current?.addEventListener('mousedown', handleNextClick);
   };
 
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
@@ -1286,87 +1287,87 @@ export default function Whiteboard() {
   }, [state.whiteboard.selectedWidget]); // selectedWidget이 변경될 때마다 실행
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className='flex flex-col h-screen'>
       {/* 툴바 */}
-      <div className="left-1/2 fixed bottom-8 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center">
-        <div className="flex space-x-2 items-center ">
+      <div className='left-1/2 fixed bottom-8 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center'>
+        <div className='flex space-x-2 items-center '>
           <Button
-            variant={tool === "select" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("select")}
+            variant={tool === 'select' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('select')}
           >
-            <MousePointer2 className="h-4 w-4" />
-            <span className="sr-only">Select tool</span>
+            <MousePointer2 className='h-4 w-4' />
+            <span className='sr-only'>Select tool</span>
           </Button>
-          <Separator orientation="vertical" className="h-6" />
+          <Separator orientation='vertical' className='h-6' />
 
           <Button
-            variant={tool === "text" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("text")}
+            variant={tool === 'text' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('text')}
           >
-            <Type className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <Type className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Button
-            variant={tool === "arrow" ? "toolSelect" : "white"}
-            size="icon"
+            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
+            size='icon'
             onClick={handleArrowMode}
           >
-            <MoveRight className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <MoveRight className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Button
-            variant={tool === "section" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("section")}
-            className="group"
+            variant={tool === 'section' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('section')}
+            className='group'
           >
             <SvgIcon
-              fill="none"
+              fill='none'
               width={16}
               height={16}
-              className="flex items-center justify-center"
+              className='flex items-center justify-center'
             >
               {sectionSvg({
-                isActive: tool === "section",
-                className: "group-hover:stroke-teal-500",
+                isActive: tool === 'section',
+                className: 'group-hover:stroke-teal-500',
               })}
             </SvgIcon>
-            <span className="sr-only">Text tool</span>
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                variant={tool === "boardLink" ? "toolSelect" : "white"}
-                size="icon"
+                variant={tool === 'boardLink' ? 'toolSelect' : 'white'}
+                size='icon'
                 onClick={() => {
-                  setTool("boardLink");
+                  setTool('boardLink');
                   fetchBoardList();
                 }}
               >
-                <Disc2 className="h-4 w-4" />
+                <Disc2 className='h-4 w-4' />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium leading-none">Select Board</h4>
+            <PopoverContent className='w-80'>
+              <div className='space-y-4'>
+                <div className='space-y-2'>
+                  <h4 className='font-medium leading-none'>Select Board</h4>
                 </div>
                 {isBoardListLoading ? (
-                  <div className="flex justify-center py-4">
+                  <div className='flex justify-center py-4'>
                     <Spinner size={24} />
                   </div>
                 ) : (
-                  <div className="max-h-[300px] overflow-y-auto space-y-2">
+                  <div className='max-h-[300px] overflow-y-auto space-y-2'>
                     {boardList.map((board: Board) => (
                       <Button
                         key={board.id}
-                        variant="ghost"
-                        className="w-full justify-start"
+                        variant='ghost'
+                        className='w-full justify-start'
                         onClick={() => handleBoardSelect(board)}
                       >
-                        <Disc2 className="mr-2 h-4 w-4" />
+                        <Disc2 className='mr-2 h-4 w-4' />
                         {board.data.focus}
                       </Button>
                     ))}
@@ -1376,49 +1377,49 @@ export default function Whiteboard() {
             </PopoverContent>
           </Popover>
           <Button
-            variant={tool === "brainStorm" ? "toolSelect" : "white"}
-            size="icon"
+            variant={tool === 'brainStorm' ? 'toolSelect' : 'white'}
+            size='icon'
             onClick={() => {
-              setTool("brainStorm");
+              setTool('brainStorm');
               setIsBrainstormActive((prev) => !prev);
             }}
           >
-            <Tornado className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <Tornado className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Button
-            variant={tool === "mindmap" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("mindmap")}
+            variant={tool === 'mindmap' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('mindmap')}
           >
-            <Boxes className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <Boxes className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Button
-            variant={tool === "refresh" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("refresh")}
+            variant={tool === 'refresh' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('refresh')}
             disabled
           >
-            <RefreshCw className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <RefreshCw className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
-          <Separator orientation="vertical" className="h-6" />
+          <Separator orientation='vertical' className='h-6' />
           <Button
-            variant={tool === "search" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("search")}
+            variant={tool === 'search' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('search')}
           >
-            <Search className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <Search className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Button
-            variant={tool === "upload" ? "toolSelect" : "white"}
-            size="icon"
+            variant={tool === 'upload' ? 'toolSelect' : 'white'}
+            size='icon'
             onClick={() => handleFileUpload()}
           >
-            <File className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <File className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           {/* <Button
             variant={tool === 'url' ? 'toolSelect' : 'white'}
@@ -1431,123 +1432,123 @@ export default function Whiteboard() {
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                variant={tool === "url" ? "toolSelect" : "white"}
-                size="icon"
-                onClick={() => setTool("url")}
+                variant={tool === 'url' ? 'toolSelect' : 'white'}
+                size='icon'
+                onClick={() => setTool('url')}
               >
-                <AppWindowMacIcon className="h-4 w-4" />
-                <span className="sr-only">Text tool</span>
+                <AppWindowMacIcon className='h-4 w-4' />
+                <span className='sr-only'>Text tool</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-120 bg-white">
-              <div className="grid gap-4">
-                <div className="space-y-2">
-                  <h4 className="font-medium leading-none">Input URL</h4>
-                  <p className="text-sm text-muted-foreground">
+            <PopoverContent className='w-120 bg-white'>
+              <div className='grid gap-4'>
+                <div className='space-y-2'>
+                  <h4 className='font-medium leading-none'>Input URL</h4>
+                  <p className='text-sm text-muted-foreground'>
                     You can input the URL of the page you want to embed.
                   </p>
                 </div>
-                <div className="grid gap-2">
-                  <div className="grid grid-cols-3 items-center gap-4">
-                    <Label htmlFor="url">URL</Label>
+                <div className='grid gap-2'>
+                  <div className='grid grid-cols-3 items-center gap-4'>
+                    <Label htmlFor='url'>URL</Label>
                     <Input
-                      id="url"
-                      defaultValue="https://"
-                      className="col-span-2 h-8"
+                      id='url'
+                      defaultValue='https://'
+                      className='col-span-2 h-8'
                       onChange={(e) => setUrl(e.target.value)}
                     />
                   </div>
                   <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-full"
+                    variant='outline'
+                    size='icon'
+                    className='w-full'
                     onClick={handleUrlAdd}
                   >
-                    <Plus className="h-4 w-4" />
+                    <Plus className='h-4 w-4' />
                   </Button>
                 </div>
               </div>
             </PopoverContent>
           </Popover>
           <Button
-            variant={tool === "template" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("template")}
+            variant={tool === 'template' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('template')}
           >
-            <Shapes className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <Shapes className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
-          <Separator orientation="vertical" className="h-6" />
+          <Separator orientation='vertical' className='h-6' />
           <Button
-            variant={tool === "aiSearch" ? "toolSelect" : "white"}
-            size="icon"
+            variant={tool === 'aiSearch' ? 'toolSelect' : 'white'}
+            size='icon'
             onClick={() => setIsAIChatOpen(!isAIChatOpen)}
           >
-            <HiOutlineSparkles className="h-4 w-4" />
-            <span className="sr-only">AI Assistant</span>
+            <HiOutlineSparkles className='h-4 w-4' />
+            <span className='sr-only'>AI Assistant</span>
           </Button>
         </div>
       </div>
-      <div className="left-1/2 fixed top-6 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center space-x-2">
-        <div className="flex space-x-2 items-center">
+      <div className='left-1/2 fixed top-6 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center space-x-2'>
+        <div className='flex space-x-2 items-center'>
           <Button
-            variant={tool === "select" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("select")}
+            variant={tool === 'select' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('select')}
           >
-            <MousePointer2 className="h-4 w-4" />
-            <span className="sr-only">Select tool</span>
+            <MousePointer2 className='h-4 w-4' />
+            <span className='sr-only'>Select tool</span>
           </Button>
           <Button
-            variant={tool === "text" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("text")}
+            variant={tool === 'text' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('text')}
           >
-            <Type className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <Type className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Button
-            variant={tool === "arrow" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("arrow")}
+            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('arrow')}
           >
-            <MoveRight className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <MoveRight className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
         </div>
-        <Separator orientation="vertical" className="h-6" />
-        <div className="p-2 font-bold text-sm flex-1 min-w-0">
-          <h1 className="truncate">How to survive in flood of technology</h1>
+        <Separator orientation='vertical' className='h-6' />
+        <div className='p-2 font-bold text-sm flex-1 min-w-0'>
+          <h1 className='truncate'>How to survive in flood of technology</h1>
         </div>
-        <Separator orientation="vertical" className="h-6" />
-        <div className="flex space-x-2 items-center">
+        <Separator orientation='vertical' className='h-6' />
+        <div className='flex space-x-2 items-center'>
           <Button
-            variant={tool === "select" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("select")}
+            variant={tool === 'select' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('select')}
           >
-            <MousePointer2 className="h-4 w-4" />
-            <span className="sr-only">Select tool</span>
+            <MousePointer2 className='h-4 w-4' />
+            <span className='sr-only'>Select tool</span>
           </Button>
           <Button
-            variant={tool === "text" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("text")}
+            variant={tool === 'text' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('text')}
           >
-            <Type className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <Type className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
           <Button
-            variant={tool === "arrow" ? "toolSelect" : "white"}
-            size="icon"
-            onClick={() => setTool("arrow")}
+            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
+            size='icon'
+            onClick={() => setTool('arrow')}
           >
-            <MoveRight className="h-4 w-4" />
-            <span className="sr-only">Text tool</span>
+            <MoveRight className='h-4 w-4' />
+            <span className='sr-only'>Text tool</span>
           </Button>
         </div>
       </div>
-      <div ref={containerRef} className="flex-grow overflow-hidden relative">
+      <div ref={containerRef} className='flex-grow overflow-hidden relative'>
         <canvas
           ref={canvasRef}
           width={window.innerWidth}
@@ -1555,13 +1556,13 @@ export default function Whiteboard() {
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          className={`${spacePressed ? "cursor-grab" : "cursor-crosshair"} ${
-            isPanning ? "cursor-grabbing" : ""
+          className={`${spacePressed ? 'cursor-grab' : 'cursor-crosshair'} ${
+            isPanning ? 'cursor-grabbing' : ''
           }`}
         />
         {/* WidgetShell 컴포넌트들을 렌더링 */}
         {widgets.map((widget) => (
-          <WidgetShell
+          <MemoizedWidgetShell
             key={widget.id}
             widget={widget}
             scale={scale}
@@ -1583,7 +1584,7 @@ export default function Whiteboard() {
           contentTitle={contentTitle}
           handleInputChange={handleInputChange}
           handleSaveClick={handleSaveClick}
-          className="custom-dialog-class"
+          className='custom-dialog-class'
           open={dialogOpen}
           onOpenChange={setDialogOpen}
         />
