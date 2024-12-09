@@ -26,7 +26,6 @@ const areEqual = (
     prevProps.widget.y === nextProps.widget.y &&
     prevProps.widget.width === nextProps.widget.width &&
     prevProps.widget.height === nextProps.widget.height &&
-    prevProps.scale === nextProps.scale &&
     prevProps.offset.x === nextProps.offset.x &&
     prevProps.offset.y === nextProps.offset.y &&
     prevProps.draggable === nextProps.draggable &&
