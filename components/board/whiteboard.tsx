@@ -36,6 +36,7 @@ import {
   redo,
   undo,
   deleteWidget,
+  setSpacePressed,
 } from '@/lib/redux/features/whiteboardSlice';
 
 import {
@@ -102,7 +103,9 @@ export default function Whiteboard() {
   const [tool, setTool] = useState<'select' | AllWidgetType>('select');
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
-  const [spacePressed, setSpacePressed] = useState(false);
+  const spacePressed = useSelector(
+    (state: RootState) => state.whiteboard.spacePressed
+  );
   const [isZooming, setIsZooming] = useState(false);
   const [isBrainstormActive, setIsBrainstormActive] = useState(false); // 브레인스톰 상태 추가
   const [contentTitle, setContentTitle] = useState(''); // contentTitle 상태 추가
@@ -194,13 +197,13 @@ export default function Whiteboard() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !spacePressed) {
-        setSpacePressed(true);
+        dispatch(setSpacePressed(true));
       }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
-        setSpacePressed(false);
+        dispatch(setSpacePressed(false));
         setIsPanning(false);
       }
     };

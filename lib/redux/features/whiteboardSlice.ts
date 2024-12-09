@@ -22,6 +22,7 @@ interface WhiteboardState {
   lastSavedState: ShellWidgetProps<AllWidgetTypes>[];
   deletedWidgets: ShellWidgetProps<AllWidgetTypes>[];
   isReduced: boolean;
+  spacePressed: boolean;
 }
 
 const initialState: WhiteboardState = {
@@ -35,6 +36,7 @@ const initialState: WhiteboardState = {
   lastSavedState: [],
   deletedWidgets: [],
   isReduced: false,
+  spacePressed: false,
 };
 
 const whiteboardSlice = createSlice({
@@ -266,6 +268,9 @@ const whiteboardSlice = createSlice({
           break;
       }
     },
+    setSpacePressed: (state, action: PayloadAction<boolean>) => {
+      state.spacePressed = action.payload;
+    },
   },
 });
 
@@ -287,5 +292,6 @@ export const {
   // setWidgets,
   undo,
   redo,
+  setSpacePressed,
 } = whiteboardSlice.actions;
 export default whiteboardSlice.reducer;

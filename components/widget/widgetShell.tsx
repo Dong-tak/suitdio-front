@@ -220,6 +220,10 @@ export default function WidgetShell({
     height: widget.height,
   });
 
+  const spacePressed = useSelector(
+    (state: RootState) => state.whiteboard.spacePressed
+  );
+
   const { debouncedUpdateWidget } = useDebounceDispatch();
 
   useEffect(() => {
@@ -936,7 +940,7 @@ export default function WidgetShell({
         </div>
       )}
       <div
-        className='widget-shell group'
+        className={`widget-shell ${spacePressed ? 'space-active' : ''} group`}
         style={{
           position: 'absolute',
           zIndex: widget.innerWidget.type === 'section' ? 1 : 2,
