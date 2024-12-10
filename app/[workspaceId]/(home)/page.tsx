@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import HomeView from "@/components/home/homeview";
-import { useState, useEffect, useRef } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import HomeView from '@/app/[workspaceId]/(home)/components/homeview';
+import { useState, useEffect, useRef } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
 import {
   addMiddleWidget,
   addWidget,
   updateWidget,
-} from "@/lib/redux/features/whiteboardSlice";
-import { createBoard } from "./action";
-import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
+} from '@/redux/features/whiteboardSlice';
+import { createBoard } from './action';
+import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 
 export default function Home() {
-  const [contentTitle, setContentTitle] = useState("");
+  const [contentTitle, setContentTitle] = useState('');
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
@@ -42,12 +42,12 @@ export default function Home() {
         dispatch(addMiddleWidget(newBoard));
 
         const Board = await createBoard(workspaceId, contentTitle);
-        console.log("보드가 생성되었습니다:", Board);
+        console.log('보드가 생성되었습니다:', Board);
 
-        localStorage.setItem("currentBoardId", Board.id);
+        localStorage.setItem('currentBoardId', Board.id);
         router.push(`/${workspaceId}/board/${Board.id}/`);
       } catch (error) {
-        console.error("보드 생성 중 오류 발생:", error);
+        console.error('보드 생성 중 오류 발생:', error);
       } finally {
         setIsLoading(false);
       }
@@ -94,7 +94,7 @@ export default function Home() {
   ) => {
     const newBoard: ShellWidgetProps<AllWidgetTypes> = {
       id: `CenterWidget-${Date.now()}`, // 유니크한 ID 생성
-      type: "shell",
+      type: 'shell',
       x: boardPosition.x,
       y: boardPosition.y,
       width: 750,
@@ -106,7 +106,7 @@ export default function Home() {
       to: [],
       innerWidget: {
         id: `CenterWidget-${Date.now()}`,
-        type: "center",
+        type: 'center',
         titleBlock: contentTitle,
         width: 750,
         height: initialHeight,
@@ -117,7 +117,7 @@ export default function Home() {
         resizeable: false,
         headerBar: true,
         footerBar: false,
-        text: "",
+        text: '',
       },
     };
 
@@ -126,7 +126,7 @@ export default function Home() {
 
   return (
     <SidebarInset>
-      <SidebarTrigger className="-ml-1" />
+      <SidebarTrigger className='-ml-1' />
       <HomeView
         contentTitle={contentTitle}
         handleInputChange={handleInputChange}

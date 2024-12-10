@@ -133,3 +133,11 @@ body {
 .edit-mode-container > * {
   pointer-events: auto;
 }
+
+.widget-shell.space-active {
+  pointer-events: none;
+}
+
+.widget-shell {
+  pointer-events: auto;
+}

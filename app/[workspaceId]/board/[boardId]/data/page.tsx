@@ -2,23 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useEffect, useRef } from 'react';
-import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
 import { useParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import { fetchBoardDetail } from './action';
 import { useDispatch } from 'react-redux';
-import {
-  addWebsocketWidget,
-  addWidget,
-  addWidgetFrom,
-  addWidgetTo,
-  deleteWidget,
-  setInitialWidgets,
-  updateWebsocketWidget,
-  updateWidget,
-} from '@/lib/redux/features/whiteboardSlice';
-import { setWebSocket } from '@/lib/redux/middleware/websocketMiddleware';
-import { parseBoardData, parseWidgetInstance } from '@/lib/parseBoard';
+import { setInitialWidgets } from '@/redux/features/whiteboardSlice';
+import { setWebSocket } from '@/redux/middleware/websocketMiddleware';
 
 export default function Board() {
   const params = useParams();
@@ -30,7 +19,7 @@ export default function Board() {
   const initializeRef = useRef(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
 
-  const Whiteboard = dynamic(() => import('@/components/board/whiteboard'), {
+  const Whiteboard = dynamic(() => import('../components/whiteboard'), {
     ssr: false,
   });
 

@@ -1,6 +1,4 @@
-"use client";
-import FilterMenu from "@/components/record/filter-menu";
-import RecordCard from "@/components/record/record-card";
+'use client';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,22 +6,25 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { ArrowLeft, ArrowRight, Ellipsis, Search } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Board } from "./action";
-import { deleteBoard, createBoard, initializeWorkspaceData } from "./action";
-import { useParams } from "next/navigation";
-import CreateBoardDialog from "@/components/home/creatboard";
-import { Spinner } from "@/components/ui/spinner";
-import { AllWidgetTypes, ShellWidgetProps } from "@/types/type";
-import { useDispatch } from "react-redux";
-import { addMiddleWidget } from "@/lib/redux/features/whiteboardSlice";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
+import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { ArrowLeft, ArrowRight, Ellipsis, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Board } from './action';
+import { deleteBoard, createBoard, initializeWorkspaceData } from './action';
+import { useParams } from 'next/navigation';
+import { Spinner } from '@/components/ui/spinner';
+import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import { useDispatch } from 'react-redux';
+
+import { useRouter } from 'next/navigation';
+import CreateBoardDialog from '../(home)/components/creatboard';
+import FilterMenu from './components/filter-menu';
+import RecordCard from './components/record-card';
+import { addMiddleWidget } from '@/redux/features/whiteboardSlice';
 
 export default function RecordView() {
   const dispatch = useDispatch();
@@ -33,7 +34,7 @@ export default function RecordView() {
     boards: Board[];
   } | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [contentTitle, setContentTitle] = useState("");
+  const [contentTitle, setContentTitle] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const params = useParams();
   const workspaceId = params.workspaceId as string;
@@ -66,10 +67,10 @@ export default function RecordView() {
       }
     };
     if (workspaceId) {
-      console.log("workspaceId:", workspaceId);
+      console.log('workspaceId:', workspaceId);
       initializeData(workspaceId);
     } else {
-      console.log("workspaceId 없음");
+      console.log('workspaceId 없음');
     }
     return () => {
       mounted = false;
@@ -96,7 +97,7 @@ export default function RecordView() {
     if (!data?.workspaceId) return;
     try {
       const newBoard = await createBoard(data.workspaceId, contentTitle);
-      setContentTitle("");
+      setContentTitle('');
       setIsDialogOpen(false);
       setData((prev) =>
         prev
@@ -107,7 +108,7 @@ export default function RecordView() {
           : null
       );
     } catch (error) {
-      console.error("보드 생성 중 오류 발생:", error);
+      console.error('보드 생성 중 오류 발생:', error);
     }
   };
 
@@ -125,12 +126,12 @@ export default function RecordView() {
         dispatch(addMiddleWidget(newBoard));
 
         const Board = await createBoard(workspaceId, contentTitle);
-        console.log("보드가 생성되었습니다:", Board);
+        console.log('보드가 생성되었습니다:', Board);
 
-        localStorage.setItem("currentBoardId", Board.id);
+        localStorage.setItem('currentBoardId', Board.id);
         router.push(`/${workspaceId}/board/${Board.id}/`);
       } catch (error) {
-        console.error("보드 생성 중 오류 발생:", error);
+        console.error('보드 생성 중 오류 발생:', error);
       } finally {
         setIsLoading(false);
       }
@@ -139,9 +140,9 @@ export default function RecordView() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className='flex items-center justify-center h-screen'>
         <Spinner size={32} />
-        <span className="ml-2">Loading...</span>
+        <span className='ml-2'>Loading...</span>
       </div>
     );
   }
@@ -164,7 +165,7 @@ export default function RecordView() {
   ) => {
     const newBoard: ShellWidgetProps<AllWidgetTypes> = {
       id: `CenterWidget-${Date.now()}`, // 유니크한 ID 생성
-      type: "shell",
+      type: 'shell',
       x: boardPosition.x,
       y: boardPosition.y,
       width: 750,
@@ -176,7 +177,7 @@ export default function RecordView() {
       to: [],
       innerWidget: {
         id: `CenterWidget-${Date.now()}`,
-        type: "center",
+        type: 'center',
         titleBlock: contentTitle,
         width: 750,
         height: initialHeight,
@@ -187,7 +188,7 @@ export default function RecordView() {
         resizeable: false,
         headerBar: true,
         footerBar: false,
-        text: "",
+        text: '',
       },
     };
 
@@ -196,34 +197,34 @@ export default function RecordView() {
 
   return (
     <SidebarInset>
-      <header className="flex h-11 shrink-0 items-center justify-between px-2">
-        <div className="gap-2 flex items-center">
-          <div className="flex items-center gap-1">
-            <SidebarTrigger className="-ml-1" />
+      <header className='flex h-11 shrink-0 items-center justify-between px-2'>
+        <div className='gap-2 flex items-center'>
+          <div className='flex items-center gap-1'>
+            <SidebarTrigger className='-ml-1' />
             <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-slate-200 w-7 h-7"
+              variant='ghost'
+              size='icon'
+              className='hover:bg-slate-200 w-7 h-7'
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className='w-4 h-4' />
             </Button>
             <Button
-              variant="ghost"
-              size="icon"
-              className="hover:bg-slate-200 w-7 h-7"
+              variant='ghost'
+              size='icon'
+              className='hover:bg-slate-200 w-7 h-7'
             >
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className='w-4 h-4' />
             </Button>
           </div>
-          <Separator orientation="vertical" className="mr-2 h-4 " />
+          <Separator orientation='vertical' className='mr-2 h-4 ' />
           <Breadcrumb>
             <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">
+              <BreadcrumbItem className='hidden md:block'>
+                <BreadcrumbLink href='#'>
                   Building Your Application
                 </BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
+              <BreadcrumbSeparator className='hidden md:block' />
               <BreadcrumbItem>
                 <BreadcrumbPage>Data Fetching</BreadcrumbPage>
               </BreadcrumbItem>
@@ -231,41 +232,41 @@ export default function RecordView() {
           </Breadcrumb>
         </div>
         <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-slate-200 w-7 h-7"
+          variant='ghost'
+          size='icon'
+          className='hover:bg-slate-200 w-7 h-7'
         >
-          <Ellipsis className="w-4 h-4" />
+          <Ellipsis className='w-4 h-4' />
         </Button>
       </header>
-      <div className="flex items-center gap-2 px-6 w-full ">
-        <Search className="w-4 h-4 absolute left-10 text-muted-foreground " />
+      <div className='flex items-center gap-2 px-6 w-full '>
+        <Search className='w-4 h-4 absolute left-10 text-muted-foreground ' />
         <Input
-          type="text"
-          placeholder="Search"
-          className="w-full pl-10 bg-slate-100 border-none"
+          type='text'
+          placeholder='Search'
+          className='w-full pl-10 bg-slate-100 border-none'
         />
         <Button
           onClick={() => {
             setIsDialogOpen(true);
             setOpen(true);
           }}
-          className="hover:bg-gradient-to-b hover:from-gray-300 hover:to-gray-300 bg-gradient-to-b from-[#ffb300] to-[#ff8f00] shadow-lg"
+          className='hover:bg-gradient-to-b hover:from-gray-300 hover:to-gray-300 bg-gradient-to-b from-[#ffb300] to-[#ff8f00] shadow-lg'
         >
           + Create new
         </Button>
       </div>
-      <div className="flex items-center gap-2 px-6 justify-start mt-2">
-        <FilterMenu label="최종 수정일" items={["수정일", "생성일", "버전"]} />
-        <FilterMenu label="필터" items={["수정일", "생성일", "버전"]} />
+      <div className='flex items-center gap-2 px-6 justify-start mt-2'>
+        <FilterMenu label='최종 수정일' items={['수정일', '생성일', '버전']} />
+        <FilterMenu label='필터' items={['수정일', '생성일', '버전']} />
       </div>
-      <div className="flex flex-1 flex-col gap-4 px-6 mt-4">
+      <div className='flex flex-1 flex-col gap-4 px-6 mt-4'>
         {data.boards.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
+          <div className='text-center py-8 text-muted-foreground'>
             생성된 보드가 없습니다. 새 보드를 생성해주세요.
           </div>
         ) : (
-          <div className="grid gap-4 grid-cols-auto-fit">
+          <div className='grid gap-4 grid-cols-auto-fit'>
             {data.boards.map((board) => (
               <RecordCard
                 key={board.id}
@@ -274,13 +275,13 @@ export default function RecordView() {
                 cardTitle={board.data.focus}
                 cardConclusion={`최종 수정: ${new Date(
                   board.updatedAt
-                ).toLocaleDateString("ko-KR")}`}
+                ).toLocaleDateString('ko-KR')}`}
                 onDelete={handleDeleteBoard}
               />
             ))}
           </div>
         )}
-        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted md:min-h-min" />
+        <div className='min-h-[100vh] flex-1 rounded-xl bg-muted md:min-h-min' />
       </div>
       <CreateBoardDialog
         contentTitle={contentTitle}

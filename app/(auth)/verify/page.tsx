@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { verifyEmail } from './action';
 import { registerUser } from '../signup/action';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/redux/store';
+import { RootState } from '@/redux/store';
 
 interface FormState {
   fieldErrors?: {
