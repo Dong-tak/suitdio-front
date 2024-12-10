@@ -1,12 +1,12 @@
-import { Circle, Play, Settings, Trash } from "lucide-react";
-import { Button } from "../ui/button";
+import { Circle, Play, Settings, Trash } from 'lucide-react';
+import { Button } from '../../../../components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { useState } from "react";
+} from '../../../../components/ui/dropdown-menu';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -15,8 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../ui/dialog";
-import { useParams, useRouter } from "next/navigation";
+} from '../../../../components/ui/dialog';
+import { useParams, useRouter } from 'next/navigation';
 
 interface RecordCardProps {
   cardId: string;
@@ -41,7 +41,7 @@ export default function RecordCard({
   };
 
   const handleCardClick = (e: React.MouseEvent) => {
-    const actionArea = (e.target as HTMLElement).closest(".card-actions");
+    const actionArea = (e.target as HTMLElement).closest('.card-actions');
     if (actionArea) {
       e.stopPropagation();
       return;
@@ -56,47 +56,47 @@ export default function RecordCard({
   return (
     <div
       onClick={handleCardClick}
-      className="relative group aspect-square rounded-xl w-full bg-muted h-full flex px-4 py-2 overflow-hidden hover:cursor-pointer"
+      className='relative group aspect-square rounded-xl w-full bg-muted h-full flex px-4 py-2 overflow-hidden hover:cursor-pointer'
     >
-      <div className="flex flex-col gap-2 w-full group-hover:opacity-10">
-        <div className="text-3xl font-bold w-full h-full flex items-start justify-center">
+      <div className='flex flex-col gap-2 w-full group-hover:opacity-10'>
+        <div className='text-3xl font-bold w-full h-full flex items-start justify-center'>
           {cardTitle}
         </div>
-        <div className="text-md text-black w-full h-full flex items-center justify-center">
+        <div className='text-md text-black w-full h-full flex items-center justify-center'>
           {cardConclusion}
         </div>
       </div>
-      <div className="card-actions absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden group-hover:block">
-        <div className="flex space-x-4 items-center">
+      <div className='card-actions absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden group-hover:block'>
+        <div className='flex space-x-4 items-center'>
           <Button
-            size="icon"
+            size='icon'
             onClick={(e) => e.stopPropagation()}
-            className="bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-6 h-6"
+            className='bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-6 h-6'
           >
-            <Circle className="w-4 h-4" />
+            <Circle className='w-4 h-4' />
           </Button>
           <Button
-            size="icon"
+            size='icon'
             onClick={handleNavigate}
-            className="bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-11 h-11"
+            className='bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-11 h-11'
           >
-            <Play className="w-6 h-6" />
+            <Play className='w-6 h-6' />
           </Button>
           <Button
-            size="icon"
+            size='icon'
             onClick={(e) => e.stopPropagation()}
-            className="bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-6 h-6"
+            className='bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-6 h-6'
           >
-            <Settings className="w-4 h-4" />
+            <Settings className='w-4 h-4' />
           </Button>
           <Dialog>
             <DialogTrigger asChild>
               <Button
-                size="icon"
+                size='icon'
                 onClick={handleDeleteClick}
-                className="bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-6 h-6"
+                className='bg-white text-black hover:bg-slate-300 rounded-full shadow-lg w-6 h-6'
               >
-                <Trash className="w-4 h-4" />
+                <Trash className='w-4 h-4' />
               </Button>
             </DialogTrigger>
             <DialogContent onClick={(e) => e.stopPropagation()}>
@@ -108,7 +108,7 @@ export default function RecordCard({
               </DialogHeader>
               <DialogFooter>
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={(e) => {
                     e.stopPropagation();
                     onDelete(cardId);

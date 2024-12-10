@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useState, useEffect } from "react";
-import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
-import { useWebSocket } from "@/hooks/use-socket";
-import { useParams } from "next/navigation";
-import { Spinner } from "@/components/ui/spinner";
+import dynamic from 'next/dynamic';
+import { useState, useEffect } from 'react';
+import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
+import { useWebSocket } from '@/hooks/use-socket';
+import { useParams } from 'next/navigation';
+import { Spinner } from '@/components/ui/spinner';
 
 interface BoardData {
   widgets: ShellWidgetProps<AllWidgetTypes>[];
@@ -16,7 +16,7 @@ export default function Board() {
   const boardId = params.boardId as string;
   const socket = useWebSocket(boardId);
 
-  const Whiteboard = dynamic(() => import("@/components/board/whiteboard"), {
+  const Whiteboard = dynamic(() => import('./components/whiteboard'), {
     ssr: false,
   });
 
@@ -34,7 +34,7 @@ export default function Board() {
     };
 
     socket.onerror = (error) => {
-      setError("웹소켓 연결에 실패했습니다.");
+      setError('웹소켓 연결에 실패했습니다.');
       setIsLoading(false);
     };
 
@@ -47,9 +47,9 @@ export default function Board() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className='flex items-center justify-center h-screen'>
         <Spinner size={32} />
-        <span className="ml-2">Loading...</span>
+        <span className='ml-2'>Loading...</span>
       </div>
     );
   }

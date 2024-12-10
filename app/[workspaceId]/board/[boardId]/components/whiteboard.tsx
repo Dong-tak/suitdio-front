@@ -23,7 +23,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState, store } from '@/lib/redux/store';
+import { RootState } from '@/redux/store';
 import {
   addWidget,
   setSelectedWidget,
@@ -35,9 +35,8 @@ import {
   setInitialWidgets,
   redo,
   undo,
-  deleteWidget,
   setSpacePressed,
-} from '@/lib/redux/features/whiteboardSlice';
+} from '@/redux/features/whiteboardSlice';
 
 import {
   ShellWidgetProps,
@@ -52,17 +51,20 @@ import {
 } from '@/types/type';
 import '@blocknote/core/fonts/inter.css';
 import '@blocknote/mantine/style.css';
-import WidgetShell from '../widget/widgetShell';
-import SvgIcon from '@/lib/utils/svgIcon';
-import { sectionSvg } from '@/lib/utils/svgBag';
+import SvgIcon from '@/utils/svgIcon';
+import { sectionSvg } from '@/utils/svgBag';
 import { HiOutlineSparkles } from 'react-icons/hi2';
-import { Separator } from '../ui/separator';
-import { createTextNode } from '@/lib/utils/textNodeCreator';
-import BrainstormInput from '../widget/widgetBrainstorm';
-import CreateBoardDialog from '../home/creatboard';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Label } from '../ui/label';
-import { Input } from '../ui/input';
+import { Separator } from '../../../../../components/ui/separator';
+import { createTextNode } from '@/utils/textNodeCreator';
+import BrainstormInput from './widget/widgetBrainstorm';
+import CreateBoardDialog from '../../../(home)/components/creatboard';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '../../../../../components/ui/popover';
+import { Label } from '../../../../../components/ui/label';
+import { Input } from '../../../../../components/ui/input';
 import {
   addArrow,
   deleteArrow,
@@ -71,17 +73,16 @@ import {
   setArrows,
   setIsArrowMode,
   setSelectedArrows,
-} from '@/lib/redux/features/arrowSlice';
-import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
+} from '@/redux/features/arrowSlice';
+import { calculateArrowPoints, drawArrow } from '../components/arrow/drawArrow';
 import { useWebSocket } from '@/hooks/use-socket';
 import { getTsid } from 'tsid-ts';
-import WidgetCenter from '../widget/widgetCenter';
-import { getSelectedWidgetInfo } from '@/lib/utils/mindMapUtils/mindMapNodeFinder';
-import { Spinner } from '../ui/spinner';
+import { getSelectedWidgetInfo } from '@/utils/mindMapUtils/mindMapNodeFinder';
+import { Spinner } from '../../../../../components/ui/spinner';
 import { Board, fetchBoards } from '@/app/[workspaceId]/record/action';
 import { useParams } from 'next/navigation';
-import { AIChat } from '../ui/ai';
-import { MemoizedWidgetShell } from '../widget/memoizedWidgetShell';
+import { AIChat } from '../../../../../components/ui/ai';
+import { MemoizedWidgetShell } from './widget/memoizedWidgetShell';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격

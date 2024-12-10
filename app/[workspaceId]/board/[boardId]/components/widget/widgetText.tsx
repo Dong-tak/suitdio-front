@@ -5,7 +5,6 @@ import '@blocknote/core/fonts/inter.css';
 import '@blocknote/react/style.css';
 import { useEffect, useRef, useState } from 'react';
 import { BlockNoteView } from '@blocknote/mantine';
-import { updateWidget } from '@/lib/redux/features/whiteboardSlice';
 import { useDispatch } from 'react-redux';
 
 interface WidgetTextProps extends TextWidget {

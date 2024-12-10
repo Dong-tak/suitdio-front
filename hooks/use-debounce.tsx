@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { debounce } from 'lodash';
 import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
-import { updateWidget } from '@/lib/redux/features/whiteboardSlice';
+import { updateWidget } from '@/redux/features/whiteboardSlice';
 
 export const useDebounceDispatch = () => {
   const dispatch = useDispatch();

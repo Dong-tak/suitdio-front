@@ -1,7 +1,6 @@
-import { calculateArrowPoints } from "@/components/arrow/drawArrow";
-import { ShellWidgetProps, AllWidgetTypes, Arrow } from "@/types/type";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { deleteWidget } from "./whiteboardSlice";
+import { ShellWidgetProps, AllWidgetTypes, Arrow } from '@/types/type';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { deleteWidget } from './whiteboardSlice';
 
 interface ArrowState {
   isArrowMode: boolean; // 화살표 모드 활성화 여부
@@ -18,14 +17,14 @@ const initialState: ArrowState = {
 };
 
 const arrowSlice = createSlice({
-  name: "arrow",
+  name: 'arrow',
   initialState,
   reducers: {
     setIsArrowMode: (state, action) => {
       state.isArrowMode = action.payload;
     },
     addLinkWidgets: (state, action) => {
-      console.log("리듀서 내부 - 받은 widget.id:", action.payload);
+      console.log('리듀서 내부 - 받은 widget.id:', action.payload);
       state.linkWidgets.push(action.payload);
     },
     deleteFirstLinkWidget: (state) => {

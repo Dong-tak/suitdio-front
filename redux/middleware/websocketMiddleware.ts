@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { store } from '@/lib/redux/store';
+import { store } from '@/redux/store';
 import { debounce } from 'lodash';
 
 let socket: WebSocket | null = null;

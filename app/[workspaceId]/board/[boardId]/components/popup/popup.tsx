@@ -8,13 +8,13 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { useSelector } from 'react-redux';
-import { RootState } from '@/lib/redux/store';
-import WidgetText from '@/components/widget/widgetText';
-import WidgetImage from '@/components/widget/widgetImage';
-import WidgetPdf from '@/components/widget/widgetPdf';
-import WidgetUrl from '@/components/widget/widgetUrl';
+import { RootState } from '@/redux/store';
 import { AllWidgetTypes, Arrow, ShellWidgetProps } from '@/types/type';
 import { DialogTitle } from '@radix-ui/react-dialog';
+import WidgetText from '@/app/[workspaceId]/board/[boardId]/components/widget/widgetText';
+import WidgetImage from '@/app/[workspaceId]/board/[boardId]/components/widget/widgetImage';
+import WidgetPdf from '@/app/[workspaceId]/board/[boardId]/components/widget/widgetPdf';
+import WidgetUrl from '@/app/[workspaceId]/board/[boardId]/components/widget/widgetUrl';
 
 interface WidgetPopupProps {
   isOpen: boolean;

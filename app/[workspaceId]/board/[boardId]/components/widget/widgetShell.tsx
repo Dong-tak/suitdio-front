@@ -24,17 +24,16 @@ import {
   setIsReduced,
   setSelectedWidget,
   updateWidget,
-} from '@/lib/redux/features/whiteboardSlice';
+} from '@/redux/features/whiteboardSlice';
 import {
   snap,
   snapHeight,
   snapWidgetPosition,
   snapWidgetResize,
-} from '@/lib/utils/snapping';
-import { RootState } from '@/lib/redux/store';
-import { Button } from '../ui/button';
+} from '@/utils/snapping';
+import { RootState } from '@/redux/store';
 import { ChevronDown, Ellipsis, Info } from 'lucide-react';
-import SvgIcon from '@/lib/utils/svgIcon';
+import SvgIcon from '@/utils/svgIcon';
 import {
   arrowModeSvg,
   chevronDownSvg8px,
@@ -44,13 +43,13 @@ import {
   recordSvg,
   sixBoltSvg,
   wideFrameSvg8px,
-} from '@/lib/utils/svgBag';
+} from '@/utils/svgBag';
 import {
   isCompletelyContained,
   updateSectionAndMembers,
   updateSectionResize,
   limitMovementInSection,
-} from '@/lib/utils/sectionHelpers';
+} from '@/utils/sectionHelpers';
 import {
   addArrow,
   addLinkWidgets,
@@ -59,15 +58,17 @@ import {
   setIsArrowMode,
   setSelectedArrows,
   updateArrow,
-} from '@/lib/redux/features/arrowSlice';
+} from '@/redux/features/arrowSlice';
 import WidgetImage from './widgetImage';
 import WidgetPdf from './widgetPdf';
 import WidgetUrl from './widgetUrl';
-import WidgetPopup from '@/components/state/popup';
+
 import { calculateArrowPoints } from '../arrow/drawArrow';
 import { getTsid } from 'tsid-ts';
 import WidgetCenter from './widgetCenter';
 import { useDebounceDispatch } from '@/hooks/use-debounce';
+import { Button } from '@/components/ui/button';
+import WidgetPopup from '../popup/popup';
 interface WidgetShellProps {
   widget: ShellWidgetProps<AllWidgetTypes>;
   scale: number;
