@@ -1,6 +1,6 @@
-import { RootState } from "@/lib/redux/store";
-import { useSelector } from "react-redux";
-import { ShellWidgetProps, AllWidgetTypes, Arrow } from "@/types/type";
+import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
+import { ShellWidgetProps, AllWidgetTypes, Arrow } from '@/types/type';
 
 interface WidgetHierarchy {
   widget: ShellWidgetProps<AllWidgetTypes>;
@@ -123,13 +123,13 @@ export const getSelectedWidgetInfo = (state: RootState): WidgetInfo | null => {
   const widgets = state.whiteboard.widgets;
   const arrows = state.arrow.arrows;
 
-  console.log("-------------------------------------------");
-  console.log("현재 선택된 위젯 IDs:", selectedWidgetIds);
-  console.log("전체 위젯 목록:", widgets);
-  console.log("전체 화살표 목록:", arrows);
+  console.log('-------------------------------------------');
+  console.log('현재 선택된 위젯 IDs:', selectedWidgetIds);
+  console.log('전체 위젯 목록:', widgets);
+  console.log('전체 화살표 목록:', arrows);
 
   if (!selectedWidgetIds || selectedWidgetIds.length === 0) {
-    console.log("선택된 위젯이 없습니다.");
+    console.log('선택된 위젯이 없습니다.');
     return null;
   }
 
@@ -140,7 +140,7 @@ export const getSelectedWidgetInfo = (state: RootState): WidgetInfo | null => {
 
   if (!rootWidget) {
     console.log(
-      "선택된 ID에 해당하는 위젯을 찾을 수 없습니다:",
+      '선택된 ID에 해당하는 위젯을 찾을 수 없습니다:',
       selectedWidgetIds[0]
     );
     return null;
@@ -150,7 +150,7 @@ export const getSelectedWidgetInfo = (state: RootState): WidgetInfo | null => {
   const childArrows = arrows.filter((arrow) => arrow.fromId === rootWidget.id);
 
   console.log(
-    "Root 위젯에서 시작하는 화살표들:",
+    'Root 위젯에서 시작하는 화살표들:',
     childArrows.map((arrow) => ({
       fromId: arrow.fromId,
       toId: arrow.toId,
@@ -169,7 +169,7 @@ export const getSelectedWidgetInfo = (state: RootState): WidgetInfo | null => {
     });
   };
 
-  console.log("위젯 계층 구조:");
+  console.log('위젯 계층 구조:');
   logHierarchy(allChildWidgets);
 
   // JSON 형태로 변환하여 출력
@@ -185,7 +185,7 @@ export const getSelectedWidgetInfo = (state: RootState): WidgetInfo | null => {
     allChildWidgets
   );
 
-  console.log("위젯 계층 구조 (JSON):");
+  console.log('위젯 계층 구조 (JSON):');
   console.log(JSON.stringify(jsonStructure, null, 2));
 
   return {
