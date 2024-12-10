@@ -21,7 +21,7 @@ import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
 import { useDispatch } from 'react-redux';
 
 import { useRouter } from 'next/navigation';
-import CreateBoardDialog from '../(home)/components/creatboard';
+import CreateBoardDialog from '../(home)/components/creatBoardDialog';
 import FilterMenu from './components/filter-menu';
 import RecordCard from './components/record-card';
 import { addMiddleWidget } from '@/redux/features/whiteboardSlice';

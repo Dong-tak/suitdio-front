@@ -57,7 +57,7 @@ import { HiOutlineSparkles } from 'react-icons/hi2';
 import { Separator } from '../../../../../components/ui/separator';
 import { createTextNode } from '@/utils/textNodeCreator';
 import BrainstormInput from './widget/widgetBrainstorm';
-import CreateBoardDialog from '../../../(home)/components/creatboard';
+import CreateBoardDialog from '../../../(home)/components/creatBoardDialog';
 import {
   Popover,
   PopoverContent,
