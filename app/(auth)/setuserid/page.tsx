@@ -5,15 +5,12 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, Check, Github, Instagram } from 'lucide-react';
-import { ChevronsUpDown } from 'lucide-react';
+import { Check, ChevronsUpDown } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import {
@@ -38,8 +35,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { completeUserProfile } from './action'; // action.ts 파일에서 가져오기
 import { Suspense } from 'react';
-import { useFormState } from 'react-hook-form';
-import { PASSWORD_MIN_LENGTH } from '@/lib/constant/const';
+import { PASSWORD_MIN_LENGTH } from '@/constant/const';
 
 interface FormState {
   fieldErrors: {

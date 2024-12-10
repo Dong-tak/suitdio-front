@@ -18,8 +18,8 @@ import { Separator } from '@/components/ui/separator';
 import { Github, Instagram, Youtube } from 'lucide-react';
 import { registerUser } from './action';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/lib/redux/store';
-import { setRegister } from '@/lib/redux/features/registerSlice';
+import { RootState } from '@/redux/store';
+import { setRegister } from '@/redux/features/registerSlice';
 
 interface FormState {
   fieldErrors?: {
