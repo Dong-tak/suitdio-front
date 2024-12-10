@@ -14,7 +14,10 @@ interface BoardData {
 export default function Board() {
   const params = useParams();
   const boardId = params.boardId as string;
-  const socket = useWebSocket(boardId);
+  const { isSocketConnected } = useWebSocket({
+    boardId,
+    isDataLoaded: true,
+  });
 
   const Whiteboard = dynamic(() => import('./components/whiteboard'), {
     ssr: false,
@@ -23,27 +26,6 @@ export default function Board() {
   const [boardData, setBoardData] = useState<BoardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    // 웹소켓 연결이 완료되면 로딩 상태 해제
-    socket.onopen = () => {
-      setBoardData({ widgets: [] });
-      setIsLoading(false);
-    };
-
-    socket.onerror = (error) => {
-      setError('웹소켓 연결에 실패했습니다.');
-      setIsLoading(false);
-    };
-
-    return () => {
-      if (socket) {
-        socket.close();
-      }
-    };
-  }, [socket]);
 
   if (isLoading) {
     return (
