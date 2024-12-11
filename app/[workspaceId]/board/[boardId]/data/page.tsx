@@ -2,8 +2,8 @@
 
 import { useParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
-import { useWebSocket } from '@/hooks/use-socket';
-import { useBoardInitialization } from '@/hooks/use-initBordData';
+import { useWebSocket } from '../hooks/use-socket';
+import { useBoardInitialization } from '../hooks/use-initBordData';
 import Whiteboard from '../components/whiteboard';
 
 export default function Board() {
