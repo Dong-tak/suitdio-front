@@ -4,7 +4,15 @@ import { useParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 import { useWebSocket } from '../hooks/use-socket';
 import { useBoardInitialization } from '../hooks/use-initBordData';
-import Whiteboard from '../components/whiteboard';
+
+import dynamic from 'next/dynamic';
+
+const Whiteboard = dynamic(
+  () => import('../components/whiteboard/whiteboard'),
+  {
+    ssr: false,
+  }
+);
 
 export default function Board() {
   const params = useParams();

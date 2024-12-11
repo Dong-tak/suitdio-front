@@ -19,9 +19,12 @@ export default function Board() {
     isDataLoaded: true,
   });
 
-  const Whiteboard = dynamic(() => import('./components/whiteboard'), {
-    ssr: false,
-  });
+  const Whiteboard = dynamic(
+    () => import('./components/whiteboard/whiteboard'),
+    {
+      ssr: false,
+    }
+  );
 
   const [boardData, setBoardData] = useState<BoardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
