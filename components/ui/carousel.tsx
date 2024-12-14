@@ -256,6 +256,60 @@ const CarouselNext = React.forwardRef<
 });
 CarouselNext.displayName = 'CarouselNext';
 
+// CarouselPrevious 컴포넌트 수정
+const RandingCarouselPrevious = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<typeof Button>
+>(({ className, variant = 'outline', size = 'icon', ...props }, ref) => {
+  const { orientation, scrollPrev, canScrollPrev } = useCarousel();
+
+  return (
+    <Button
+      ref={ref}
+      variant={variant}
+      size={size}
+      className={cn(
+        ' h-8 w-8 rounded-full',
+
+        className
+      )}
+      disabled={!canScrollPrev}
+      onClick={scrollPrev}
+      {...props}
+    >
+      <ArrowLeft className='h-4 w-4' />
+      <span className='sr-only'>Previous slide</span>
+    </Button>
+  );
+});
+
+// CarouselNext 컴포넌트 수정
+const RandingCarouselNext = React.forwardRef<
+  HTMLButtonElement,
+  React.ComponentProps<typeof Button>
+>(({ className, variant = 'outline', size = 'icon', ...props }, ref) => {
+  const { orientation, scrollNext, canScrollNext } = useCarousel();
+
+  return (
+    <Button
+      ref={ref}
+      variant={variant}
+      size={size}
+      className={cn(
+        ' h-8 w-8 rounded-full',
+
+        className
+      )}
+      disabled={!canScrollNext}
+      onClick={scrollNext}
+      {...props}
+    >
+      <ArrowRight className='h-4 w-4' />
+      <span className='sr-only'>Next slide</span>
+    </Button>
+  );
+});
+
 export {
   type CarouselApi,
   Carousel,
@@ -263,4 +317,6 @@ export {
   CarouselItem,
   CarouselPrevious,
   CarouselNext,
+  RandingCarouselPrevious,
+  RandingCarouselNext,
 };
