@@ -41,7 +41,7 @@ export default function Home() {
         <LandingTabs />
       </div>
       {/* Carousel Section */}
-      <div className='flex flex-col items-start justify-center h-full mt-28 gap-12 px-48 w-full'>
+      <div className='flex flex-col items-start justify-center h-full mt-28 gap-4 px-48 w-full'>
         <h1 className='text-[40px] font-medium'>
           The modern feedback platform
         </h1>
@@ -59,6 +59,21 @@ export default function Home() {
           </div>
         </div>
         <LandingTabs />
+      </div>
+      {/* OneImage Section */}
+      <div className='flex flex-col items-center justify-center h-full mt-60 gap-12'>
+        <div className='flex flex-col items-center justify-center gap-4'>
+          <div className='text-[50px] font-bold'>
+            AI-Powered Suit Design for Your Business
+          </div>
+        </div>
+        <Image
+          src='/images/mileque-image.jpg'
+          alt='협업하는 사람들을 보여주는 일러스트레이션'
+          width={800}
+          height={600}
+          className='w-full max-w-[1200px] h-auto border-2 border-black/10 rounded-md'
+        />
       </div>
     </div>
   );

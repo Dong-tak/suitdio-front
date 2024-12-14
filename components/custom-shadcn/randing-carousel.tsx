@@ -34,7 +34,7 @@ export function CarouselSpacing() {
                 alt='협업하는 사람들을 보여주는 일러스트레이션'
                 width={300}
                 height={500}
-                className='w-full aspect-[1.5/2] object-cover h-auto border-2 border-black/10 rounded-md'
+                className='w-full  aspect-[1.5/2] object-cover h-auto border-2 border-black/10 rounded-md'
               />
             </div>
           </CarouselItem>

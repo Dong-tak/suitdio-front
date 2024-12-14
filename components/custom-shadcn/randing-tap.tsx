@@ -22,7 +22,10 @@ export function LandingTabs() {
         <TabsTrigger value='integration'>Integration</TabsTrigger>
       </TabsList>
       <div className=' w-full mt-8 px-48 h-full'>
-        <TabsContent value='board'>
+        <TabsContent
+          value='board'
+          className='w-full items-center justify-center flex'
+        >
           {/* <Card>
             <CardHeader>
               <CardTitle>Board</CardTitle>
@@ -49,7 +52,7 @@ export function LandingTabs() {
             alt='협업하는 사람들을 보여주는 일러스트레이션'
             width={800}
             height={600}
-            className='w-full h-auto border-2 border-black/10 rounded-md'
+            className='w-full max-w-[1200px] h-auto border-2 border-black/10 rounded-md'
           />
         </TabsContent>
         <TabsContent value='widgets'>
