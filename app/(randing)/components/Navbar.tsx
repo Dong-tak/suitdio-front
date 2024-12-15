@@ -9,7 +9,7 @@ export default function Navbar() {
       <div className='flex-1'>
         <Link href='/' className='flex items-center gap-2 justify-start'>
           <Image
-            src='/images/smallLogo.png'
+            src='/images/main/smallLogo.png'
             alt='logo'
             width={32}
             height={32}
@@ -23,9 +23,11 @@ export default function Navbar() {
       </div>
 
       <div className='flex-1 flex justify-end'>
-        <Button variant='outline' size='sm' className='text-[16px]'>
-          Login
-        </Button>
+        <Link href='/login'>
+          <Button variant='outline' size='sm' className='text-[16px]'>
+            Login
+          </Button>
+        </Link>
       </div>
     </div>
   );
