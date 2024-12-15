@@ -54,17 +54,17 @@ import '@blocknote/mantine/style.css';
 import SvgIcon from '@/utils/svgIcon';
 import { sectionSvg } from '@/utils/svgBag';
 import { HiOutlineSparkles } from 'react-icons/hi2';
-import { Separator } from '../../../../../components/ui/separator';
+import { Separator } from '../../../../../../components/ui/separator';
 import { createTextNode } from '@/utils/textNodeCreator';
-import BrainstormInput from './widget/widgetBrainstorm';
-import CreateBoardDialog from '../../../(home)/components/creatboard';
+import BrainstormInput from '../widget/widgetBrainstorm';
+import CreateBoardDialog from '../../../../(home)/components/creatBoardDialog';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../../../../../components/ui/popover';
-import { Label } from '../../../../../components/ui/label';
-import { Input } from '../../../../../components/ui/input';
+} from '../../../../../../components/ui/popover';
+import { Label } from '../../../../../../components/ui/label';
+import { Input } from '../../../../../../components/ui/input';
 import {
   addArrow,
   deleteArrow,
@@ -74,15 +74,22 @@ import {
   setIsArrowMode,
   setSelectedArrows,
 } from '@/redux/features/arrowSlice';
-import { calculateArrowPoints, drawArrow } from '../components/arrow/drawArrow';
-import { useWebSocket } from '@/hooks/use-socket';
+import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
 import { getTsid } from 'tsid-ts';
-import { getSelectedWidgetInfo } from '@/utils/mindMapUtils/mindMapNodeFinder';
-import { Spinner } from '../../../../../components/ui/spinner';
+
+import { Spinner } from '../../../../../../components/ui/spinner';
 import { Board, fetchBoards } from '@/app/[workspaceId]/record/action';
 import { useParams } from 'next/navigation';
-import { AIChat } from '../../../../../components/ui/ai';
-import { MemoizedWidgetShell } from './widget/memoizedWidgetShell';
+import { AIChat } from '../../../../../../components/ui/ai';
+import { MemoizedWidgetShell } from '../widget/memoizedWidgetShell';
+import { getSelectedWidgetInfo } from '@/utils/mindMapUtils/mindMapNodeFinder';
+import { useWhiteboardGrid } from '../../hooks/whiteboard/useWhiteboardGrid';
+import { useWhiteboardZoom } from '../../hooks/whiteboard/useWhiteboardZoom';
+import { useWhiteboardKeyboard } from '../../hooks/whiteboard/useWhiteboardKeyboard';
+import { useWhiteboardCanvas } from '../../hooks/whiteboard/useWhiteboardCanvas';
+import { useFileUpload } from '../../hooks/whiteboard/useFileUpload';
+import { useClipboard } from '../../hooks/whiteboard/useClipboard';
+import { useDragAndDrop } from '../../hooks/whiteboard/useDragDrop';
 
 // 기본 그리드 설정
 let baseSpacing = 48; // 기본 간격
@@ -99,15 +106,15 @@ export default function Whiteboard() {
   ) as ShellWidgetProps<AllWidgetTypes>[];
 
   const dispatch = useDispatch();
-  const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  // const [scale, setScale] = useState(1);
+  // const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [tool, setTool] = useState<'select' | AllWidgetType>('select');
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const spacePressed = useSelector(
     (state: RootState) => state.whiteboard.spacePressed
   );
-  const [isZooming, setIsZooming] = useState(false);
+  // const [isZooming, setIsZooming] = useState(false);
   const [isBrainstormActive, setIsBrainstormActive] = useState(false); // 브레인스톰 상태 추가
   const [contentTitle, setContentTitle] = useState(''); // contentTitle 상태 추가
   const [dialogOpen, setDialogOpen] = useState(false); // 다이얼로그 상태 추가
@@ -139,7 +146,19 @@ export default function Whiteboard() {
     popupOpenShells: new Set(),
   });
 
-  const history = useSelector((state: RootState) => state.whiteboard.history);
+  // 섹션 드래그 상태 추가
+  const [sectionDraft, setSectionDraft] = useState<{
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null>(null);
+
+  // Screen 좌표 기준의 마우스 위치를 저장
+  const [mousePosition, setMousePosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
 
   const handleShellEditModeChange = (widgetId: string, isEdit: boolean) => {
     setActiveShells((prev) => {
@@ -171,350 +190,45 @@ export default function Whiteboard() {
     });
   };
 
-  // 섹션 드래그 상태 추가
-  const [sectionDraft, setSectionDraft] = useState<{
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  } | null>(null);
-
-  // Screen 좌표 기준의 마우스 위치를 저장
-  const [mousePosition, setMousePosition] = useState<{
-    x: number;
-    y: number;
-  } | null>(null);
-
   // 입력 변경 핸들러
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setContentTitle(e.target.value);
   };
 
-  useEffect(() => {
-    console.log('위젯 상태:', widgets);
-  }, [widgets]);
+  // useWhiteboardZoom 훅 사용
+  const { scale, setScale, offset, setOffset, isZooming } = useWhiteboardZoom({
+    containerRef,
+    ZOOM_SPEED: 0.001,
+  });
 
-  // 스페이스바 누르면 드래그 모드, 떼면 드래그 모드 종료
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !spacePressed) {
-        dispatch(setSpacePressed(true));
-      }
-    };
+  const { drawGrid } = useWhiteboardGrid({
+    scale,
+    offset,
+    baseSpacing: 48,
+    basePointSize: 4,
+  });
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        dispatch(setSpacePressed(false));
-        setIsPanning(false);
-      }
-    };
+  useWhiteboardKeyboard({ setIsPanning, selectedArrow, widgets });
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
+  // Canvas 관련 훅 사용
+  const { redraw } = useWhiteboardCanvas({
+    canvasRef,
+    scale,
+    offset,
+    arrows,
+    selectedArrow,
+    sectionDraft,
+    selectArea,
+    drawGrid,
+  });
 
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [spacePressed]);
-
-  //20px을 기준으로 그리드 그리기
-  const drawGrid = useCallback(
-    (ctx: CanvasRenderingContext2D) => {
-      ctx.save();
-
-      // 줌 레벨에 따른 그리드 간격과 점 크기 조정
-      if (scale < 0.3) {
-        baseSpacing = 60;
-        basePointSize = 4;
-      } else {
-        baseSpacing = 48;
-      }
-
-      ctx.strokeStyle = '#DBDBDB';
-      ctx.lineWidth = basePointSize;
-
-      // 화면에 보이는 영역의 좌표 계산
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const visibleStartX = -offset.x;
-      const visibleEndX = canvas.width / scale - offset.x;
-      const visibleStartY = -offset.y;
-      const visibleEndY = canvas.height / scale - offset.y;
-
-      // 그리드 시작점을 간격에 맞춰 조정
-      const startX = Math.floor(visibleStartX / baseSpacing) * baseSpacing;
-      const startY = Math.floor(visibleStartY / baseSpacing) * baseSpacing;
-
-      // 화면에 보이는 영역만 그리드 그리기
-      for (let x = startX; x < visibleEndX; x += baseSpacing) {
-        for (let y = startY; y < visibleEndY; y += baseSpacing) {
-          ctx.beginPath();
-          ctx.arc(x, y, basePointSize * 0.25, 0, 2 * Math.PI);
-          ctx.stroke();
-        }
-      }
-      ctx.restore();
-    },
-    [offset, scale]
-  );
-
-  //브라우저 줌 이벤트 방지
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const preventDefault = (e: WheelEvent) => {
-      e.preventDefault();
-    };
-
-    container.addEventListener('wheel', preventDefault, { passive: false });
-
-    return () => {
-      container.removeEventListener('wheel', preventDefault);
-    };
-  }, []);
-
-  // window 좌표 기준의 마우스 위치 기준으로 줌인, 줌아웃 구현
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (isZooming) {
-        setMousePosition({ x: e.clientX, y: e.clientY });
-      }
-    };
-
-    const handleGlobalWheel = (e: WheelEvent) => {
-      if (e.metaKey || e.ctrlKey) {
-        e.preventDefault();
-
-        // 줌 시작 시 상태 설정
-        if (!isZooming) {
-          setIsZooming(true);
-          setMousePosition({ x: e.clientX, y: e.clientY });
-        }
-
-        const delta = e.deltaY;
-        const zoomFactor = Math.exp(-delta * ZOOM_SPEED);
-        const newScale = Math.min(Math.max(scale * zoomFactor, 0.1), 5);
-
-        if (mousePosition) {
-          const rect = containerRef.current?.getBoundingClientRect();
-          if (!rect) return;
-
-          // Screen 좌표 기준으로 컨테이너의 상대적 위치 계산
-          const pointX = (mousePosition.x - rect.left) / scale;
-          const pointY = (mousePosition.y - rect.top) / scale;
-
-          // 새로운 오프셋 계산
-          const newOffset = {
-            x: offset.x + (pointX * (scale - newScale)) / newScale,
-            y: offset.y + (pointY * (scale - newScale)) / newScale,
-          };
-
-          setScale(newScale);
-          setOffset(newOffset);
-        }
-      }
-    };
-
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (e.key === 'Meta' || e.key === 'Control') {
-        setIsZooming(false);
-        setMousePosition(null);
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    container.addEventListener('wheel', handleGlobalWheel, { passive: false });
-    window.addEventListener('keyup', handleKeyUp);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      container.removeEventListener('wheel', handleGlobalWheel);
-      window.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [scale, offset, isZooming, mousePosition]);
-
-  //scale, offset 변경 시 그리드 그리기
-  const redraw = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.save();
-    ctx.scale(scale, scale);
-    ctx.translate(offset.x, offset.y);
-
-    drawGrid(ctx);
-
-    // 화살표 그리기
-    arrows.forEach((arrow) => {
-      const isSelected = selectedArrow.includes(arrow);
-      drawArrow(ctx, arrow, scale, offset);
-
-      // 선택된 화살표의 시작점과 끝점에 원 그리기
-      if (isSelected) {
-        ctx.beginPath();
-        ctx.fillStyle = '#00A3FF';
-        ctx.arc(arrow.points[0], arrow.points[1], 5 / scale, 0, 2 * Math.PI);
-        ctx.arc(arrow.points[8], arrow.points[9], 5 / scale, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-    });
-
-    // 섹션 드래프트 그리기
-    if (sectionDraft) {
-      ctx.fillStyle = 'rgba(200, 200, 200, 0.2)';
-      ctx.strokeStyle = '#00A3FF';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.rect(
-        sectionDraft.x,
-        sectionDraft.y,
-        sectionDraft.width,
-        sectionDraft.height
-      );
-      ctx.fill();
-      ctx.stroke();
-    }
-
-    // 선택 영역 그리기
-    if (selectArea) {
-      ctx.strokeStyle = '#d97706';
-      ctx.fillStyle = '#fffbeb50';
-      ctx.lineWidth = 1 / scale;
-      ctx.beginPath();
-      ctx.rect(
-        selectArea.startX,
-        selectArea.startY,
-        selectArea.width,
-        selectArea.height
-      );
-      ctx.fill();
-      ctx.stroke();
-    }
-
-    ctx.restore();
-  }, [scale, offset, sectionDraft, selectArea, arrows, selectedArrow]);
-
-  useEffect(() => {
-    redraw();
-  }, [scale, offset, redraw]);
-
-  // 파일 업로드 처리
-  const processFile = (file: File, dataUrl: string) => {
-    const centerX = (window.innerWidth / 2 - offset.x * scale) / scale;
-    const centerY = (window.innerHeight / 2 - offset.y * scale) / scale;
-    let innerWidget: AllWidgetTypes;
-    console.log('file:', file.name);
-
-    if (file.type.startsWith('image/')) {
-      innerWidget = {
-        id: Date.now().toString(),
-        type: 'image',
-        src: dataUrl,
-        x: Math.round(centerX / baseSpacing) * baseSpacing,
-        y: Math.round(centerY / baseSpacing) * baseSpacing,
-        width: 472,
-        name: file.name,
-        draggable: true,
-        editable: true,
-        resizeable: true,
-        headerBar: true,
-        footerBar: false,
-      };
-    } else if (file.type === 'application/pdf') {
-      innerWidget = {
-        id: Date.now().toString(),
-        type: 'pdf',
-        src: dataUrl,
-        x: Math.round(centerX / baseSpacing) * baseSpacing,
-        y: Math.round(centerY / baseSpacing) * baseSpacing,
-        width: 460,
-        name: file.name,
-        draggable: true,
-        editable: true,
-        resizeable: true,
-        headerBar: true,
-        footerBar: false,
-      };
-    } else if (
-      file.type === 'text/markdown' ||
-      file.type === 'text/x-markdown'
-    ) {
-      innerWidget = {
-        id: Date.now().toString(),
-        type: 'text',
-        src: dataUrl,
-        fontSize: FONT_SIZE,
-        x: Math.round(centerX / baseSpacing) * baseSpacing,
-        y: Math.round(centerY / baseSpacing) * baseSpacing,
-        draggable: true,
-        editable: true,
-        resizeable: true,
-        headerBar: true,
-        footerBar: false,
-      };
-    } else {
-      console.warn(`지원되지 않는 파일 형식: ${file.type}`);
-      return;
-    }
-
-    const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-      id: Date.now().toString(),
-      type: 'shell',
-      x: Math.round(centerX / baseSpacing) * baseSpacing,
-      y: Math.round(centerY / baseSpacing) * baseSpacing,
-      width: 472,
-      height: 136,
-      resizable: true,
-      editable: true,
-      draggable: true,
-      from: [],
-      to: [],
-      innerWidget,
-    };
-
-    dispatch(addWidget(newWidget));
-    dispatch(addSelectedWidget(newWidget.id));
-    setTool('select');
-  };
-
-  // 파일 업로드 핸들러(drag 파일이 존재할 경우 바로 실행)
-  const handleFileUpload = (dragFile?: File) => {
-    const handleFile = (file: File) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          processFile(file, event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
-    };
-
-    if (dragFile) {
-      handleFile(dragFile);
-      return;
-    }
-
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*, application/pdf, text/markdown';
-    fileInput.onchange = (e: Event) => {
-      const target = e.target as HTMLInputElement;
-      if (target.files?.[0]) {
-        handleFile(target.files[0]);
-      }
-    };
-    fileInput.click();
-  };
+  const { handleFileUpload } = useFileUpload({
+    scale,
+    offset,
+    baseSpacing,
+    FONT_SIZE,
+    setTool,
+  });
 
   //마우스를 다운을 트리거로 위젯 생성, 선택, 드래그 모드 설정
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -887,37 +601,10 @@ export default function Whiteboard() {
     setIsBoardPlacementMode(true); // 보드 배치 모드 활성화
   }, []);
 
-  // 드래그 앤 드롭 이벤트 리스너
-  useEffect(() => {
-    const container = containerRef.current;
-    if (container) {
-      container.addEventListener('dragover', handleDragOver);
-      container.addEventListener('drop', handleDrop);
-    }
-
-    return () => {
-      if (container) {
-        container.removeEventListener('dragover', handleDragOver);
-        container.removeEventListener('drop', handleDrop);
-      }
-    };
-  }, []);
-
-  // 드래그 오버 핸들러
-  const handleDragOver = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
-  // 드롭 핸들러
-  const handleDrop = (e: DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (e.dataTransfer?.files[0]) {
-      handleFileUpload(e.dataTransfer.files[0]);
-    }
-  };
+  useDragAndDrop({
+    containerRef,
+    handleFileUpload,
+  });
 
   // 붙여넣기를 통해 text, URL을 분류하고 추가하는 핸들러
   const handleUrlAdd = () => {
@@ -940,130 +627,15 @@ export default function Whiteboard() {
     }
   };
 
-  // 현재 마우스 위치로 클립보드 붙여넣기
-  useEffect(() => {
-    if (
-      tool !== 'url' &&
-      activeShells.editModeShells.size === 0 &&
-      activeShells.popupOpenShells.size === 0
-    ) {
-      const handlePaste = (e: ClipboardEvent) => {
-        e.preventDefault();
-        const pastedText = e.clipboardData?.getData('text');
-
-        if (pastedText && mousePosition) {
-          const isUrl = /^(http|https):\/\/[^ "]+$/.test(pastedText);
-          if (isUrl) {
-            addUrlWidgets(mousePosition, pastedText);
-          } else {
-            addTextWidgets(mousePosition, pastedText);
-          }
-        }
-      };
-
-      const handleMouseMove = (e: MouseEvent) => {
-        setMousePosition({ x: e.clientX, y: e.clientY });
-      };
-
-      document.addEventListener('paste', handlePaste);
-      document.addEventListener('mousemove', handleMouseMove);
-
-      return () => {
-        document.removeEventListener('paste', handlePaste);
-        document.removeEventListener('mousemove', handleMouseMove);
-      };
-    }
-  }, [widgets, mousePosition]);
-
-  // 현재 마우스 위치로 텍스트 위젯 추가
-  const addTextWidgets = (mousePos: { x: number; y: number }, text: string) => {
-    const x = (mousePos.x - offset.x * scale) / scale;
-    const y = (mousePos.y - offset.y * scale) / scale;
-
-    const innerWidget: TextWidget = {
-      id: Date.now().toString(),
-      type: 'text',
-      mkText: text,
-      fontSize: FONT_SIZE,
-      draggable: true,
-      editable: true,
-      resizeable: true,
-      headerBar: true,
-      footerBar: false,
-    };
-    const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-      id: Date.now().toString(),
-      type: 'shell',
-      width: 472,
-      height: 184,
-      x,
-      y,
-      resizable: true,
-      editable: true,
-      draggable: true,
-      from: [],
-      to: [],
-      innerWidget,
-    };
-    dispatch(addWidget(newWidget));
-  };
-
-  // 현재 마우스 위치로 URL 위젯 추가
-  const addUrlWidgets = (mousePos: { x: number; y: number }, text: string) => {
-    const x = (mousePos.x - offset.x * scale) / scale;
-    const y = (mousePos.y - offset.y * scale) / scale;
-
-    const innerWidget: IframeEmbedWidget = {
-      id: Date.now().toString(),
-      type: 'url',
-      src: text,
-      draggable: true,
-      editable: true,
-      resizeable: true,
-      headerBar: true,
-      footerBar: false,
-    };
-    const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-      id: Date.now().toString(),
-      type: 'shell',
-      width: 472,
-      height: 712, // URL 위젯 기본 높이
-      x,
-      y,
-      resizable: true,
-      editable: true,
-      draggable: true,
-      from: [],
-      to: [],
-      innerWidget,
-    };
-    dispatch(addWidget(newWidget));
-  };
-
-  useEffect(() => {
-    console.log('history:', history);
-  }, [history]);
-
-  // 키보드 이벤트 핸들러 추가
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey) {
-        // Mac의 Cmd 키와 Windows의 Ctrl 키 모두 지원
-        if (e.shiftKey && e.key.toLowerCase() === 'z') {
-          // Cmd/Ctrl + Shift + Z: Redo
-          e.preventDefault();
-          dispatch(redo());
-        } else if (e.key.toLowerCase() === 'z') {
-          // Cmd/Ctrl + Z: Undo
-          e.preventDefault();
-          dispatch(undo());
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [dispatch]);
+  const { addTextWidgets, addUrlWidgets } = useClipboard({
+    tool,
+    activeShells,
+    scale,
+    offset,
+    FONT_SIZE,
+    mousePosition,
+    setMousePosition,
+  });
 
   const handleArrowMode = () => {
     setTool('arrow');
@@ -1133,46 +705,6 @@ export default function Whiteboard() {
   };
 
   // 키보드 이벤트 핸들러 추가
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (
-        selectedArrow.length > 0 &&
-        (e.key === 'Backspace' || e.key === 'Delete')
-      ) {
-        // 선택된 각 화살표에 대해 처리
-        selectedArrow.forEach((arrow) => {
-          // fromId를 가진 위젯에서 toId 제거
-          const fromWidget = widgets.find((w) => w.id === arrow.fromId);
-          if (fromWidget) {
-            const updatedFromWidget = {
-              ...fromWidget,
-              to: fromWidget.to.filter((to) => to.id !== arrow.toId),
-            };
-            console.log('updatedFromWidget:', updatedFromWidget);
-            dispatch(updateWidget(updatedFromWidget));
-          }
-
-          // toId를 가진 위젯에서 fromId 제거
-          const toWidget = widgets.find((w) => w.id === arrow.toId);
-          if (toWidget) {
-            const updatedToWidget = {
-              ...toWidget,
-              from: toWidget.from.filter((from) => from.id !== arrow.fromId),
-            };
-            console.log('updatedToWidget:', updatedToWidget);
-            dispatch(updateWidget(updatedToWidget));
-          }
-        });
-
-        // 화살표 삭제 및 선택 해제
-        dispatch(deleteArrow(selectedArrow));
-        dispatch(setSelectedArrows([]));
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedArrow, dispatch]);
 
   useEffect(() => {
     if (arrows.length > 0) {

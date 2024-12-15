@@ -141,3 +141,7 @@ body {
 .widget-shell {
   pointer-events: auto;
 }
+
+.nav-menu-fontsize {
+  @apply text-[16px];
+}

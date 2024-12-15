@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { debounce } from 'lodash'; // lodash 임포트
 import { SectionWidget, AllWidgetTypes, ShellWidgetProps } from '@/types/type';
-import { isCompletelyContained, isWithinBounds } from '@/utils/sectionHelpers';
+import {
+  isCompletelyContained,
+  isWithinBounds,
+} from '../../utils/sectionHelpers';
 
 interface WidgetSectionProps {
   widget: ShellWidgetProps<SectionWidget>;

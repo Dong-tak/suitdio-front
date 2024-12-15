@@ -30,7 +30,7 @@ import {
   snapHeight,
   snapWidgetPosition,
   snapWidgetResize,
-} from '@/utils/snapping';
+} from '@/app/[workspaceId]/board/[boardId]/utils/snapping';
 import { RootState } from '@/redux/store';
 import { ChevronDown, Ellipsis, Info } from 'lucide-react';
 import SvgIcon from '@/utils/svgIcon';
@@ -49,7 +49,7 @@ import {
   updateSectionAndMembers,
   updateSectionResize,
   limitMovementInSection,
-} from '@/utils/sectionHelpers';
+} from '../../utils/sectionHelpers';
 import {
   addArrow,
   addLinkWidgets,
@@ -66,7 +66,7 @@ import WidgetUrl from './widgetUrl';
 import { calculateArrowPoints } from '../arrow/drawArrow';
 import { getTsid } from 'tsid-ts';
 import WidgetCenter from './widgetCenter';
-import { useDebounceDispatch } from '@/hooks/use-debounce';
+import { useDebounceDispatch } from '../../hooks/use-debounce';
 import { Button } from '@/components/ui/button';
 import WidgetPopup from '../popup/popup';
 interface WidgetShellProps {

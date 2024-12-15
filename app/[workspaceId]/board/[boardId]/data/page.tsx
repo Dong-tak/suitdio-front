@@ -1,23 +1,22 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
-import { fetchBoardDetail } from './action';
-import { useDispatch } from 'react-redux';
-import { setInitialWidgets } from '@/redux/features/whiteboardSlice';
-import { setWebSocket } from '@/redux/middleware/websocketMiddleware';
-import { useWebSocket } from '@/hooks/use-socket';
-import { useBoardInitialization } from '@/hooks/use-initBordData';
+import { useWebSocket } from '../hooks/use-socket';
+import { useBoardInitialization } from '../hooks/use-initBordData';
+
+import dynamic from 'next/dynamic';
+
+const Whiteboard = dynamic(
+  () => import('../components/whiteboard/whiteboard'),
+  {
+    ssr: false,
+  }
+);
 
 export default function Board() {
   const params = useParams();
   const boardId = params.boardId as string;
-
-  const Whiteboard = dynamic(() => import('../components/whiteboard'), {
-    ssr: false,
-  });
 
   const { isDataLoaded, isLoading, error } = useBoardInitialization(boardId);
 

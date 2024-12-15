@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
-import { useWebSocket } from '@/hooks/use-socket';
+import { useWebSocket } from './hooks/use-socket';
 import { useParams } from 'next/navigation';
 import { Spinner } from '@/components/ui/spinner';
 
@@ -19,9 +19,12 @@ export default function Board() {
     isDataLoaded: true,
   });
 
-  const Whiteboard = dynamic(() => import('./components/whiteboard'), {
-    ssr: false,
-  });
+  const Whiteboard = dynamic(
+    () => import('./components/whiteboard/whiteboard'),
+    {
+      ssr: false,
+    }
+  );
 
   const [boardData, setBoardData] = useState<BoardData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
