@@ -16,7 +16,7 @@ export default function RandingLayout({
       <div className='flex flex-col items-start justify-start gap-2 pt-10'>
         <div className='flex items-center gap-2 justify-start '>
           <Image
-            src='/images/smallLogo.png'
+            src='/images/main/smallLogo.png'
             alt='logo'
             width={32}
             height={32}
