@@ -26,7 +26,13 @@ export function LandingTabs({ data, len }: LandingTabsProps) {
       defaultValue={data[0].title}
       className='w-full flex flex-col items-center gap-2'
     >
-      <TabsList className={`grid w-1/2 grid-cols-${len} gap-2`}>
+      <TabsList
+        className={`w-1/2 gap-2`}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${len}, 1fr)`,
+        }}
+      >
         {data.map((item, index) => (
           <TabsTrigger key={index} value={item.title}>
             {item.title}
