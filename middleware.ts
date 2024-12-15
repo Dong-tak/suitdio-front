@@ -9,6 +9,9 @@ const PUBLIC_PATHS = [
   '/setuserid-social',
   '/setuserid',
   '/auth/google/callback',
+  '/',
+  '/products',
+  '/products/:id',
 ];
 
 export async function middleware(request: NextRequest) {
