@@ -100,7 +100,7 @@ export default function NavigationMenuCustom() {
                     href='https://suitdio.featurebase.app/en/help'
                   >
                     <Image
-                      src='/mileque-docs.jpg'
+                      src='/mileQue-docs.jpg'
                       alt='MileQue'
                       width={200}
                       height={200}
