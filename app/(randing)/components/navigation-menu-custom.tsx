@@ -42,12 +42,6 @@ const components: { title: string; href: string; description: string }[] = [
     description:
       'A set of layered sections of content—known as tab panels—that are displayed one at a time.',
   },
-  {
-    title: 'Tooltip',
-    href: '/docs/primitives/tooltip',
-    description:
-      'A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.',
-  },
 ];
 
 export default function NavigationMenuCustom() {
@@ -55,7 +49,7 @@ export default function NavigationMenuCustom() {
     <NavigationMenu>
       <NavigationMenuList className='gap-4'>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className='nav-menu-fontsize bg-transparent'>
+          <NavigationMenuTrigger className='nav-menu-fontsize bg-transparent font-semibold text-purple-600'>
             Products
           </NavigationMenuTrigger>
           <NavigationMenuContent>
@@ -75,66 +69,64 @@ export default function NavigationMenuCustom() {
                     <div className='mb-2 mt-4 text-lg font-medium'>
                       shadcn/ui
                     </div>
-                    <p className='text-sm leading-tight text-muted-foreground'>
-                      Beautifully designed components that you can copy and
-                      paste into your apps. Accessible. Customizable. Open
-                      Source.
-                    </p>
                   </a>
                 </NavigationMenuLink>
               </li>
-              <ListItem href='/docs' title='Introduction'>
-                Re-usable components built using Radix UI and Tailwind CSS.
+              <ListItem
+                href='/products/infoCollection'
+                title='Information Collection'
+              >
+                여러 플랫폼에서 한 번의 클릭으로 필요한 정보를 저장할 수
+                있습니다.
               </ListItem>
-              <ListItem href='/docs/installation' title='Installation'>
-                How to install dependencies and structure your app.
+              <ListItem href='/products/team' title='Team'>
+                팀 기능을 통해 팀원들과 함께 지식을 관리할 수 있습니다.
               </ListItem>
-              <ListItem href='/docs/primitives/typography' title='Typography'>
-                Styles for headings, paragraphs, lists...etc
+              <ListItem href='/products/ai-copilot' title='AI'>
+                인공지능을 사용하여 지식 관리를 시작하세요.
               </ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className='nav-menu-fontsize'>
-            AI-Copilot
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className='grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] '>
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className='nav-menu-fontsize'>
+          <NavigationMenuTrigger className='nav-menu-fontsize bg-transparent font-semibold text-purple-600'>
             Resources
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className='grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] '>
-              {components.map((component) => (
-                <ListItem
-                  key={component.title}
-                  title={component.title}
-                  href={component.href}
-                >
-                  {component.description}
-                </ListItem>
-              ))}
+            <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
+              <li className='row-span-3'>
+                <NavigationMenuLink asChild>
+                  <a
+                    className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md'
+                    href='/docs'
+                  >
+                    <Image
+                      src='/vercel.svg'
+                      alt='shadcn/ui'
+                      width={24}
+                      height={24}
+                    />
+                    <div className='mb-2 mt-4 text-lg font-medium'>Docs</div>
+                  </a>
+                </NavigationMenuLink>
+              </li>
+              <ListItem href='/change-log' title='Change Log'>
+                여러 플랫폼에서 한 번의 클릭으로 필요한 정보를 저장할 수
+                있습니다.
+              </ListItem>
+              <ListItem href='/feedback' title='Feedback'>
+                팀 기능을 통해 팀원들과 함께 지식을 관리할 수 있습니다.
+              </ListItem>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href='/docs' legacyBehavior passHref>
+          <Link href='/products/pricing' legacyBehavior passHref>
             <NavigationMenuLink
-              className={cn(navigationMenuTriggerStyle(), 'nav-menu-fontsize')}
+              className={cn(
+                navigationMenuTriggerStyle(),
+                'nav-menu-fontsize font-semibold text-purple-600 bg-transparent'
+              )}
             >
               Pricing
             </NavigationMenuLink>
@@ -160,8 +152,8 @@ const ListItem = React.forwardRef<
           )}
           {...props}
         >
-          <div className='text-sm font-medium leading-none'>{title}</div>
-          <p className='line-clamp-2 text-sm leading-snug text-muted-foreground'>
+          <div className='text-[16px] font-medium leading-none'>{title}</div>
+          <p className='line-clamp-2 text-[16px] leading-snug text-muted-foreground'>
             {children}
           </p>
         </a>

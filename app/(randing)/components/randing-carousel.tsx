@@ -11,8 +11,9 @@ import {
   RandingCarouselPrevious,
 } from '@/components/ui/carousel';
 import Image from 'next/image';
+import { CarouselSpacingProps } from '@/app/(randing)/page';
 
-export function CarouselSpacing() {
+export function CarouselSpacing({ data }: CarouselSpacingProps) {
   return (
     <Carousel
       className='w-full'
@@ -21,7 +22,7 @@ export function CarouselSpacing() {
       }}
     >
       <CarouselContent className='-ml-1'>
-        {Array.from({ length: 5 }).map((_, index) => (
+        {data.map((item, index) => (
           <CarouselItem key={index} className='pl-1 md:basis-1/2 lg:basis-1/3'>
             <div className='p-1'>
               {/* <Card>
@@ -29,9 +30,13 @@ export function CarouselSpacing() {
                   <span className='text-2xl font-semibold'>{index + 1}</span>
                 </CardContent>
               </Card> */}
+              <div className='flex flex-col gap-1 h-[90px]'>
+                <h2 className='text-sm font-semibold'>{item.title}</h2>
+                <p className='text-[16px] text-gray-500'>{item.description}</p>
+              </div>
               <Image
-                src='/images/mileque-image.jpg'
-                alt='협업하는 사람들을 보여주는 일러스트레이션'
+                src={item.src}
+                alt={item.title}
                 width={300}
                 height={500}
                 className='w-full  aspect-[1.5/2] object-cover h-auto border-2 border-black/10 rounded-md'
