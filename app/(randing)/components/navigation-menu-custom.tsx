@@ -54,21 +54,20 @@ export default function NavigationMenuCustom() {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
-              <li className='row-span-3'>
+              <li className='row-span-3 hover:bg-accent hover:text-accent-foreground'>
                 <NavigationMenuLink asChild>
                   <a
                     className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md'
                     href='/'
                   >
                     <Image
-                      src='/vercel.svg'
-                      alt='shadcn/ui'
-                      width={24}
-                      height={24}
+                      src='/mileque-image.jpg'
+                      alt='MileQue'
+                      width={200}
+                      height={200}
+                      className='w-full h-auto object-cover'
                     />
-                    <div className='mb-2 mt-4 text-lg font-medium'>
-                      shadcn/ui
-                    </div>
+                    <div className='mb-2 mt-4 text-lg font-medium'>MileQue</div>
                   </a>
                 </NavigationMenuLink>
               </li>
@@ -94,28 +93,41 @@ export default function NavigationMenuCustom() {
           </NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
-              <li className='row-span-3'>
+              <li className='row-span-3 hover:bg-accent hover:text-accent-foreground'>
                 <NavigationMenuLink asChild>
                   <a
                     className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md'
-                    href='/docs'
+                    href='https://suitdio.featurebase.app/en/help'
                   >
                     <Image
-                      src='/vercel.svg'
-                      alt='shadcn/ui'
-                      width={24}
-                      height={24}
+                      src='/mileque-docs.jpg'
+                      alt='MileQue'
+                      width={200}
+                      height={200}
+                      className='w-full h-auto object-cover'
                     />
                     <div className='mb-2 mt-4 text-lg font-medium'>Docs</div>
                   </a>
                 </NavigationMenuLink>
               </li>
-              <ListItem href='/change-log' title='Change Log'>
+              <ListItem
+                href='https://suitdio.featurebase.app/ko/changelog'
+                title='Change Log'
+              >
                 여러 플랫폼에서 한 번의 클릭으로 필요한 정보를 저장할 수
                 있습니다.
               </ListItem>
-              <ListItem href='/feedback' title='Feedback'>
+              <ListItem
+                href='https://suitdio.featurebase.app/en'
+                title='Feedback'
+              >
                 팀 기능을 통해 팀원들과 함께 지식을 관리할 수 있습니다.
+              </ListItem>
+              <ListItem
+                href='https://suitdio.featurebase.app/en/help'
+                title='Help Center'
+              >
+                MileQue를 어떻게 사용하는지 도움을 받을 수 있습니다.
               </ListItem>
             </ul>
           </NavigationMenuContent>
