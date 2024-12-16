@@ -17,11 +17,6 @@ const PUBLIC_PATHS = [
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // 루트 경로이면 토큰 체크 없이 통과
-  if (pathname === '/') {
-    return NextResponse.next();
-  }
-
   // 2. 공용 경로에 대한 접근 허용 ㄴ
   if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next();

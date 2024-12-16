@@ -6,7 +6,7 @@ export default function TwoImage({
   head,
 }: CarouselSpacingProps & H1andH2Props) {
   return (
-    <div className='flex flex-col w-full justify-center h-full gap-12'>
+    <div className='flex flex-col w-full items-center justify-center h-full gap-12'>
       <div className='flex flex-col items-start justify-center gap-16'>
         <div className='text-[50px] font-bold text-start'>{head.h1}</div>
         <div className='grid w-full grid-cols-2 gap-10'>

@@ -53,28 +53,8 @@ export default function NavigationMenuCustom() {
             Products
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
-              <li className='row-span-3 hover:bg-accent hover:text-accent-foreground'>
-                <NavigationMenuLink asChild>
-                  <a
-                    className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md'
-                    href='/'
-                  >
-                    <Image
-                      src='/mileque-image.jpg'
-                      alt='MileQue'
-                      width={200}
-                      height={200}
-                      className='w-full h-auto object-cover'
-                    />
-                    <div className='mb-2 mt-4 text-lg font-medium'>MileQue</div>
-                  </a>
-                </NavigationMenuLink>
-              </li>
-              <ListItem
-                href='/products/infoCollection'
-                title='Information Collection'
-              >
+            <ul className='grid gap-3 p-6 w-[300px] grid-cols-1'>
+              <ListItem href='/products/infoCollection' title='Easy Scrap'>
                 여러 플랫폼에서 한 번의 클릭으로 필요한 정보를 저장할 수
                 있습니다.
               </ListItem>
@@ -92,24 +72,7 @@ export default function NavigationMenuCustom() {
             Resources
           </NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className='grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]'>
-              <li className='row-span-3 hover:bg-accent hover:text-accent-foreground'>
-                <NavigationMenuLink asChild>
-                  <a
-                    className='flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md'
-                    href='https://suitdio.featurebase.app/en/help'
-                  >
-                    <Image
-                      src='/mileQue-docs.jpg'
-                      alt='MileQue'
-                      width={200}
-                      height={200}
-                      className='w-full h-auto object-cover'
-                    />
-                    <div className='mb-2 mt-4 text-lg font-medium'>Docs</div>
-                  </a>
-                </NavigationMenuLink>
-              </li>
+            <ul className='grid gap-3 p-6 w-[300px] grid-cols-1'>
               <ListItem
                 href='https://suitdio.featurebase.app/ko/changelog'
                 title='Change Log'
@@ -125,7 +88,7 @@ export default function NavigationMenuCustom() {
               </ListItem>
               <ListItem
                 href='https://suitdio.featurebase.app/en/help'
-                title='Help Center'
+                title='Docs'
               >
                 MileQue를 어떻게 사용하는지 도움을 받을 수 있습니다.
               </ListItem>
