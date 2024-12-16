@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { RiInstagramFill } from 'react-icons/ri';
 import { IoMail } from 'react-icons/io5';
+import GoogleAnalytics from '@/components/googleAnalytics';
 
 export default function RandingLayout({
   children,
@@ -11,6 +12,9 @@ export default function RandingLayout({
 }) {
   return (
     <div className='w-full flex flex-col px-48'>
+      <GoogleAnalytics
+        GA_MEASUREMENT_ID={process.env.NEXT_PUBLIC_GA_ID || ''}
+      />
       <Navbar />
       {children}
       <div className='flex flex-col items-start justify-start gap-2 pt-10'>
