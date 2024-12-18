@@ -1,7 +1,24 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { store } from '@/redux/store';
-import { debounce } from 'lodash';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { store } from "@/redux/store";
+import { debounce } from "lodash";
+import { getTsid } from "tsid-ts";
+
+interface RelationAction {
+  type: "action";
+  transactionId: null;
+  actions: {
+    action: "create";
+    type: "relation";
+    data: {
+      id: string;
+      fromId: string;
+      toId: string;
+      relation: "forward" | "backward";
+      property: Record<string, unknown>;
+    };
+  }[];
+}
 
 let socket: WebSocket | null = null;
 
@@ -14,7 +31,7 @@ export const setWebSocket = (ws: WebSocket) => {
 const debouncedSend = debounce((message: any) => {
   if (socket) {
     socket.send(JSON.stringify(message));
-    console.log('웹소켓 업데이트 메시지 전송:', message);
+    console.log("웹소켓 업데이트 메시지 전송:", message);
   }
 }, 300);
 
@@ -26,21 +43,27 @@ store.subscribe(() => {
   if (!socket || !action) return;
 
   switch (action.type) {
-    case 'whiteboard/addWidget':
+    case "whiteboard/addWidget":
       const addMessage = createAddWidgetMessage(action.payload);
       socket.send(JSON.stringify(addMessage));
-      console.log('웹소켓 위젯 생성 메시지 전송:', addMessage);
+      console.log("웹소켓 위젯 생성 메시지 전송:", addMessage);
       break;
 
-    case 'whiteboard/updateWidget':
+    case "whiteboard/updateWidget":
       const updateMessage = createUpdateWidgetMessage(action.payload);
       debouncedSend(updateMessage);
       break;
 
-    case 'whiteboard/deleteWidget':
+    case "whiteboard/deleteWidget":
       const deleteMessage = createDeleteWidgetMessage(action.payload);
       socket.send(JSON.stringify(deleteMessage));
-      console.log('웹소켓 위젯 삭제 메시지 전송:', deleteMessage);
+      console.log("웹소켓 위젯 삭제 메시지 전송:", deleteMessage);
+      break;
+
+    case "arrow/addArrow":
+      const arrowMessage = createAddArrowMessage(action.payload);
+      socket.send(JSON.stringify(arrowMessage));
+      console.log("웹소켓 화살표 관계 생성 메시지 전송:", arrowMessage);
       break;
   }
 });
@@ -48,12 +71,12 @@ store.subscribe(() => {
 // 메시지 생성 함수들
 function createAddWidgetMessage(widget: any) {
   const baseMessage = {
-    type: 'action',
+    type: "action",
     transactionId: null,
     actions: [
       {
-        action: 'create',
-        type: 'widget',
+        action: "create",
+        type: "widget",
         data: {
           type: widget.innerWidget.type,
           id: widget.id,
@@ -67,37 +90,37 @@ function createAddWidgetMessage(widget: any) {
             width: widget.width,
             height: widget.height,
           },
-          state: 'default',
+          state: "default",
         },
       },
     ],
   };
 
   switch (widget.innerWidget.type) {
-    case 'text':
+    case "text":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
         data: { content: widget.innerWidget.text },
       };
       break;
-    case 'url':
+    case "url":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
-        type: 'embed_url',
+        type: "embed_url",
         data: { src: widget.innerWidget.src },
       };
       break;
-    case 'image':
+    case "image":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
-        type: 'embed_img',
+        type: "embed_img",
         data: { src: widget.innerWidget.src },
       };
       break;
-    case 'pdf':
+    case "pdf":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
-        type: 'embed_pdf',
+        type: "embed_pdf",
         data: { src: widget.innerWidget.src },
       };
       break;
@@ -109,12 +132,12 @@ function createAddWidgetMessage(widget: any) {
 
 function createUpdateWidgetMessage(widget: any) {
   const baseMessage = {
-    type: 'action',
+    type: "action",
     transactionId: null,
     actions: [
       {
-        action: 'update',
-        type: 'widget',
+        action: "update",
+        type: "widget",
         data: {
           type: widget.innerWidget.type,
           id: widget.id,
@@ -128,37 +151,37 @@ function createUpdateWidgetMessage(widget: any) {
             width: widget.width,
             height: widget.height,
           },
-          state: 'default',
+          state: "default",
         },
       },
     ],
   };
 
   switch (widget.innerWidget.type) {
-    case 'text':
+    case "text":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
         data: { content: widget.innerWidget.text },
       };
       break;
-    case 'url':
+    case "url":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
-        type: 'embed_url',
+        type: "embed_url",
         data: { src: widget.innerWidget.src },
       };
       break;
-    case 'image':
+    case "image":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
-        type: 'embed_img',
+        type: "embed_img",
         data: { src: widget.innerWidget.src },
       };
       break;
-    case 'pdf':
+    case "pdf":
       baseMessage.actions[0].data = {
         ...baseMessage.actions[0].data,
-        type: 'embed_pdf',
+        type: "embed_pdf",
         data: { src: widget.innerWidget.src },
       };
       break;
@@ -170,14 +193,36 @@ function createUpdateWidgetMessage(widget: any) {
 
 function createDeleteWidgetMessage(widgetId: string) {
   return {
-    type: 'action',
+    type: "action",
     transactionId: null,
     actions: [
       {
-        action: 'delete',
-        type: 'widget',
+        action: "delete",
+        type: "widget",
         data: { id: widgetId },
       },
     ],
   };
+}
+
+function createAddArrowMessage(arrow: { fromId: string; toId: string }) {
+  const relationData: RelationAction = {
+    type: "action",
+    transactionId: null,
+    actions: [
+      {
+        action: "create",
+        type: "relation",
+        data: {
+          id: getTsid().toString(),
+          fromId: arrow.fromId,
+          toId: arrow.toId,
+          relation: "forward",
+          property: {},
+        },
+      },
+    ],
+  };
+
+  return relationData;
 }

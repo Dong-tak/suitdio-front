@@ -1,3 +1,4 @@
+import { calculateArrowPoints } from "@/app/[workspaceId]/board/[boardId]/components/arrow/drawArrow";
 import {
   AllWidgetTypes,
   ShellWidgetProps,
@@ -7,6 +8,7 @@ import {
   IframeEmbedWidget,
   SectionWidget,
   BoardWidget,
+  Arrow,
 } from "@/types/type";
 
 interface Position {
@@ -185,28 +187,52 @@ export function parseWidgetInstance(
 }
 
 export function parseBoardData(response: BoardResponse) {
+  // 위젯 파싱
   const widgets = response.widgetInstances.map((instance) =>
     parseWidgetInstance(instance)
   );
 
-  response.widgetRelations.forEach((relation) => {
-    if (!relation.is_deleted) {
+  // 화살표 정보 생성 및 포인트 계산
+  const arrows: Arrow[] = response.widgetRelations
+    .filter((relation) => !relation.is_deleted)
+    .flatMap((relation) => {
       const fromWidget = widgets.find((w) => w.id === relation.widget_from);
-      if (fromWidget) {
-        relation.to_instances.forEach((toId) => {
-          const toWidget = widgets.find((w) => w.id === toId);
-          if (toWidget) {
-            fromWidget.to.push(toWidget);
-            toWidget.from.push(fromWidget);
-          }
-        });
-      }
-    }
-  });
+
+      // to_instances의 각 대상에 대해 화살표 생성
+      return relation.to_instances.map((toId) => {
+        const toWidget = widgets.find((w) => w.id === toId);
+
+        if (fromWidget && toWidget) {
+          // 화살표 포인트 계산
+          const points = calculateArrowPoints(fromWidget, toWidget);
+          return {
+            id: `${relation.id}-${toId}`, // 고유한 ID 생성
+            fromId: relation.widget_from,
+            toId: toId,
+            points: points.points,
+            arrowTipX: points.arrowTipX,
+            arrowTipY: points.arrowTipY,
+          };
+        }
+        return null;
+      });
+    })
+    .filter((arrow): arrow is Arrow => arrow !== null);
+
+  // 위젯 간의 관계 정보 저장
+  const widgetRelations = response.widgetRelations
+    .filter((relation) => !relation.is_deleted)
+    .flatMap((relation) =>
+      relation.to_instances.map((toId) => ({
+        fromId: relation.widget_from,
+        toId: toId,
+      }))
+    );
 
   return {
     widgets,
-    relations: response.widgetRelations.filter((r) => !r.is_deleted),
+    arrows,
+    relations: widgetRelations,
     boardInfo: response.board,
   };
 }

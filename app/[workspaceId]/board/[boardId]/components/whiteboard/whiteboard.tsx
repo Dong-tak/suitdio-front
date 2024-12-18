@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, {
   useRef,
@@ -6,7 +6,7 @@ import React, {
   useState,
   useCallback,
   useMemo,
-} from 'react';
+} from "react";
 import {
   Type,
   AppWindowMacIcon,
@@ -20,10 +20,10 @@ import {
   Tornado,
   Boxes,
   Plus,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/redux/store';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import {
   addWidget,
   setSelectedWidget,
@@ -36,7 +36,7 @@ import {
   redo,
   undo,
   setSpacePressed,
-} from '@/redux/features/whiteboardSlice';
+} from "@/redux/features/whiteboardSlice";
 
 import {
   ShellWidgetProps,
@@ -48,23 +48,23 @@ import {
   SelectArea,
   Arrow,
   BoardWidget,
-} from '@/types/type';
-import '@blocknote/core/fonts/inter.css';
-import '@blocknote/mantine/style.css';
-import SvgIcon from '@/utils/svgIcon';
-import { sectionSvg } from '@/utils/svgBag';
-import { HiOutlineSparkles } from 'react-icons/hi2';
-import { Separator } from '../../../../../../components/ui/separator';
-import { createTextNode } from '@/utils/textNodeCreator';
-import BrainstormInput from '../widget/widgetBrainstorm';
-import CreateBoardDialog from '../../../../(home)/components/creatBoardDialog';
+} from "@/types/type";
+import "@blocknote/core/fonts/inter.css";
+import "@blocknote/mantine/style.css";
+import SvgIcon from "@/utils/svgIcon";
+import { sectionSvg } from "@/utils/svgBag";
+import { HiOutlineSparkles } from "react-icons/hi2";
+import { Separator } from "../../../../../../components/ui/separator";
+import { createTextNode } from "@/utils/textNodeCreator";
+import BrainstormInput from "../widget/widgetBrainstorm";
+import CreateBoardDialog from "../../../../(home)/components/creatBoardDialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../../../../../../components/ui/popover';
-import { Label } from '../../../../../../components/ui/label';
-import { Input } from '../../../../../../components/ui/input';
+} from "../../../../../../components/ui/popover";
+import { Label } from "../../../../../../components/ui/label";
+import { Input } from "../../../../../../components/ui/input";
 import {
   addArrow,
   deleteArrow,
@@ -73,27 +73,27 @@ import {
   setArrows,
   setIsArrowMode,
   setSelectedArrows,
-} from '@/redux/features/arrowSlice';
-import { calculateArrowPoints, drawArrow } from '../arrow/drawArrow';
-import { getTsid } from 'tsid-ts';
+} from "@/redux/features/arrowSlice";
+import { calculateArrowPoints, drawArrow } from "../arrow/drawArrow";
+import { getTsid } from "tsid-ts";
 
-import { Spinner } from '../../../../../../components/ui/spinner';
-import { Board, fetchBoards } from '@/app/[workspaceId]/record/action';
-import { useParams } from 'next/navigation';
-import { AIChat } from '../../../../../../components/ui/ai';
-import { MemoizedWidgetShell } from '../widget/memoizedWidgetShell';
-import { getSelectedWidgetInfo } from '@/utils/mindMapUtils/mindMapNodeFinder';
-import { useWhiteboardGrid } from '../../hooks/whiteboard/useWhiteboardGrid';
-import { useWhiteboardZoom } from '../../hooks/whiteboard/useWhiteboardZoom';
-import { useWhiteboardKeyboard } from '../../hooks/whiteboard/useWhiteboardKeyboard';
-import { useWhiteboardCanvas } from '../../hooks/whiteboard/useWhiteboardCanvas';
-import { useFileUpload } from '../../hooks/whiteboard/useFileUpload';
-import { useClipboard } from '../../hooks/whiteboard/useClipboard';
-import { useDragAndDrop } from '../../hooks/whiteboard/useDragDrop';
+import { Spinner } from "../../../../../../components/ui/spinner";
+import { Board, fetchBoards } from "@/app/[workspaceId]/record/action";
+import { useParams } from "next/navigation";
+import { AIChat } from "../../../../../../components/ui/ai";
+import { MemoizedWidgetShell } from "../widget/memoizedWidgetShell";
+import { getSelectedWidgetInfo } from "@/utils/mindMapUtils/mindMapNodeFinder";
+import { useWhiteboardGrid } from "../../hooks/whiteboard/useWhiteboardGrid";
+import { useWhiteboardZoom } from "../../hooks/whiteboard/useWhiteboardZoom";
+import { useWhiteboardKeyboard } from "../../hooks/whiteboard/useWhiteboardKeyboard";
+import { useWhiteboardCanvas } from "../../hooks/whiteboard/useWhiteboardCanvas";
+import { useFileUpload } from "../../hooks/whiteboard/useFileUpload";
+import { useClipboard } from "../../hooks/whiteboard/useClipboard";
+import { useDragAndDrop } from "../../hooks/whiteboard/useDragDrop";
 
 // 기본 그리드 설정
-let baseSpacing = 48; // 기본 간격
-let basePointSize = 4; // 기본 점 크기
+const baseSpacing = 48; // 기본 간격
+const basePointSize = 4; // 기본 점 크기
 
 export const FONT_SIZE = 16;
 export const RESIZE_HANDLE_SIZE = 8;
@@ -108,7 +108,7 @@ export default function Whiteboard() {
   const dispatch = useDispatch();
   // const [scale, setScale] = useState(1);
   // const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [tool, setTool] = useState<'select' | AllWidgetType>('select');
+  const [tool, setTool] = useState<"select" | AllWidgetType>("select");
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const spacePressed = useSelector(
@@ -116,7 +116,7 @@ export default function Whiteboard() {
   );
   // const [isZooming, setIsZooming] = useState(false);
   const [isBrainstormActive, setIsBrainstormActive] = useState(false); // 브레인스톰 상태 추가
-  const [contentTitle, setContentTitle] = useState(''); // contentTitle 상태 추가
+  const [contentTitle, setContentTitle] = useState(""); // contentTitle 상태 추가
   const [dialogOpen, setDialogOpen] = useState(false); // 다이얼로그 상태 추가
   const [boardPosition, setBoardPosition] = useState<{
     x: number;
@@ -125,7 +125,7 @@ export default function Whiteboard() {
   const [isBoardPlacementMode, setIsBoardPlacementMode] = useState(false);
   const [selectArea, setSelectArea] = useState<SelectArea | null>(null);
   const [isSelecting, setIsSelecting] = useState(false);
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const isArrowMode = useSelector(
     (state: RootState) => state.arrow.isArrowMode
@@ -245,7 +245,7 @@ export default function Whiteboard() {
     const x = (e.clientX - rect.left - offset.x * scale) / scale;
     const y = (e.clientY - rect.top - offset.y * scale) / scale;
 
-    if (tool === 'select' || tool === 'brainStorm') {
+    if (tool === "select" || tool === "brainStorm") {
       if (!e.shiftKey) {
         dispatch(setEditModeWidgets(null));
         setIsSelecting(true);
@@ -267,7 +267,7 @@ export default function Whiteboard() {
         }
       }
       // 보드 생성 모드일 때
-    } else if (tool === 'boardLink' && isBoardPlacementMode) {
+    } else if (tool === "boardLink" && isBoardPlacementMode) {
       const position = {
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
@@ -275,9 +275,9 @@ export default function Whiteboard() {
       setBoardPosition(position);
       setDialogOpen(true);
       setIsBoardPlacementMode(false);
-      setTool('select');
+      setTool("select");
       return;
-    } else if (tool === 'section') {
+    } else if (tool === "section") {
       const startPos = {
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
@@ -289,20 +289,20 @@ export default function Whiteboard() {
         width: 0,
         height: 0,
       });
-    } else if (tool === 'mindmap') {
-      console.log('mindmap');
+    } else if (tool === "mindmap") {
+      console.log("mindmap");
     } else {
       let innerWidget: AllWidgetTypes;
       // tool 타입에 따른 innerWidget 설정
       switch (tool) {
-        case 'text':
+        case "text":
           innerWidget = {
             id: Date.now().toString(),
-            type: 'text',
+            type: "text",
             text: JSON.stringify([
               {
-                type: 'paragraph',
-                content: 'New Text',
+                type: "paragraph",
+                content: "New Text",
               },
             ]),
             fontSize: FONT_SIZE,
@@ -322,7 +322,7 @@ export default function Whiteboard() {
       // 공통 shell 위 생성
       const newWidget: ShellWidgetProps<AllWidgetTypes> = {
         id: Date.now().toString(),
-        type: 'shell',
+        type: "shell",
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
         width: 472,
@@ -337,7 +337,7 @@ export default function Whiteboard() {
 
       dispatch(addWidget(newWidget));
       dispatch(setSelectedWidget([newWidget.id]));
-      setTool('select');
+      setTool("select");
     }
     redraw();
   };
@@ -375,7 +375,7 @@ export default function Whiteboard() {
       redraw();
     }
 
-    if (tool === 'section' && sectionDraft) {
+    if (tool === "section" && sectionDraft) {
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
 
@@ -403,7 +403,7 @@ export default function Whiteboard() {
       const selectedIds = widgets
         .filter((widget) => {
           // center 타입인 경우 선택하지 않음
-          if (widget.innerWidget.type === 'center') {
+          if (widget.innerWidget.type === "center") {
             return false;
           }
 
@@ -448,16 +448,16 @@ export default function Whiteboard() {
       setSelectArea(null);
     }
 
-    if (tool === 'section' && sectionDraft) {
+    if (tool === "section" && sectionDraft) {
       if (sectionDraft.width > 0 && sectionDraft.height > 0) {
         const innerWidget: SectionWidget = {
           id: Date.now().toString(),
-          type: 'section',
+          type: "section",
           x: sectionDraft.x,
           y: sectionDraft.y,
           width: sectionDraft.width,
           height: sectionDraft.height,
-          fill: 'rgba(200, 200, 200, 0.2)',
+          fill: "rgba(200, 200, 200, 0.2)",
           memberIds: [],
           draggable: true,
           editable: false,
@@ -468,7 +468,7 @@ export default function Whiteboard() {
 
         const newWidget: ShellWidgetProps<AllWidgetTypes> = {
           id: Date.now().toString(),
-          type: 'shell',
+          type: "shell",
           x: sectionDraft.x,
           y: sectionDraft.y,
           width: sectionDraft.width,
@@ -484,7 +484,7 @@ export default function Whiteboard() {
         dispatch(addWidget(newWidget));
       }
       setSectionDraft(null);
-      setTool('select');
+      setTool("select");
     }
     setIsPanning(false);
   };
@@ -496,7 +496,7 @@ export default function Whiteboard() {
     return widgets
       .filter(
         (widget): widget is ShellWidgetProps<TextWidget> =>
-          widget.innerWidget.type === 'text'
+          widget.innerWidget.type === "text"
       )
       .map((widget) => widget.innerWidget);
   };
@@ -524,7 +524,7 @@ export default function Whiteboard() {
     // 새로운 위젯을 추가
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
       id: Date.now().toString(),
-      type: 'shell',
+      type: "shell",
       x: newNode.x ?? 0,
       y: newNode.y ?? 0,
       width: 200,
@@ -553,14 +553,14 @@ export default function Whiteboard() {
       // 제목과 내용을 분리
       const initialText = JSON.stringify([
         {
-          type: 'paragraph',
-          content: '', // 내용은 빈 문자열로 초기화
+          type: "paragraph",
+          content: "", // 내용은 빈 문자열로 초기화
         },
       ]);
 
       const newBoard: ShellWidgetProps<AllWidgetTypes> = {
         id: `board-${widgets.length + 1}`,
-        type: 'shell',
+        type: "shell",
         x: boardPosition.x,
         y: boardPosition.y,
         width: 500,
@@ -572,7 +572,7 @@ export default function Whiteboard() {
         to: [],
         innerWidget: {
           id: `board-inner-${widgets.length + 1}`,
-          type: 'boardLink',
+          type: "boardLink",
           titleBlock: contentTitle, // 제목은 contentTitle 사용
           width: 500,
           height: 500,
@@ -590,7 +590,7 @@ export default function Whiteboard() {
       dispatch(addWidget(newBoard));
 
       setDialogOpen(false);
-      setContentTitle('');
+      setContentTitle("");
       setBoardPosition(null);
     },
     [boardPosition, contentTitle, widgets, dispatch]
@@ -619,11 +619,11 @@ export default function Whiteboard() {
       const isUrl = /^(http|https):\/\/[^ "]+$/.test(url);
       if (isUrl) {
         addUrlWidgets(centerPosition, url);
-        setUrl('https://'); // 입력 필드 초기화
+        setUrl("https://"); // 입력 필드 초기화
       } else {
         addTextWidgets(centerPosition, url);
       }
-      setTool('select');
+      setTool("select");
     }
   };
 
@@ -638,13 +638,13 @@ export default function Whiteboard() {
   });
 
   const handleArrowMode = () => {
-    setTool('arrow');
+    setTool("arrow");
     dispatch(setIsArrowMode(true));
   };
 
   useEffect(() => {
     if (!isArrowMode) {
-      setTool('select');
+      setTool("select");
     }
   }, [isArrowMode]);
 
@@ -692,7 +692,7 @@ export default function Whiteboard() {
         ...arrowPoints,
       };
 
-      console.log('newArrow:', newArrow);
+      console.log("newArrow:", newArrow);
 
       // Redux store에 화살표 추가
       dispatch(addArrow(newArrow));
@@ -725,10 +725,10 @@ export default function Whiteboard() {
 
       // 복이 제거된 화살표 배열이 기존과 다르다면 업데이트
       if (uniqueArrows.length !== arrows.length) {
-        console.log('중복 화살표가 제거됨:', uniqueArrows);
+        console.log("중복 화살표가 제거됨:", uniqueArrows);
         dispatch(setArrows(uniqueArrows)); // setArrows 액션이 필요합니다
       }
-      console.log('Updated arrows:', arrows);
+      console.log("Updated arrows:", arrows);
     }
   }, [arrows]);
   // 디버깅을 위한 로그 추가
@@ -748,7 +748,7 @@ export default function Whiteboard() {
       const boards = await fetchBoards(workspaceId);
       setBoardList(boards);
     } catch (error) {
-      console.error('보드 리스트 로딩 실패:', error);
+      console.error("보드 리스트 로딩 실패:", error);
     } finally {
       setIsBoardListLoading(false);
     }
@@ -772,7 +772,7 @@ export default function Whiteboard() {
 
       const innerWidget: BoardWidget = {
         id: getTsid().toString(),
-        type: 'boardLink',
+        type: "boardLink",
         titleBlock: board.data.focus,
         text: boardUrl,
         x: Math.round(x / baseSpacing) * baseSpacing,
@@ -788,7 +788,7 @@ export default function Whiteboard() {
 
       const newWidget: ShellWidgetProps<AllWidgetTypes> = {
         id: getTsid().toString(),
-        type: 'shell',
+        type: "shell",
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
         width: 472,
@@ -802,14 +802,14 @@ export default function Whiteboard() {
       };
 
       dispatch(addWidget(newWidget));
-      setTool('select');
+      setTool("select");
 
       // 이벤트 리스너 제거
-      canvasRef.current?.removeEventListener('mousedown', handleNextClick);
+      canvasRef.current?.removeEventListener("mousedown", handleNextClick);
     };
 
     // 다음 클릭을 위한 이벤트 리스너 추가
-    canvasRef.current?.addEventListener('mousedown', handleNextClick);
+    canvasRef.current?.addEventListener("mousedown", handleNextClick);
   };
 
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
@@ -823,87 +823,87 @@ export default function Whiteboard() {
   }, [state.whiteboard.selectedWidget]); // selectedWidget이 변경될 때마다 실행
 
   return (
-    <div className='flex flex-col h-screen'>
+    <div className="flex flex-col h-screen">
       {/* 툴바 */}
-      <div className='left-1/2 fixed bottom-8 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center'>
-        <div className='flex space-x-2 items-center '>
+      <div className="left-1/2 fixed bottom-8 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center">
+        <div className="flex space-x-2 items-center ">
           <Button
-            variant={tool === 'select' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('select')}
+            variant={tool === "select" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("select")}
           >
-            <MousePointer2 className='h-4 w-4' />
-            <span className='sr-only'>Select tool</span>
+            <MousePointer2 className="h-4 w-4" />
+            <span className="sr-only">Select tool</span>
           </Button>
-          <Separator orientation='vertical' className='h-6' />
+          <Separator orientation="vertical" className="h-6" />
 
           <Button
-            variant={tool === 'text' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('text')}
+            variant={tool === "text" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("text")}
           >
-            <Type className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <Type className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           <Button
-            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
-            size='icon'
+            variant={tool === "arrow" ? "toolSelect" : "white"}
+            size="icon"
             onClick={handleArrowMode}
           >
-            <MoveRight className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <MoveRight className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           <Button
-            variant={tool === 'section' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('section')}
-            className='group'
+            variant={tool === "section" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("section")}
+            className="group"
           >
             <SvgIcon
-              fill='none'
+              fill="none"
               width={16}
               height={16}
-              className='flex items-center justify-center'
+              className="flex items-center justify-center"
             >
               {sectionSvg({
-                isActive: tool === 'section',
-                className: 'group-hover:stroke-teal-500',
+                isActive: tool === "section",
+                className: "group-hover:stroke-teal-500",
               })}
             </SvgIcon>
-            <span className='sr-only'>Text tool</span>
+            <span className="sr-only">Text tool</span>
           </Button>
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                variant={tool === 'boardLink' ? 'toolSelect' : 'white'}
-                size='icon'
+                variant={tool === "boardLink" ? "toolSelect" : "white"}
+                size="icon"
                 onClick={() => {
-                  setTool('boardLink');
+                  setTool("boardLink");
                   fetchBoardList();
                 }}
               >
-                <Disc2 className='h-4 w-4' />
+                <Disc2 className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className='w-80'>
-              <div className='space-y-4'>
-                <div className='space-y-2'>
-                  <h4 className='font-medium leading-none'>Select Board</h4>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium leading-none">Select Board</h4>
                 </div>
                 {isBoardListLoading ? (
-                  <div className='flex justify-center py-4'>
+                  <div className="flex justify-center py-4">
                     <Spinner size={24} />
                   </div>
                 ) : (
-                  <div className='max-h-[300px] overflow-y-auto space-y-2'>
+                  <div className="max-h-[300px] overflow-y-auto space-y-2">
                     {boardList.map((board: Board) => (
                       <Button
                         key={board.id}
-                        variant='ghost'
-                        className='w-full justify-start'
+                        variant="ghost"
+                        className="w-full justify-start"
                         onClick={() => handleBoardSelect(board)}
                       >
-                        <Disc2 className='mr-2 h-4 w-4' />
+                        <Disc2 className="mr-2 h-4 w-4" />
                         {board.data.focus}
                       </Button>
                     ))}
@@ -913,49 +913,49 @@ export default function Whiteboard() {
             </PopoverContent>
           </Popover>
           <Button
-            variant={tool === 'brainStorm' ? 'toolSelect' : 'white'}
-            size='icon'
+            variant={tool === "brainStorm" ? "toolSelect" : "white"}
+            size="icon"
             onClick={() => {
-              setTool('brainStorm');
+              setTool("brainStorm");
               setIsBrainstormActive((prev) => !prev);
             }}
           >
-            <Tornado className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <Tornado className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           <Button
-            variant={tool === 'mindmap' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('mindmap')}
+            variant={tool === "mindmap" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("mindmap")}
           >
-            <Boxes className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <Boxes className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           <Button
-            variant={tool === 'refresh' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('refresh')}
+            variant={tool === "refresh" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("refresh")}
             disabled
           >
-            <RefreshCw className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <RefreshCw className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
-          <Separator orientation='vertical' className='h-6' />
+          <Separator orientation="vertical" className="h-6" />
           <Button
-            variant={tool === 'search' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('search')}
+            variant={tool === "search" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("search")}
           >
-            <Search className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <Search className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           <Button
-            variant={tool === 'upload' ? 'toolSelect' : 'white'}
-            size='icon'
+            variant={tool === "upload" ? "toolSelect" : "white"}
+            size="icon"
             onClick={() => handleFileUpload()}
           >
-            <File className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <File className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           {/* <Button
             variant={tool === 'url' ? 'toolSelect' : 'white'}
@@ -968,123 +968,123 @@ export default function Whiteboard() {
           <Popover>
             <PopoverTrigger asChild>
               <Button
-                variant={tool === 'url' ? 'toolSelect' : 'white'}
-                size='icon'
-                onClick={() => setTool('url')}
+                variant={tool === "url" ? "toolSelect" : "white"}
+                size="icon"
+                onClick={() => setTool("url")}
               >
-                <AppWindowMacIcon className='h-4 w-4' />
-                <span className='sr-only'>Text tool</span>
+                <AppWindowMacIcon className="h-4 w-4" />
+                <span className="sr-only">Text tool</span>
               </Button>
             </PopoverTrigger>
-            <PopoverContent className='w-120 bg-white'>
-              <div className='grid gap-4'>
-                <div className='space-y-2'>
-                  <h4 className='font-medium leading-none'>Input URL</h4>
-                  <p className='text-sm text-muted-foreground'>
+            <PopoverContent className="w-120 bg-white">
+              <div className="grid gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium leading-none">Input URL</h4>
+                  <p className="text-sm text-muted-foreground">
                     You can input the URL of the page you want to embed.
                   </p>
                 </div>
-                <div className='grid gap-2'>
-                  <div className='grid grid-cols-3 items-center gap-4'>
-                    <Label htmlFor='url'>URL</Label>
+                <div className="grid gap-2">
+                  <div className="grid grid-cols-3 items-center gap-4">
+                    <Label htmlFor="url">URL</Label>
                     <Input
-                      id='url'
-                      defaultValue='https://'
-                      className='col-span-2 h-8'
+                      id="url"
+                      defaultValue="https://"
+                      className="col-span-2 h-8"
                       onChange={(e) => setUrl(e.target.value)}
                     />
                   </div>
                   <Button
-                    variant='outline'
-                    size='icon'
-                    className='w-full'
+                    variant="outline"
+                    size="icon"
+                    className="w-full"
                     onClick={handleUrlAdd}
                   >
-                    <Plus className='h-4 w-4' />
+                    <Plus className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             </PopoverContent>
           </Popover>
           <Button
-            variant={tool === 'template' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('template')}
+            variant={tool === "template" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("template")}
           >
-            <Shapes className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <Shapes className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
-          <Separator orientation='vertical' className='h-6' />
+          <Separator orientation="vertical" className="h-6" />
           <Button
-            variant={tool === 'aiSearch' ? 'toolSelect' : 'white'}
-            size='icon'
+            variant={tool === "aiSearch" ? "toolSelect" : "white"}
+            size="icon"
             onClick={() => setIsAIChatOpen(!isAIChatOpen)}
           >
-            <HiOutlineSparkles className='h-4 w-4' />
-            <span className='sr-only'>AI Assistant</span>
+            <HiOutlineSparkles className="h-4 w-4" />
+            <span className="sr-only">AI Assistant</span>
           </Button>
         </div>
       </div>
-      <div className='left-1/2 fixed top-6 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center space-x-2'>
-        <div className='flex space-x-2 items-center'>
+      <div className="left-1/2 fixed top-6 border -translate-x-1/2 border-muted rounded-lg px-3 py-2 bg-white z-50 shadow-md h-12 flex items-center space-x-2">
+        <div className="flex space-x-2 items-center">
           <Button
-            variant={tool === 'select' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('select')}
+            variant={tool === "select" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("select")}
           >
-            <MousePointer2 className='h-4 w-4' />
-            <span className='sr-only'>Select tool</span>
+            <MousePointer2 className="h-4 w-4" />
+            <span className="sr-only">Select tool</span>
           </Button>
           <Button
-            variant={tool === 'text' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('text')}
+            variant={tool === "text" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("text")}
           >
-            <Type className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <Type className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           <Button
-            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('arrow')}
+            variant={tool === "arrow" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("arrow")}
           >
-            <MoveRight className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <MoveRight className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
         </div>
-        <Separator orientation='vertical' className='h-6' />
-        <div className='p-2 font-bold text-sm flex-1 min-w-0'>
-          <h1 className='truncate'>How to survive in flood of technology</h1>
+        <Separator orientation="vertical" className="h-6" />
+        <div className="p-2 font-bold text-sm flex-1 min-w-0">
+          <h1 className="truncate">How to survive in flood of technology</h1>
         </div>
-        <Separator orientation='vertical' className='h-6' />
-        <div className='flex space-x-2 items-center'>
+        <Separator orientation="vertical" className="h-6" />
+        <div className="flex space-x-2 items-center">
           <Button
-            variant={tool === 'select' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('select')}
+            variant={tool === "select" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("select")}
           >
-            <MousePointer2 className='h-4 w-4' />
-            <span className='sr-only'>Select tool</span>
+            <MousePointer2 className="h-4 w-4" />
+            <span className="sr-only">Select tool</span>
           </Button>
           <Button
-            variant={tool === 'text' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('text')}
+            variant={tool === "text" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("text")}
           >
-            <Type className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <Type className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
           <Button
-            variant={tool === 'arrow' ? 'toolSelect' : 'white'}
-            size='icon'
-            onClick={() => setTool('arrow')}
+            variant={tool === "arrow" ? "toolSelect" : "white"}
+            size="icon"
+            onClick={() => setTool("arrow")}
           >
-            <MoveRight className='h-4 w-4' />
-            <span className='sr-only'>Text tool</span>
+            <MoveRight className="h-4 w-4" />
+            <span className="sr-only">Text tool</span>
           </Button>
         </div>
       </div>
-      <div ref={containerRef} className='flex-grow overflow-hidden relative'>
+      <div ref={containerRef} className="flex-grow overflow-hidden relative">
         <canvas
           ref={canvasRef}
           width={window.innerWidth}
@@ -1092,8 +1092,8 @@ export default function Whiteboard() {
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
-          className={`${spacePressed ? 'cursor-grab' : 'cursor-crosshair'} ${
-            isPanning ? 'cursor-grabbing' : ''
+          className={`${spacePressed ? "cursor-grab" : "cursor-crosshair"} ${
+            isPanning ? "cursor-grabbing" : ""
           }`}
         />
         {/* WidgetShell 컴포넌트들을 렌더링 */}
@@ -1120,7 +1120,7 @@ export default function Whiteboard() {
           contentTitle={contentTitle}
           handleInputChange={handleInputChange}
           handleSaveClick={handleSaveClick}
-          className='custom-dialog-class'
+          className="custom-dialog-class"
           open={dialogOpen}
           onOpenChange={setDialogOpen}
         />

@@ -1,7 +1,7 @@
-import { configureStore, Middleware } from '@reduxjs/toolkit';
-import whiteboardReducer from './features/whiteboardSlice';
-import arrowReducer from './features/arrowSlice';
-import registerReducer from './features/registerSlice';
+import { configureStore, Middleware } from "@reduxjs/toolkit";
+import whiteboardReducer from "./features/whiteboardSlice";
+import arrowReducer from "./features/arrowSlice";
+import registerReducer from "./features/registerSlice";
 
 // lastAction을 저장할 리듀서
 const lastActionReducer = (state = null, action: any) => {
