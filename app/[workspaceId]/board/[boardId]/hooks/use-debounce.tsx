@@ -10,7 +10,7 @@ export const useDebounceDispatch = () => {
   const debouncedUpdateWidget = useCallback(
     debounce((widget: ShellWidgetProps<AllWidgetTypes>) => {
       dispatch(updateWidget(widget));
-    }, 30), // 300ms 딜레이
+    }, 200), // 300ms 딜레이
     [dispatch]
   );
 
