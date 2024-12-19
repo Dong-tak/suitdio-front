@@ -16,3 +16,5 @@ export const useDebounceDispatch = () => {
 
   return { debouncedUpdateWidget };
 };
+
+// 다중 위젯 업데이트를 위한 디바운스 함수

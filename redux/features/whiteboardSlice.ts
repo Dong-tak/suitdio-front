@@ -23,6 +23,7 @@ interface WhiteboardState {
   deletedWidgets: ShellWidgetProps<AllWidgetTypes>[];
   isReduced: boolean;
   spacePressed: boolean;
+  lastAction?: { type: string; payload: any }; // 추가
 }
 
 const initialState: WhiteboardState = {
@@ -205,6 +206,10 @@ const whiteboardSlice = createSlice({
               w.id !==
               (lastCommand.payload as ShellWidgetProps<AllWidgetTypes>).id
           );
+          state.lastAction = {
+            type: 'whiteboard/undo/CREATE_WIDGET',
+            payload: lastCommand.payload,
+          };
           break;
         case 'DELETE_WIDGET':
           if (typeof lastCommand.payload === 'string') {
@@ -217,6 +222,10 @@ const whiteboardSlice = createSlice({
               });
             }
           }
+          state.lastAction = {
+            type: 'whiteboard/undo/DELETE_WIDGET',
+            payload: lastCommand.payload,
+          };
           break;
         case 'UPDATE_WIDGET':
           const updatedWidgetIndex = state.lastSavedState.findIndex(
@@ -228,6 +237,10 @@ const whiteboardSlice = createSlice({
             state.widgets[updatedWidgetIndex] =
               lastCommand.payload as ShellWidgetProps<AllWidgetTypes>;
           }
+          state.lastAction = {
+            type: 'whiteboard/undo/UPDATE_WIDGET',
+            payload: lastCommand.payload,
+          };
           break;
       }
     },

@@ -636,18 +636,23 @@ export default function WidgetShell({
       const dx = snappedX / scale - widget.x;
       const dy = snappedY / scale - widget.y;
 
-      // 시각적 위치 즉시 업데이트
-      setVisualPosition({
-        ...visualPosition,
-        x: snappedX / scale,
-        y: snappedY / scale,
-      });
-
       if (Array.isArray(selectedWidget) && selectedWidget.includes(widget.id)) {
-        // Shift 키가 눌려있지 않으면 기존 선택 해제
+        // 선택된 모든 위젯의 시각적 위치 업데이트
         selectedWidget.forEach((id) => {
           const targetWidget = widgets.find((w) => w.id === id);
           if (targetWidget) {
+            // DOM에서 해당 위젯 요소를 찾아 위치 업데이트
+            const targetElement = document.querySelector(
+              `[data-widget-id="${id}"]`
+            ) as HTMLElement;
+            if (targetElement) {
+              targetElement.style.left = `${
+                (targetWidget.x + dx + offset.x) * scale
+              }px`;
+              targetElement.style.top = `${
+                (targetWidget.y + dy + offset.y) * scale
+              }px`;
+            }
             debouncedUpdateWidget({
               ...targetWidget,
               x: targetWidget.x + dx,
@@ -656,6 +661,13 @@ export default function WidgetShell({
           }
         });
       }
+
+      // 현재 드래그 중인 위젯의 시각적 위치 업데이트
+      setVisualPosition({
+        ...visualPosition,
+        x: snappedX / scale,
+        y: snappedY / scale,
+      });
 
       if (isSection(widget.innerWidget)) {
         // 섹션 이동 시 멤버들도 함께 이동
@@ -942,6 +954,7 @@ export default function WidgetShell({
       )}
       <div
         className={`widget-shell ${spacePressed ? 'space-active' : ''} group`}
+        data-widget-id={widget.id} // 추가
         style={{
           position: 'absolute',
           zIndex: widget.innerWidget.type === 'section' ? 1 : 2,

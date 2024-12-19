@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { store } from '@/redux/store';
 import { debounce } from 'lodash';
+import { AllWidgetTypes, ShellWidgetProps } from '@/types/type';
 
 let socket: WebSocket | null = null;
 
@@ -22,6 +23,7 @@ const debouncedSend = debounce((message: any) => {
 store.subscribe(() => {
   const state = store.getState();
   const action = state.lastAction; // lastAction을 저장하도록 reducer 수정 필요
+  const undoAction = state.whiteboard.lastAction;
 
   if (!socket || !action) return;
 
@@ -38,9 +40,29 @@ store.subscribe(() => {
       break;
 
     case 'whiteboard/deleteWidget':
+      console.log('deleteWidget 액션 감지', action.payload);
       const deleteMessage = createDeleteWidgetMessage(action.payload);
       socket.send(JSON.stringify(deleteMessage));
       console.log('웹소켓 위젯 삭제 메시지 전송:', deleteMessage);
+      break;
+  }
+});
+
+// 상태 변경 감지 및 메시지 전송
+store.subscribe(() => {
+  const state = store.getState();
+  const undoAction = state.whiteboard.lastAction;
+
+  if (!socket || !undoAction) return;
+
+  switch (undoAction.type) {
+    case 'whiteboard/undo/CREATE_WIDGET':
+      console.log('undo 액션 감지', undoAction.payload);
+      const undoCreateMessage = createDeleteWidgetMessage(
+        undoAction.payload.id
+      );
+      socket.send(JSON.stringify(undoCreateMessage));
+      console.log('웹소켓 위젯 생성(undo) 메시지 전송:', undoCreateMessage);
       break;
   }
 });
