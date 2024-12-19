@@ -1,6 +1,6 @@
-import { useCallback, useEffect, RefObject } from 'react';
-import { Arrow, SelectArea } from '@/types/type';
-import { drawArrow } from '../../components/arrow/drawArrow';
+import { useCallback, useEffect, RefObject } from "react";
+import { Arrow, SelectArea } from "@/types/type";
+import { drawArrow } from "../../components/arrow/drawArrow";
 
 interface UseWhiteboardCanvasProps {
   canvasRef: RefObject<HTMLCanvasElement>;
@@ -36,15 +36,7 @@ export const useWhiteboardCanvas = ({
     (ctx: CanvasRenderingContext2D) => {
       arrows.forEach((arrow) => {
         const isSelected = selectedArrow.includes(arrow);
-        drawArrow(ctx, arrow, scale, offset);
-
-        if (isSelected) {
-          ctx.beginPath();
-          ctx.fillStyle = '#00A3FF';
-          ctx.arc(arrow.points[0], arrow.points[1], 5 / scale, 0, 2 * Math.PI);
-          ctx.arc(arrow.points[8], arrow.points[9], 5 / scale, 0, 2 * Math.PI);
-          ctx.fill();
-        }
+        drawArrow(ctx, arrow, scale, offset, isSelected);
       });
     },
     [arrows, selectedArrow, scale, offset]
@@ -54,8 +46,8 @@ export const useWhiteboardCanvas = ({
     (ctx: CanvasRenderingContext2D) => {
       if (!sectionDraft) return;
 
-      ctx.fillStyle = 'rgba(200, 200, 200, 0.2)';
-      ctx.strokeStyle = '#00A3FF';
+      ctx.fillStyle = "rgba(200, 200, 200, 0.2)";
+      ctx.strokeStyle = "#00A3FF";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.rect(
@@ -74,8 +66,8 @@ export const useWhiteboardCanvas = ({
     (ctx: CanvasRenderingContext2D) => {
       if (!selectArea) return;
 
-      ctx.strokeStyle = '#d97706';
-      ctx.fillStyle = '#fffbeb50';
+      ctx.strokeStyle = "#d97706";
+      ctx.fillStyle = "#fffbeb50";
       ctx.lineWidth = 1 / scale;
       ctx.beginPath();
       ctx.rect(
@@ -94,7 +86,7 @@ export const useWhiteboardCanvas = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Clear and setup canvas

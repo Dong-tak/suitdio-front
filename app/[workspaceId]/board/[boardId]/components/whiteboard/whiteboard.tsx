@@ -650,7 +650,7 @@ export default function Whiteboard() {
 
   // 화살표 선택을 위한 함수 추가
   const isPointNearArrow = (x: number, y: number, arrow: Arrow): boolean => {
-    const tolerance = 10 / scale; // 클릭 허용 범위
+    const tolerance = 40 / scale; // 클릭 허용 범위
 
     // 시작점과 끝점 사이의 거리 계산
     const dx = arrow.arrowTipX - arrow.points[0];
@@ -821,6 +821,64 @@ export default function Whiteboard() {
   useEffect(() => {
     getSelectedWidgetInfo(state);
   }, [state.whiteboard.selectedWidget]); // selectedWidget이 변경될 때마다 실행
+
+  // 선택된 화살표의 연결점을 표시하기 위한 컴포넌트
+  const ArrowEndpoints = () => {
+    return (
+      <>
+        {arrows.map((arrow) => {
+          const isSelected = selectedArrow.includes(arrow);
+          if (!isSelected) return null;
+
+          const startPoint = {
+            x: (arrow.points[0] + offset.x) * scale,
+            y: (arrow.points[1] + offset.y) * scale,
+          };
+
+          const lastIndex = arrow.points.length - 2;
+          const endPoint = {
+            x: (arrow.points[lastIndex] + offset.x) * scale,
+            y: (arrow.points[lastIndex + 1] + offset.y) * scale,
+          };
+
+          return (
+            <div key={`arrow-endpoints-${arrow.fromId}-${arrow.toId}`}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: `${startPoint.x}px`,
+                  top: `${startPoint.y}px`,
+                  width: "12px",
+                  height: "12px",
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "50%",
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 10,
+                  pointerEvents: "none",
+                  border: "2px solid #0f8df9", // 테두리 추가
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  left: `${endPoint.x}px`,
+                  top: `${endPoint.y}px`,
+                  width: "12px",
+                  height: "12px",
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "50%",
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 10,
+                  pointerEvents: "none",
+                  border: "2px solid #0f8df9", // 테두리 추가
+                }}
+              />
+            </div>
+          );
+        })}
+      </>
+    );
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -1096,6 +1154,8 @@ export default function Whiteboard() {
             isPanning ? "cursor-grabbing" : ""
           }`}
         />
+        {/* 화살표 연결점 렌더링 */}
+        <ArrowEndpoints />
         {/* WidgetShell 컴포넌트들을 렌더링 */}
         {widgets.map((widget) => (
           <MemoizedWidgetShell
