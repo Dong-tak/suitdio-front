@@ -131,7 +131,7 @@ export const drawArrow = (
   ctx.save();
   ctx.beginPath();
   ctx.strokeStyle = "#000000";
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.lineJoin = "round";
 
   if (points.length < 4) return;
