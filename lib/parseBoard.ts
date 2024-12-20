@@ -187,7 +187,6 @@ export function parseWidgetInstance(
 }
 
 export function parseBoardData(response: BoardResponse) {
-  // 위젯 파싱
   const widgets = response.widgetInstances.map((instance) =>
     parseWidgetInstance(instance)
   );
@@ -196,19 +195,23 @@ export function parseBoardData(response: BoardResponse) {
   const arrows: Arrow[] = response.widgetRelations
     .filter((relation) => !relation.is_deleted)
     .flatMap((relation) => {
-      const fromWidget = widgets.find((w) => w.id === relation.widget_from);
-
-      // to_instances의 각 대상에 대해 화살표 생성
       return relation.to_instances.map((toId) => {
-        const toWidget = widgets.find((w) => w.id === toId);
+        // relation이 'backward'인 경우 fromId와 toId를 서로 바꿈
+        const actualFromId =
+          relation.relation === "backward" ? toId : relation.widget_from;
+        const actualToId =
+          relation.relation === "backward" ? relation.widget_from : toId;
+
+        const fromWidget = widgets.find((w) => w.id === actualFromId);
+        const toWidget = widgets.find((w) => w.id === actualToId);
 
         if (fromWidget && toWidget) {
           // 화살표 포인트 계산
           const points = calculateArrowPoints(fromWidget, toWidget);
           return {
-            id: `${relation.id}-${toId}`, // 고유한 ID 생성
-            fromId: relation.widget_from,
-            toId: toId,
+            id: `${relation.id}`,
+            fromId: actualFromId,
+            toId: actualToId,
             points: points.points,
             arrowTipX: points.arrowTipX,
             arrowTipY: points.arrowTipY,
@@ -219,13 +222,13 @@ export function parseBoardData(response: BoardResponse) {
     })
     .filter((arrow): arrow is Arrow => arrow !== null);
 
-  // 위젯 간의 관계 정보 저장
+  // 위젯 간의 관계 정보도 방향에 맞게 저장
   const widgetRelations = response.widgetRelations
     .filter((relation) => !relation.is_deleted)
     .flatMap((relation) =>
       relation.to_instances.map((toId) => ({
-        fromId: relation.widget_from,
-        toId: toId,
+        fromId: relation.relation === "backward" ? toId : relation.widget_from,
+        toId: relation.relation === "backward" ? relation.widget_from : toId,
       }))
     );
 

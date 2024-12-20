@@ -4,10 +4,7 @@ const offset = 8; // 위젯으로부터의 거리를 5px로 설정
 const baseRadius = 15; // 곡선 반지름 기본값(최대값)
 const headLength = 15; // 화살표 헤드 길이
 const headAngle = Math.PI / 6; // 화살표 헤드 각도
-const headOffset = -4; // 화살표 헤드를 선 끝에서 얼마나 떨어뜨릴지 설정
-// 둥근 화살표헤드로 변경시 필요한 파라미터
-const arrowWidth = 20;
-const arrowHeadLength = 30;
+const headOffset = -3; // 화살표 헤드를 선 끝에서 얼마나 떨어뜨릴지 설정
 
 const arrowcontect = {
   left: 4,
@@ -39,7 +36,7 @@ export const calculateArrowPoints = (
       x: fromCenter.x + arrowcontect.bottom,
       y: fromWidget.y + fromWidget.height + offset,
     }, // 하단 중앙
-    { x: fromWidget.x + 2, y: fromCenter.y + arrowcontect.left }, // 좌측 중앙
+    { x: fromWidget.x, y: fromCenter.y + arrowcontect.left }, // 좌측 중앙
     {
       x: fromWidget.x + fromWidget.width + offset,
       y: fromCenter.y + arrowcontect.right,

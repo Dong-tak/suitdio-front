@@ -90,6 +90,7 @@ import { useWhiteboardCanvas } from "../../hooks/whiteboard/useWhiteboardCanvas"
 import { useFileUpload } from "../../hooks/whiteboard/useFileUpload";
 import { useClipboard } from "../../hooks/whiteboard/useClipboard";
 import { useDragAndDrop } from "../../hooks/whiteboard/useDragDrop";
+import { ArrowContextMenu } from "@/app/[workspaceId]/board/[boardId]/components/arrow/arrowContextMenu";
 
 // 기본 그리드 설정
 const baseSpacing = 48; // 기본 간격
@@ -159,6 +160,13 @@ export default function Whiteboard() {
     x: number;
     y: number;
   } | null>(null);
+
+  const [contextMenuPosition, setContextMenuPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [selectedArrowForContext, setSelectedArrowForContext] =
+    useState<Arrow | null>(null);
 
   const handleShellEditModeChange = (widgetId: string, isEdit: boolean) => {
     setActiveShells((prev) => {
@@ -297,7 +305,7 @@ export default function Whiteboard() {
       switch (tool) {
         case "text":
           innerWidget = {
-            id: Date.now().toString(),
+            id: getTsid().toString(),
             type: "text",
             text: JSON.stringify([
               {
@@ -321,7 +329,7 @@ export default function Whiteboard() {
 
       // 공통 shell 위 생성
       const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-        id: Date.now().toString(),
+        id: getTsid().toString(),
         type: "shell",
         x: Math.round(x / baseSpacing) * baseSpacing,
         y: Math.round(y / baseSpacing) * baseSpacing,
@@ -451,7 +459,7 @@ export default function Whiteboard() {
     if (tool === "section" && sectionDraft) {
       if (sectionDraft.width > 0 && sectionDraft.height > 0) {
         const innerWidget: SectionWidget = {
-          id: Date.now().toString(),
+          id: getTsid().toString(),
           type: "section",
           x: sectionDraft.x,
           y: sectionDraft.y,
@@ -467,7 +475,7 @@ export default function Whiteboard() {
         };
 
         const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-          id: Date.now().toString(),
+          id: getTsid().toString(),
           type: "shell",
           x: sectionDraft.x,
           y: sectionDraft.y,
@@ -523,7 +531,7 @@ export default function Whiteboard() {
 
     // 새로운 위젯을 추가
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-      id: Date.now().toString(),
+      id: getTsid().toString(),
       type: "shell",
       x: newNode.x ?? 0,
       y: newNode.y ?? 0,
@@ -650,7 +658,7 @@ export default function Whiteboard() {
 
   // 화살표 선택을 위한 함수 추가
   const isPointNearArrow = (x: number, y: number, arrow: Arrow): boolean => {
-    const tolerance = 40 / scale; // 클릭 허용 범위
+    const tolerance = 35 / scale; // 클릭 허용 범위
 
     // 시작점과 끝점 사이의 거리 계산
     const dx = arrow.arrowTipX - arrow.points[0];
@@ -669,40 +677,40 @@ export default function Whiteboard() {
     return distance < tolerance && t >= 0 && t <= 1;
   };
 
-  useEffect(() => {
-    if (isArrowMode && linkWidgets.length === 2) {
-      addArrowWidget();
-    }
-  }, [linkWidgets]);
+  // useEffect(() => {
+  //   if (isArrowMode && linkWidgets.length === 2) {
+  //     addArrowWidget();
+  //   }
+  // }, [linkWidgets]);
 
-  const addArrowWidget = () => {
-    if (linkWidgets.length === 2) {
-      const [fromWidget, toWidget] = linkWidgets;
-      dispatch(addWidgetFrom({ widgetId: toWidget.id, fromWidget }));
-      dispatch(addWidgetTo({ widgetId: fromWidget.id, toWidget }));
+  // const addArrowWidget = () => {
+  //   if (linkWidgets.length === 2) {
+  //     const [fromWidget, toWidget] = linkWidgets;
+  //     dispatch(addWidgetFrom({ widgetId: toWidget.id, fromWidget }));
+  //     dispatch(addWidgetTo({ widgetId: fromWidget.id, toWidget }));
 
-      // 화살표 포인트 계산
-      const arrowPoints = calculateArrowPoints(fromWidget, toWidget);
+  //     // 화살표 포인트 계산
+  //     const arrowPoints = calculateArrowPoints(fromWidget, toWidget);
 
-      // 새로운 화살표 객체 생성
-      const newArrow: Arrow = {
-        id: getTsid().toString(),
-        fromId: fromWidget.id,
-        toId: toWidget.id,
-        ...arrowPoints,
-      };
+  //     // 새로운 화살표 객체 생성
+  //     const newArrow: Arrow = {
+  //       id: getTsid().toString(),
+  //       fromId: fromWidget.id,
+  //       toId: toWidget.id,
+  //       ...arrowPoints,
+  //     };
 
-      console.log("newArrow:", newArrow);
+  //     console.log("newArrow:", newArrow);
 
-      // Redux store에 화살표 추가
-      dispatch(addArrow(newArrow));
+  //     // Redux store에 화살표 추가
+  //     dispatch(addArrow(newArrow));
 
-      // linkWidgets 배열에서 처리된 위젯들 제거
-      dispatch(deleteLinkWidget());
+  //     // linkWidgets 배열에서 처리된 위젯들 제거
+  //     dispatch(deleteLinkWidget());
 
-      dispatch(setIsArrowMode(false));
-    }
-  };
+  //     dispatch(setIsArrowMode(false));
+  //   }
+  // };
 
   // 키보드 이벤트 핸들러 추가
 
@@ -878,6 +886,17 @@ export default function Whiteboard() {
         })}
       </>
     );
+  };
+
+  const handleArrowContextMenu = (e: React.MouseEvent, arrow: Arrow) => {
+    e.preventDefault();
+    setContextMenuPosition({ x: e.clientX, y: e.clientY });
+    setSelectedArrowForContext(arrow);
+  };
+
+  const handleCloseContextMenu = () => {
+    setContextMenuPosition(null);
+    setSelectedArrowForContext(null);
   };
 
   return (
@@ -1150,10 +1169,29 @@ export default function Whiteboard() {
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
+          onContextMenu={(e) => {
+            const arrow = arrows.find((arrow) =>
+              isPointNearArrow(
+                (e.clientX - offset.x * scale) / scale,
+                (e.clientY - offset.y * scale) / scale,
+                arrow
+              )
+            );
+            if (arrow) {
+              handleArrowContextMenu(e, arrow);
+            }
+          }}
           className={`${spacePressed ? "cursor-grab" : "cursor-crosshair"} ${
             isPanning ? "cursor-grabbing" : ""
           }`}
         />
+        {contextMenuPosition && selectedArrowForContext && (
+          <ArrowContextMenu
+            position={contextMenuPosition}
+            arrow={selectedArrowForContext}
+            onClose={handleCloseContextMenu}
+          />
+        )}
         {/* 화살표 연결점 렌더링 */}
         <ArrowEndpoints />
         {/* WidgetShell 컴포넌트들을 렌더링 */}

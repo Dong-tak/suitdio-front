@@ -3,12 +3,13 @@ import type { NextRequest } from "next/server";
 import { store } from "@/redux/store";
 import { debounce } from "lodash";
 import { getTsid } from "tsid-ts";
+import { Arrow } from "@/types/type";
 
 interface RelationAction {
   type: "action";
   transactionId: null;
   actions: {
-    action: "create";
+    action: "create" | "update" | "delete";
     type: "relation";
     data: {
       id: string;
@@ -21,6 +22,13 @@ interface RelationAction {
 }
 
 let socket: WebSocket | null = null;
+
+// 전역 변수로 마지막 요청 정보를 저장
+let lastArrowRequest = {
+  fromId: "",
+  toId: "",
+  timestamp: 0,
+};
 
 // 웹소켓 연결 설정 함수
 export const setWebSocket = (ws: WebSocket) => {
@@ -62,8 +70,27 @@ store.subscribe(() => {
 
     case "arrow/addArrow":
       const arrowMessage = createAddArrowMessage(action.payload);
-      socket.send(JSON.stringify(arrowMessage));
-      console.log("웹소켓 화살표 관계 생성 메시지 전송:", arrowMessage);
+      if (arrowMessage) {
+        socket.send(JSON.stringify(arrowMessage));
+        console.log("웹소켓 화살표 관계 생성 메시지 전송:", arrowMessage);
+      }
+      break;
+
+    case "arrow/deleteArrow":
+      const deleteArrowMessage = createDeleteArrowMessage(action.payload);
+      socket.send(JSON.stringify(deleteArrowMessage));
+      console.log("웹소켓 화살표 관계 삭제 메시지 전송:", deleteArrowMessage);
+      break;
+
+    case "arrow/conversionArrow":
+      const conversionArrowMessage = createConversionArrowMessage(
+        action.payload
+      );
+      socket.send(JSON.stringify(conversionArrowMessage));
+      console.log(
+        "웹소켓 화살표 관계 변환 메시지 전송:",
+        conversionArrowMessage
+      );
       break;
   }
 });
@@ -205,7 +232,34 @@ function createDeleteWidgetMessage(widgetId: string) {
   };
 }
 
-function createAddArrowMessage(arrow: { fromId: string; toId: string }) {
+function createAddArrowMessage(arrow: {
+  id: string;
+  fromId: string;
+  toId: string;
+}) {
+  const currentTime = Date.now();
+
+  // 이전 요청과 동일한 fromId, toId를 가진 요청이 100ms 이내에 들어오면 무시
+  if (
+    lastArrowRequest.fromId === arrow.fromId &&
+    lastArrowRequest.toId === arrow.toId &&
+    currentTime - lastArrowRequest.timestamp < 100
+  ) {
+    console.log("중복 화살표 요청 무시:", {
+      fromId: arrow.fromId,
+      toId: arrow.toId,
+      timeDiff: currentTime - lastArrowRequest.timestamp,
+    });
+    return null;
+  }
+
+  // 현재 요청 정보 저장
+  lastArrowRequest = {
+    fromId: arrow.fromId,
+    toId: arrow.toId,
+    timestamp: currentTime,
+  };
+
   const relationData: RelationAction = {
     type: "action",
     transactionId: null,
@@ -214,10 +268,53 @@ function createAddArrowMessage(arrow: { fromId: string; toId: string }) {
         action: "create",
         type: "relation",
         data: {
-          id: getTsid().toString(),
+          id: arrow.id,
           fromId: arrow.fromId,
           toId: arrow.toId,
           relation: "forward",
+          property: {},
+        },
+      },
+    ],
+  };
+
+  return relationData;
+}
+
+function createDeleteArrowMessage(arrowData: any) {
+  const arrow = Array.isArray(arrowData) ? arrowData[0] : arrowData;
+
+  return {
+    type: "action",
+    actions: [
+      {
+        type: "relation",
+        action: "delete",
+        data: {
+          id: arrow.id,
+        },
+      },
+    ],
+  };
+}
+
+function createConversionArrowMessage(arrow: {
+  id: string;
+  fromId: string;
+  toId: string;
+}): RelationAction {
+  const relationData: RelationAction = {
+    type: "action",
+    transactionId: null,
+    actions: [
+      {
+        action: "update",
+        type: "relation",
+        data: {
+          id: arrow.id,
+          fromId: arrow.fromId,
+          toId: arrow.toId,
+          relation: "backward",
           property: {},
         },
       },

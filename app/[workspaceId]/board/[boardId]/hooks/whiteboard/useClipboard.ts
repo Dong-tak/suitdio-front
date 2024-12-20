@@ -1,12 +1,13 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import { addWidget } from '@/redux/features/whiteboardSlice';
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { addWidget } from "@/redux/features/whiteboardSlice";
 import {
   AllWidgetTypes,
   ShellWidgetProps,
   TextWidget,
   IframeEmbedWidget,
-} from '@/types/type';
+} from "@/types/type";
+import { getTsid } from "tsid-ts";
 
 interface UseClipboardProps {
   tool: string;
@@ -37,8 +38,8 @@ export const useClipboard = ({
     const y = (mousePos.y - offset.y * scale) / scale;
 
     const innerWidget: TextWidget = {
-      id: Date.now().toString(),
-      type: 'text',
+      id: getTsid().toString(),
+      type: "text",
       mkText: text,
       fontSize: FONT_SIZE,
       draggable: true,
@@ -49,8 +50,8 @@ export const useClipboard = ({
     };
 
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-      id: Date.now().toString(),
-      type: 'shell',
+      id: getTsid().toString(),
+      type: "shell",
       width: 472,
       height: 184,
       x,
@@ -71,8 +72,8 @@ export const useClipboard = ({
     const y = (mousePos.y - offset.y * scale) / scale;
 
     const innerWidget: IframeEmbedWidget = {
-      id: Date.now().toString(),
-      type: 'url',
+      id: getTsid().toString(),
+      type: "url",
       src: text,
       draggable: true,
       editable: true,
@@ -82,8 +83,8 @@ export const useClipboard = ({
     };
 
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-      id: Date.now().toString(),
-      type: 'shell',
+      id: getTsid().toString(),
+      type: "shell",
       width: 472,
       height: 712,
       x,
@@ -101,13 +102,13 @@ export const useClipboard = ({
 
   useEffect(() => {
     if (
-      tool !== 'url' &&
+      tool !== "url" &&
       activeShells.editModeShells.size === 0 &&
       activeShells.popupOpenShells.size === 0
     ) {
       const handlePaste = (e: ClipboardEvent) => {
         e.preventDefault();
-        const pastedText = e.clipboardData?.getData('text');
+        const pastedText = e.clipboardData?.getData("text");
 
         if (pastedText && mousePosition) {
           const isUrl = /^(http|https):\/\/[^ "]+$/.test(pastedText);
@@ -123,12 +124,12 @@ export const useClipboard = ({
         setMousePosition({ x: e.clientX, y: e.clientY });
       };
 
-      document.addEventListener('paste', handlePaste);
-      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener("paste", handlePaste);
+      document.addEventListener("mousemove", handleMouseMove);
 
       return () => {
-        document.removeEventListener('paste', handlePaste);
-        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener("paste", handlePaste);
+        document.removeEventListener("mousemove", handleMouseMove);
       };
     }
   }, [tool, activeShells, mousePosition, scale, offset]);
