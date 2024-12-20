@@ -1,13 +1,14 @@
-import { useDispatch } from 'react-redux';
-import { addWidget, addSelectedWidget } from '@/redux/features/whiteboardSlice';
-import { AllWidgetType, AllWidgetTypes, ShellWidgetProps } from '@/types/type';
+import { useDispatch } from "react-redux";
+import { addWidget, addSelectedWidget } from "@/redux/features/whiteboardSlice";
+import { AllWidgetType, AllWidgetTypes, ShellWidgetProps } from "@/types/type";
+import { getTsid } from "tsid-ts";
 
 interface UseFileUploadProps {
   scale: number;
   offset: { x: number; y: number };
   baseSpacing: number;
   FONT_SIZE: number;
-  setTool: (tool: 'select' | AllWidgetType) => void;
+  setTool: (tool: "select" | AllWidgetType) => void;
 }
 
 export const useFileUpload = ({
@@ -24,10 +25,10 @@ export const useFileUpload = ({
     const centerY = (window.innerHeight / 2 - offset.y * scale) / scale;
     let innerWidget: AllWidgetTypes;
 
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith("image/")) {
       innerWidget = {
-        id: Date.now().toString(),
-        type: 'image',
+        id: getTsid().toString(),
+        type: "image",
         src: dataUrl,
         x: Math.round(centerX / baseSpacing) * baseSpacing,
         y: Math.round(centerY / baseSpacing) * baseSpacing,
@@ -39,10 +40,10 @@ export const useFileUpload = ({
         headerBar: true,
         footerBar: false,
       };
-    } else if (file.type === 'application/pdf') {
+    } else if (file.type === "application/pdf") {
       innerWidget = {
-        id: Date.now().toString(),
-        type: 'pdf',
+        id: getTsid().toString(),
+        type: "pdf",
         src: dataUrl,
         x: Math.round(centerX / baseSpacing) * baseSpacing,
         y: Math.round(centerY / baseSpacing) * baseSpacing,
@@ -55,12 +56,12 @@ export const useFileUpload = ({
         footerBar: false,
       };
     } else if (
-      file.type === 'text/markdown' ||
-      file.type === 'text/x-markdown'
+      file.type === "text/markdown" ||
+      file.type === "text/x-markdown"
     ) {
       innerWidget = {
-        id: Date.now().toString(),
-        type: 'text',
+        id: getTsid().toString(),
+        type: "text",
         src: dataUrl,
         fontSize: FONT_SIZE,
         x: Math.round(centerX / baseSpacing) * baseSpacing,
@@ -77,8 +78,8 @@ export const useFileUpload = ({
     }
 
     const newWidget: ShellWidgetProps<AllWidgetTypes> = {
-      id: Date.now().toString(),
-      type: 'shell',
+      id: getTsid().toString(),
+      type: "shell",
       x: Math.round(centerX / baseSpacing) * baseSpacing,
       y: Math.round(centerY / baseSpacing) * baseSpacing,
       width: 472,
@@ -93,7 +94,7 @@ export const useFileUpload = ({
 
     dispatch(addWidget(newWidget));
     dispatch(addSelectedWidget(newWidget.id));
-    setTool('select');
+    setTool("select");
   };
 
   const handleFileUpload = (dragFile?: File) => {
@@ -112,9 +113,9 @@ export const useFileUpload = ({
       return;
     }
 
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/*, application/pdf, text/markdown';
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/*, application/pdf, text/markdown";
     fileInput.onchange = (e: Event) => {
       const target = e.target as HTMLInputElement;
       if (target.files?.[0]) {
