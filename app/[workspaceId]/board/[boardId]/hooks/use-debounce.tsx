@@ -10,9 +10,11 @@ export const useDebounceDispatch = () => {
   const debouncedUpdateWidget = useCallback(
     debounce((widget: ShellWidgetProps<AllWidgetTypes>) => {
       dispatch(updateWidget(widget));
-    }, 30), // 300ms 딜레이
+    }, 200), // 300ms 딜레이
     [dispatch]
   );
 
   return { debouncedUpdateWidget };
 };
+
+// 다중 위젯 업데이트를 위한 디바운스 함수

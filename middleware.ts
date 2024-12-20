@@ -12,6 +12,7 @@ const PUBLIC_PATHS = [
   '/',
   '/products',
   '/products/:id',
+  '/:id/board/:boardId/data',
 ];
 
 export async function middleware(request: NextRequest) {

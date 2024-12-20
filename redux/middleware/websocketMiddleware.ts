@@ -47,6 +47,7 @@ const debouncedSend = debounce((message: any) => {
 store.subscribe(() => {
   const state = store.getState();
   const action = state.lastAction; // lastAction을 저장하도록 reducer 수정 필요
+  const undoAction = state.whiteboard.lastAction;
 
   if (!socket || !action) return;
 
@@ -62,7 +63,8 @@ store.subscribe(() => {
       debouncedSend(updateMessage);
       break;
 
-    case "whiteboard/deleteWidget":
+    case 'whiteboard/deleteWidget':
+      console.log('deleteWidget 액션 감지', action.payload);
       const deleteMessage = createDeleteWidgetMessage(action.payload);
       socket.send(JSON.stringify(deleteMessage));
       console.log("웹소켓 위젯 삭제 메시지 전송:", deleteMessage);
@@ -91,6 +93,39 @@ store.subscribe(() => {
         "웹소켓 화살표 관계 변환 메시지 전송:",
         conversionArrowMessage
       );
+      break;
+  }
+});
+
+// 상태 변경 감지 및 메시지 전송
+store.subscribe(() => {
+  const state = store.getState();
+  const undoAction = state.whiteboard.lastAction;
+
+  if (!socket || !undoAction) return;
+
+  switch (undoAction.type) {
+    case 'whiteboard/undo/CREATE_WIDGET':
+      console.log('undo 액션 감지', undoAction.payload);
+      const undoCreateMessage = createDeleteWidgetMessage(
+        undoAction.payload.id
+      );
+      socket.send(JSON.stringify(undoCreateMessage));
+      console.log('웹소켓 위젯 생성(undo) 메시지 전송:', undoCreateMessage);
+      break;
+
+    case 'whiteboard/undo/DELETE_WIDGET':
+      console.log('undo delete 취소 액션 감지', undoAction.payload);
+      const undoDeleteMessage = createAddWidgetMessage(undoAction.payload);
+      socket.send(JSON.stringify(undoDeleteMessage));
+      console.log('웹소켓 위젯 삭제(undo) 메시지 전송:', undoDeleteMessage);
+      break;
+
+    case 'whiteboard/undo/UPDATE_WIDGET':
+      console.log('undo 액션 감지', undoAction.payload);
+      const undoUpdateMessage = createUpdateWidgetMessage(undoAction.payload);
+      socket.send(JSON.stringify(undoUpdateMessage));
+      console.log('웹소켓 위젯 업데이트(undo) 메시지 전송:', undoUpdateMessage);
       break;
   }
 });
