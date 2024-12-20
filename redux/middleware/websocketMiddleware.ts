@@ -64,6 +64,20 @@ store.subscribe(() => {
       socket.send(JSON.stringify(undoCreateMessage));
       console.log('웹소켓 위젯 생성(undo) 메시지 전송:', undoCreateMessage);
       break;
+
+    case 'whiteboard/undo/DELETE_WIDGET':
+      console.log('undo delete 취소 액션 감지', undoAction.payload);
+      const undoDeleteMessage = createAddWidgetMessage(undoAction.payload);
+      socket.send(JSON.stringify(undoDeleteMessage));
+      console.log('웹소켓 위젯 삭제(undo) 메시지 전송:', undoDeleteMessage);
+      break;
+
+    case 'whiteboard/undo/UPDATE_WIDGET':
+      console.log('undo 액션 감지', undoAction.payload);
+      const undoUpdateMessage = createUpdateWidgetMessage(undoAction.payload);
+      socket.send(JSON.stringify(undoUpdateMessage));
+      console.log('웹소켓 위젯 업데이트(undo) 메시지 전송:', undoUpdateMessage);
+      break;
   }
 });
 

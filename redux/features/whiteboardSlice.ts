@@ -220,12 +220,13 @@ const whiteboardSlice = createSlice({
               deletedWidget.forEach((widget) => {
                 state.widgets.push(widget);
               });
+              state.lastAction = {
+                type: 'whiteboard/undo/DELETE_WIDGET',
+                payload: deletedWidget[0],
+              };
             }
           }
-          state.lastAction = {
-            type: 'whiteboard/undo/DELETE_WIDGET',
-            payload: lastCommand.payload,
-          };
+
           break;
         case 'UPDATE_WIDGET':
           const updatedWidgetIndex = state.lastSavedState.findIndex(
