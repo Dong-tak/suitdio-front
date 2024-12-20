@@ -1,4 +1,4 @@
-import { CarouselSpacingProps, H1andH2Props } from '@/app/(randing)/page';
+import { CarouselSpacingProps, H1andH2Props } from '@/app/(landing)/page';
 import { CarouselSpacing } from './randing-carousel';
 
 export default function CarouselWithTitle({

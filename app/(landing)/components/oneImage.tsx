@@ -1,4 +1,4 @@
-import { H1andH2Props, OneImageProps } from '@/app/(randing)/page';
+import { H1andH2Props, OneImageProps } from '@/app/(landing)/page';
 import Image from 'next/image';
 
 export default function OneImage({ data, head }: OneImageProps & H1andH2Props) {

@@ -1,4 +1,4 @@
-import { CarouselSpacingProps, H1andH2Props } from '@/app/(randing)/page';
+import { CarouselSpacingProps, H1andH2Props } from '@/app/(landing)/page';
 import Image from 'next/image';
 
 export default function TwoImage({

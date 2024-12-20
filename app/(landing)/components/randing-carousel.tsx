@@ -11,7 +11,7 @@ import {
   RandingCarouselPrevious,
 } from '@/components/ui/carousel';
 import Image from 'next/image';
-import { CarouselSpacingProps } from '@/app/(randing)/page';
+import { CarouselSpacingProps } from '@/app/(landing)/page';
 
 export function CarouselSpacing({ data }: CarouselSpacingProps) {
   return (

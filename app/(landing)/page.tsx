@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import { LandingTabWithTitle } from '@/app/(randing)/components/tabs';
-import TwoImage from '@/app/(randing)/components/twoImage';
-import CarouselWithTitle from '@/app/(randing)/components/carouselWithTitle';
+import { LandingTabWithTitle } from '@/app/(landing)/components/tabs';
+import TwoImage from '@/app/(landing)/components/twoImage';
+import CarouselWithTitle from '@/app/(landing)/components/carouselWithTitle';
 import {
   MAINPAGE_TABS_DATA,
   MAINPAGE_TABS_TITLE,

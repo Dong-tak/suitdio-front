@@ -2,7 +2,7 @@ import {
   CarouselSpacingProps,
   H1andH2Props,
   LandingTabsProps,
-} from '@/app/(randing)/page';
+} from '@/app/(landing)/page';
 
 export const MAINPAGE_TABS_DATA: LandingTabsProps['data'] = [
   {

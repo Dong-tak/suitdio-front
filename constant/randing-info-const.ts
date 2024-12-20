@@ -2,7 +2,7 @@ import {
   CarouselSpacingProps,
   H1andH2Props,
   LandingTabsProps,
-} from '@/app/(randing)/page';
+} from '@/app/(landing)/page';
 
 export const INFO_COLLECTION_TABS_TITLE: H1andH2Props['head'] = {
   h1: '간편하고 빠르게 정보를 수집하세요.',

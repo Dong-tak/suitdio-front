@@ -2,7 +2,7 @@ import {
   CarouselSpacingProps,
   H1andH2Props,
   LandingTabsProps,
-} from '@/app/(randing)/page';
+} from '@/app/(landing)/page';
 
 export const TEAM_TABS_TITLE: H1andH2Props['head'] = {
   h1: '가장 저렴한 팀을 위한 지식 관리 서비스',

@@ -2,7 +2,7 @@ import {
   CarouselSpacingProps,
   H1andH2Props,
   LandingTabsProps,
-} from '@/app/(randing)/page';
+} from '@/app/(landing)/page';
 
 export const AI_COPILOT_TABS_TITLE: H1andH2Props['head'] = {
   h1: '인공지능을 활용하여 지식 관리를 촉진하세요.',

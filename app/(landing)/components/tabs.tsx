@@ -1,4 +1,4 @@
-import { H1andH2Props, LandingTabsProps } from '@/app/(randing)/page';
+import { H1andH2Props, LandingTabsProps } from '@/app/(landing)/page';
 import { LandingTabs } from './randing-tap';
 
 export function LandingTabWithTitle({

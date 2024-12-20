@@ -1,4 +1,4 @@
-import Navbar from '@/app/(randing)/components/Navbar';
+import Navbar from '@/app/(landing)/components/Navbar';
 import Image from 'next/image';
 import { FaGithub, FaInstagram, FaLinkedin } from 'react-icons/fa';
 import { RiInstagramFill } from 'react-icons/ri';
