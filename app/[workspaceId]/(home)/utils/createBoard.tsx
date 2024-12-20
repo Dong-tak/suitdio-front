@@ -1,5 +1,6 @@
-import { ShellWidgetProps, AllWidgetTypes } from '@/types/type';
-import { CenterWidgetParams } from '../types/types';
+import { ShellWidgetProps, AllWidgetTypes } from "@/types/type";
+import { CenterWidgetParams } from "../types/types";
+import { getTsid } from "tsid-ts";
 
 export const centerWidget = ({
   contentTitle,
@@ -7,10 +8,10 @@ export const centerWidget = ({
   boardPosition,
   initialHeight = 200,
 }: CenterWidgetParams): ShellWidgetProps<AllWidgetTypes> => {
-  const timestamp = Date.now();
+  const timestamp = getTsid().toString();
   return {
     id: `CenterWidget-${timestamp}`,
-    type: 'shell',
+    type: "shell",
     ...boardPosition,
     width: 750,
     height: initialHeight,
@@ -21,7 +22,7 @@ export const centerWidget = ({
     to: [],
     innerWidget: {
       id: `CenterWidget-${timestamp}`,
-      type: 'center',
+      type: "center",
       titleBlock: contentTitle,
       width: 750,
       height: initialHeight,
@@ -31,7 +32,7 @@ export const centerWidget = ({
       resizeable: false,
       headerBar: true,
       footerBar: false,
-      text: '',
+      text: "",
     },
   };
 };

@@ -1,3 +1,4 @@
+import { calculateArrowPoints } from "@/app/[workspaceId]/board/[boardId]/components/arrow/drawArrow";
 import {
   AllWidgetTypes,
   ShellWidgetProps,
@@ -7,6 +8,7 @@ import {
   IframeEmbedWidget,
   SectionWidget,
   BoardWidget,
+  Arrow,
 } from "@/types/type";
 
 interface Position {
@@ -189,24 +191,51 @@ export function parseBoardData(response: BoardResponse) {
     parseWidgetInstance(instance)
   );
 
-  response.widgetRelations.forEach((relation) => {
-    if (!relation.is_deleted) {
-      const fromWidget = widgets.find((w) => w.id === relation.widget_from);
-      if (fromWidget) {
-        relation.to_instances.forEach((toId) => {
-          const toWidget = widgets.find((w) => w.id === toId);
-          if (toWidget) {
-            fromWidget.to.push(toWidget);
-            toWidget.from.push(fromWidget);
-          }
-        });
-      }
-    }
-  });
+  // 화살표 정보 생성 및 포인트 계산
+  const arrows: Arrow[] = response.widgetRelations
+    .filter((relation) => !relation.is_deleted)
+    .flatMap((relation) => {
+      return relation.to_instances.map((toId) => {
+        // relation이 'backward'인 경우 fromId와 toId를 서로 바꿈
+        const actualFromId =
+          relation.relation === "backward" ? toId : relation.widget_from;
+        const actualToId =
+          relation.relation === "backward" ? relation.widget_from : toId;
+
+        const fromWidget = widgets.find((w) => w.id === actualFromId);
+        const toWidget = widgets.find((w) => w.id === actualToId);
+
+        if (fromWidget && toWidget) {
+          // 화살표 포인트 계산
+          const points = calculateArrowPoints(fromWidget, toWidget);
+          return {
+            id: `${relation.id}`,
+            fromId: actualFromId,
+            toId: actualToId,
+            points: points.points,
+            arrowTipX: points.arrowTipX,
+            arrowTipY: points.arrowTipY,
+          };
+        }
+        return null;
+      });
+    })
+    .filter((arrow): arrow is Arrow => arrow !== null);
+
+  // 위젯 간의 관계 정보도 방향에 맞게 저장
+  const widgetRelations = response.widgetRelations
+    .filter((relation) => !relation.is_deleted)
+    .flatMap((relation) =>
+      relation.to_instances.map((toId) => ({
+        fromId: relation.relation === "backward" ? toId : relation.widget_from,
+        toId: relation.relation === "backward" ? relation.widget_from : toId,
+      }))
+    );
 
   return {
     widgets,
-    relations: response.widgetRelations.filter((r) => !r.is_deleted),
+    arrows,
+    relations: widgetRelations,
     boardInfo: response.board,
   };
 }
