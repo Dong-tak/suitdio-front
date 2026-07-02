@@ -3,34 +3,15 @@
 > AI 시대, 기획자를 위한 가장 낮은 전환비용의 비주얼 워크스페이스
 > **Structured Thinking with AI** — one space, one flow: from idea to strategy
 
-이 저장소는 실제 서비스 코드의 **개발 중간 단계 스냅샷**입니다 (`develop` 브랜치, 화살표·노드·섹션·마인드맵 핵심 기능이 구현된 시점). 완성된 최신 버전은 기술이전 이슈로 비공개이며, 포트폴리오 참고용으로 공개되었습니다.
-
-## 화면
-
 <p align="center">
   <img src="docs/screenshots/landing-hero.webp" width="700" alt="랜딩페이지 히어로 - Structured Thinking with AI" />
-  <br/><sub>랜딩페이지 — 멀티포맷 임포트 + 멀티 AI 모델 연동</sub>
 </p>
 
-<p align="center">
-  <img src="docs/screenshots/ai-features.webp" width="700" alt="Seamless AI Features - Easy Import, Copilot, Quick AI" />
-  <br/><sub>Easy Import / Copilot(인라인 편집) / Quick AI(Cmd+K) 소개</sub>
-</p>
+> 이 저장소는 실제 서비스 코드의 **개발 중간 단계 스냅샷**입니다 (`develop` 브랜치, 화살표·노드·섹션·마인드맵 핵심 기능이 구현된 시점). 완성된 최신 버전은 기술이전 이슈로 비공개이며, 포트폴리오 참고용으로 공개되었습니다.
 
-<p align="center">
-  <img src="docs/screenshots/board-empty.gif" width="700" alt="빈 보드 + AI 챗 사이드바" />
-  <br/><sub>보드 캔버스 + AI Chat 사이드바가 나란히 배치된 실제 화면</sub>
-</p>
+## 링크
 
-<p align="center">
-  <img src="docs/screenshots/board-ai-chat.gif" width="700" alt="AI 리서치 결과를 보드 위젯으로 드래그" />
-  <br/><sub>Perplexity 리서치 결과(출처 인용 포함)를 텍스트 위젯으로 옮겨 정리하는 실사용 화면</sub>
-</p>
-
-<p align="center">
-  <img src="docs/screenshots/home.gif" width="700" alt="홈 화면 - Recent Boards, Recent Notes" />
-  <br/><sub>홈 화면 — AI 프롬프트 입력, 최근 보드/노트, 업데이트 노트</sub>
-</p>
+- [Changelog](https://feedback.suitdio.com/ko/changelog) — 실제 서비스 업데이트 노트
 
 ## 서비스 소개
 
@@ -42,7 +23,22 @@ Suitdio는 기획(설계)자를 위한 AI 작업 공간입니다. 비효율이 �
 
 ## 핵심 기능
 
+### 홈 — 빠른 시작
+
+<p align="center">
+  <img src="docs/screenshots/home.gif" width="700" alt="홈 화면 - Recent Boards, Recent Notes" />
+  <br/><sub>AI 프롬프트로 바로 시작하거나, 최근 보드/노트로 빠르게 돌아갈 수 있는 홈 화면</sub>
+</p>
+
+별도 세팅 없이 AI 프롬프트 한 줄로 바로 시작하거나(Easy Start), 최근 보드·노트 목록에서 하던 작업으로 빠르게 복귀할 수 있습니다.
+
 ### 보드 (Board)
+
+<p align="center">
+  <img src="docs/screenshots/board-empty.gif" width="700" alt="빈 보드 + AI 챗 사이드바" />
+  <br/><sub>보드 캔버스 + AI Chat 사이드바가 나란히 배치된 실제 화면</sub>
+</p>
+
 - **노드(위젯) 생성·수정·삭제·이동**: Redux 기반 CRUD + Command 패턴으로 undo/redo(최대 20단계) 지원
 - **화살표(Arrow)**: 외부 캔버스 라이브러리 없이 Canvas 2D API로 직접 렌더링. 두 위젯의 겹치지 않는 변을 자동으로 찾아 연결하고, 좌/우 헤드를 개별적으로 켜고 끌 수 있어 방향을 자유롭게 표현 가능
 - **섹션(Section)**: 위젯을 그룹으로 묶어 관리. 완전 포함 기준으로 소속 여부 판정
@@ -51,12 +47,24 @@ Suitdio는 기획(설계)자를 위한 AI 작업 공간입니다. 비효율이 �
 - **다양한 위젯**: 브레인스톰, 노트(포스트잇), 보드, 코멘트, 웹/PDF/이미지 임베드
 
 ### AI 연동
-- 파일(이미지/PDF/PPT/Word) 드래그&드롭으로 손쉬운 임포트
+
+<p align="center">
+  <img src="docs/screenshots/ai-features.webp" width="700" alt="Seamless AI Features - Easy Import, Copilot, Quick AI" />
+  <br/><sub>Easy Import / Copilot(인라인 편집) / Quick AI(Cmd+K)</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/board-ai-chat.gif" width="700" alt="AI 리서치 결과를 보드 위젯으로 드래그" />
+  <br/><sub>Perplexity 리서치 결과(출처 인용 포함)를 텍스트 위젯으로 옮겨 정리하는 실사용 화면</sub>
+</p>
+
+- 파일(이미지/PDF/PPT/Word) 드래그&드롭으로 손쉬운 임포트(Easy Import)
 - 문서 내 인라인 AI 편집(Copilot)
 - Cmd+K 퀵 액션(팩트체크, 맞춤법 검사, 번역, 표 생성, 마인드맵 생성 등)
 - ChatGPT, Claude, Gemini, Perplexity 등 다양한 AI 모델 연동, AI 리서치 결과를 보드 위젯으로 바로 옮겨 정리하는 워크플로우 지원
 
 ### 실시간 협업
+
 - Socket.io 기반 WebSocket으로 위젯 생성/수정/삭제/이동을 실시간 동기화
 
 ## 데이터 구조
