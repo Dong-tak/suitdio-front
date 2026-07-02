@@ -5,6 +5,33 @@
 
 이 저장소는 실제 서비스 코드의 **개발 중간 단계 스냅샷**입니다 (`develop` 브랜치, 화살표·노드·섹션·마인드맵 핵심 기능이 구현된 시점). 완성된 최신 버전은 기술이전 이슈로 비공개이며, 포트폴리오 참고용으로 공개되었습니다.
 
+## 화면
+
+<p align="center">
+  <img src="docs/screenshots/landing-hero.webp" width="700" alt="랜딩페이지 히어로 - Structured Thinking with AI" />
+  <br/><sub>랜딩페이지 — 멀티포맷 임포트 + 멀티 AI 모델 연동</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/ai-features.webp" width="700" alt="Seamless AI Features - Easy Import, Copilot, Quick AI" />
+  <br/><sub>Easy Import / Copilot(인라인 편집) / Quick AI(Cmd+K) 소개</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/board-empty.gif" width="700" alt="빈 보드 + AI 챗 사이드바" />
+  <br/><sub>보드 캔버스 + AI Chat 사이드바가 나란히 배치된 실제 화면</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/board-ai-chat.gif" width="700" alt="AI 리서치 결과를 보드 위젯으로 드래그" />
+  <br/><sub>Perplexity 리서치 결과(출처 인용 포함)를 텍스트 위젯으로 옮겨 정리하는 실사용 화면</sub>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/home.gif" width="700" alt="홈 화면 - Recent Boards, Recent Notes" />
+  <br/><sub>홈 화면 — AI 프롬프트 입력, 최근 보드/노트, 업데이트 노트</sub>
+</p>
+
 ## 서비스 소개
 
 Suitdio는 기획(설계)자를 위한 AI 작업 공간입니다. 비효율이 당연하게 여겨져 온 기획 업무의 생산성을 확보하는 것을 목표로, 보드 위에서 자유롭게 생각을 정리하고 그 구조 위에서 바로 AI를 활용할 수 있도록 만들었습니다.
