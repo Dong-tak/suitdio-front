@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Suitdio (수트디오)
 
-## Getting Started
+> AI 시대, 기획자를 위한 가장 낮은 전환비용의 비주얼 워크스페이스
+> **Structured Thinking with AI** — one space, one flow: from idea to strategy
 
-First, run the development server:
+이 저장소는 실제 서비스 코드의 **개발 중간 단계 스냅샷**입니다 (`develop` 브랜치, 화살표·노드·섹션·마인드맵 핵심 기능이 구현된 시점). 완성된 최신 버전은 기술이전 이슈로 비공개이며, 포트폴리오 참고용으로 공개되었습니다.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 서비스 소개
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Suitdio는 기획(설계)자를 위한 AI 작업 공간입니다. 비효율이 당연하게 여겨져 온 기획 업무의 생산성을 확보하는 것을 목표로, 보드 위에서 자유롭게 생각을 정리하고 그 구조 위에서 바로 AI를 활용할 수 있도록 만들었습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **해결하려는 문제**: 기존 노트테이킹 도구들은 비주얼적으로 직관적이지 않아 정리에 드는 리소스가 크고, 그로 인해 사용을 포기하는 사람이 많습니다. Suitdio는 직관적인 시각적 메모 환경과 그 메모를 기반으로 동작하는 AI를 결합해 이 문제를 해결합니다.
+- **주요 사용자**: 기획자, 사업개발(BD), 프로그래머, 디자이너 등 의사결정이 잦은 지식노동자
+- **핵심 전략**: `포커싱` + `간편함` = Real Productive
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 핵심 기능
 
-## Learn More
+### 보드 (Board)
+- **노드(위젯) 생성·수정·삭제·이동**: Redux 기반 CRUD + Command 패턴으로 undo/redo(최대 20단계) 지원
+- **화살표(Arrow)**: 외부 캔버스 라이브러리 없이 Canvas 2D API로 직접 렌더링. 두 위젯의 겹치지 않는 변을 자동으로 찾아 연결하고, 좌/우 헤드를 개별적으로 켜고 끌 수 있어 방향을 자유롭게 표현 가능
+- **섹션(Section)**: 위젯을 그룹으로 묶어 관리. 완전 포함 기준으로 소속 여부 판정
+- **마인드맵(Mindmap)**: 화살표로 연결된 노드들의 관계를 기반으로 계층 구조를 자동 계산해 트리 형태로 재배치. dagre/elk 같은 외부 레이아웃 라이브러리 없이 자체 재귀 알고리즘으로 구현(순환 연결 방지 가드 포함)
+- **중앙 위젯 / 텍스트 위젯**: BlockNote 기반 리치 텍스트 에디터, 텍스트 위젯을 보드로 변환해 정리하는 기능
+- **다양한 위젯**: 브레인스톰, 노트(포스트잇), 보드, 코멘트, 웹/PDF/이미지 임베드
 
-To learn more about Next.js, take a look at the following resources:
+### AI 연동
+- 파일(이미지/PDF/PPT/Word) 드래그&드롭으로 손쉬운 임포트
+- 문서 내 인라인 AI 편집(Copilot)
+- Cmd+K 퀵 액션(팩트체크, 맞춤법 검사, 번역, 표 생성, 마인드맵 생성 등)
+- ChatGPT, Claude, Gemini, Perplexity 등 다양한 AI 모델 연동, AI 리서치 결과를 보드 위젯으로 바로 옮겨 정리하는 워크플로우 지원
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 실시간 협업
+- Socket.io 기반 WebSocket으로 위젯 생성/수정/삭제/이동을 실시간 동기화
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 기술 스택
 
-## Deploy on Vercel
+- **프레임워크/언어**: Next.js 14(App Router), React 18, TypeScript 5
+- **상태관리**: Redux Toolkit + react-redux
+- **스타일**: Tailwind CSS, Radix UI
+- **에디터**: BlockNote
+- **실시간 통신**: Socket.io-client
+- **서버 통신**: axios
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 개발 히스토리
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+이 프로젝트는 초기에 "QueueFeed"라는 이름으로 시작해, 팀이 피봇하며 화이트보드 프로토타입(`Konva` 기반)을 개발했고, 이후 성능과 커스터마이징을 위해 순수 Canvas 2D API 기반의 자체 렌더링 엔진으로 전환하며 "Suitdio"로 리브랜딩되었습니다.
+
+---
+
+*이 저장소는 개인 포트폴리오 목적으로 공개된 스냅샷이며, 실제 운영 중인 서비스와는 차이가 있을 수 있습니다.*
